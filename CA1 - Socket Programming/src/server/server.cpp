@@ -31,7 +31,7 @@ Server::Server(const std::string& config_file) {
 void Server::run() {
 }
 
-void Server::addHandler(RequestHandler* handler) {
+void Server::addHandler(RequestHandler* handler, const std::string& path) {
 }
 
 void Server::connectTCP() {

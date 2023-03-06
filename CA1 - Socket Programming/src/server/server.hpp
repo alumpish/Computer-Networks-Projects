@@ -12,7 +12,7 @@ public:
     Server(const std::string& config_file = "./config.json");
 
     void run();
-    void addHandler(RequestHandler* handler);
+    void addHandler(RequestHandler* handler, const std::string& path);
 
 private:
     int port_;
