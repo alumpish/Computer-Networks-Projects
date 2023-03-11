@@ -8,8 +8,24 @@
 
 class Connector {
 public:
+
+    struct Event {
+        enum class EventType {
+            stdin_cmd,
+            incoming_client,
+            client_req
+        } type;
+        int sock_fd;
+    };
+
     Connector();
     Connector(int port, std::string host_name, int max_clients);
+
+    std::string rcvMessage(int sock_fd);
+    void sendMessage(int sock_fd, const std::string& msg);
+    void acceptClient();
+
+    Connector::Event pollForEvent();
 
 private:
     struct {
@@ -26,7 +42,6 @@ private:
     } fds_;
 
     void connect();
-    void acceptClient();
     int getFirstFreeClient();
 };
 

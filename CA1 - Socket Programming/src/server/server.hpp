@@ -2,7 +2,8 @@
 #define SERVER_HPP
 
 #include <string>
-#include <vector>
+
+#include "server_connector.hpp"
 
 class RequestHandler;
 
@@ -15,21 +16,7 @@ public:
     void addHandler(RequestHandler* handler, const std::string& path);
 
 private:
-    int port_;
-    std::string host_name_;
-    int max_clients_;
-
-    struct {
-        int server_fd;
-        std::vector<int> client_fds;
-        fd_set master_fds_set;
-        int max_fd;
-    } fds_;
-
-    void connectTCP();
-    void acceptClient();
-
-    int getFirstFreeClient();
+    Connector connector_;
 };
 
 #endif
