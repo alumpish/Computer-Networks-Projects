@@ -30,4 +30,10 @@ class Err401 : std::exception {
     }
 };
 
+class Err403 : std::exception {
+    const char* what() const throw() {
+        return "Access denied!";
+    }
+};
+
 #endif

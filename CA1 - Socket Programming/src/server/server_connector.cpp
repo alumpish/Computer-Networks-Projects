@@ -57,7 +57,7 @@ void Connector::sendMessage(int sock_fd, const std::string& msg) {
         throw InternalServerErr("couldn't send tcp message completely.");
 }
 
-void Connector::acceptClient() {
+int Connector::acceptClient() {
     int free_client_idx = getFirstFreeClient();
     if (free_client_idx == -1)
         throw InternalServerErr("Max number of clients exceeded.");
@@ -70,6 +70,7 @@ void Connector::acceptClient() {
     fds_.client_fds[free_client_idx] = client_fd;
     FD_SET(client_fd, &fds_.master_fds_set);
     fds_.max_fd = std::max(fds_.max_fd, client_fd);
+    return client_fd;
 }
 
 Connector::Event Connector::pollForEvent() {

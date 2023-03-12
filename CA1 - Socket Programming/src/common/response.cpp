@@ -6,6 +6,8 @@
 
 using json = nlohmann::json;
 
+Response::Response() {}
+
 Response::Response(const std::string& response) {
     deserializeFromJSON(response);
 }
