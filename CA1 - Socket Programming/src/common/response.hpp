@@ -34,4 +34,4 @@ private:
     void deserializeFromJSON(const json& to_deserialize);
 };
 
-#endif RESPONSE_HPP
+#endif
