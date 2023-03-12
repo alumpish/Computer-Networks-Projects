@@ -13,18 +13,18 @@ using exec_func = std::function<void(const std::vector<std::string>&)>;
 class CommandHandler {
 public:
     struct Command {
-        std::vector<std::string> args_regex;
-        std::string help;
-        exec_func func;
+        std::vector<std::string> args_regex_;
+        std::string help_;
+        exec_func func_;
 
-        int getArgsCount() const { return args_regex.size(); };
-        void execCommand(const std::vector<std::string>& input_args) { func(input_args); }
-        std::string help() const { return help; };
+        int getArgsCount() const { return args_regex_.size(); };
+        void execCommand(const std::vector<std::string>& input_args) { func_(input_args); }
+        std::string help() const { return help_; };
         bool matchArgsList(const std::vector<std::string>& input_args) const {
-            if (input_args.size() != args_regex.size())
+            if (input_args.size() != args_regex_.size())
                 return false;
-            for (int i = 0; i < args_regex.size(); ++i)
-                if (!std::regex_match(input_args[i], std::regex(args_regex[i])))
+            for (int i = 0; i < args_regex_.size(); ++i)
+                if (!std::regex_match(input_args[i], std::regex(args_regex_[i])))
                     return false;
             return true;
         }
