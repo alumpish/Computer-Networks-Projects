@@ -1,4 +1,5 @@
-OBJS :=# Add every object file in this directory
+OBJS := server_connector.o \
+	server.o
 DIRS :=
 
 # NOTE: here should be SUB_MAKE_INCLUDE, different from the top Makefile

@@ -13,8 +13,8 @@ CLIENT_OBJS := ./src/client/main.o
 # NOTE: ALL_OBJS are intentionally left blank, no need to fill it
 SERVER_ALL_OBJS := $(SERVER_OBJS)
 CLIENT_ALL_OBJS := $(CLIENT_OBJS)
-CLEAN_FILES := $(TARGET) $(OBJS)
-DIST_CLEAN_FILES := $(OBJS)
+CLEAN_FILES := $(TARGET_SERVER) $(TARGET_CLIENT) $(SERVER_OBJS) $(CLIENT_OBJS)
+DIST_CLEAN_FILES := $(SERVER_OBJS) $(CLIENT_OBJS)
 
 # recursive wildcard
 rwildcard=$(foreach d,$(wildcard $(addsuffix *,$(1))),$(call rwildcard,$(d)/,$(2))$(filter $(subst *,%,$(2)),$(d)))
@@ -23,11 +23,11 @@ rwildcard=$(foreach d,$(wildcard $(addsuffix *,$(1))),$(call rwildcard,$(d)/,$(2
 default: show-info all
 
 # non-phony targets
-$(TARGET_SERVER): build-subdirs $(OBJS) find-all-objs
+$(TARGET_SERVER): build-subdirs $(SERVER_ALL_OBJS) find-all-objs
 	@echo -e "\t" CXX $(CFLAGS) $(SERVER_ALL_OBJS) -o $@
 	@$(CXX) $(CFLAGS) $(SERVER_ALL_OBJS) -o $@
 
-$(TARGET_CLIENT): build-subdirs $(OBJS) find-all-objs
+$(TARGET_CLIENT): build-subdirs $(CLIENT_ALL_OBJS) find-all-objs
 	@echo -e "\t" CXX $(CFLAGS) $(CLIENT_ALL_OBJS) -o $@
 	@$(CXX) $(CFLAGS) $(CLIENT_ALL_OBJS) -o $@
 
