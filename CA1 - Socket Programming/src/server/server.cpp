@@ -6,73 +6,107 @@
 #include <unistd.h>
 
 #include <cmath>
+#include <ctime>
 #include <fstream>
+#include <random>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "exceptions.hpp"
 #include "json.hpp"
+#include "request.hpp"
+#include "request_handler.hpp"
+#include "response.hpp"
+#include "server_connector.hpp"
 
 using json = nlohmann::json;
 
 Server::Server(const std::string& config_file) {
     std::ifstream f(config_file);
     json data = json::parse(f);
-    port_ = data["port"];
-    host_name_ = data["hostName"];
-    max_clients_ = data["maxClients"];
+    int port = data["port"];
+    std::string host_name = data["hostName"];
+    int max_clients = data["maxClients"];
 
-    connectTCP();
-    fds_.client_fds = std::vector<int>(max_clients_, -1);
-    FD_ZERO(&fds_.master_fds_set);
-    FD_SET(fds_.server_fd, &fds_.master_fds_set);
-    FD_SET(STDIN_FILENO, &fds_.master_fds_set);
-    fds_.max_fd = std::max(fds_.server_fd, STDIN_FILENO);
+    connector_ = Connector(port, host_name, max_clients);
 }
 
 void Server::run() {
+    auto event = connector_.pollForEvent();
+    if (event.type == Connector::Event::EventType::incoming_client)
+        handleIncomingClient(event);
+    else if (event.type == Connector::Event::EventType::stdin_cmd)
+        handleSTDINCommand(event);
+    else if (event.type == Connector::Event::EventType::client_req)
+        handleIncomingRequest(event);
 }
 
-void Server::addHandler(RequestHandler* handler) {
+void Server::addHandler(RequestHandler* handler, const std::string& path) {
+    handlers_map_[path] = handler;
 }
 
-void Server::connectTCP() {
-    struct sockaddr_in address;
-    int server_fd;
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+void Server::handleIncomingClient(Connector::Event event) {
+    if (event.type != Connector::Event::EventType::incoming_client)
+        return;
 
-    int opt = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    int new_client_fd = connector_.acceptClient();
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = inet_addr(host_name_.c_str());
-    address.sin_port = htons(port_);
+    std::string new_session_id = genSessionID();
+    sessions_.insert(new_session_id);
 
-    if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == -1) {
-        close(server_fd);
-        throw InternalServerErr("Binding server address failed.");
+    Response response;
+    response.setSessionID(new_session_id);
+    connector_.sendMessage(new_client_fd, response.toJSON());
+}
+
+void Server::handleIncomingRequest(Connector::Event event) {
+    if (event.type != Connector::Event::EventType::client_req)
+        return;
+
+    std::string request_string = connector_.rcvMessage(event.sock_fd);
+    Request req(request_string);
+
+    if (!isAuthorized(req.getSessionID()))
+        throw Err403();
+
+    RequestHandler* handler = findRequestHandler(req.getPath());
+    Response response = handler->callback(req);
+    response.setSessionID(req.getSessionID());
+    connector_.sendMessage(event.sock_fd, response.toJSON());
+}
+
+void Server::handleSTDINCommand(Connector::Event event) {
+    if (event.type != Connector::Event::EventType::stdin_cmd)
+        return;
+
+    // TODO handle stdin commands
+}
+
+std::string Server::genSessionID() const {
+    const std::string LETTERS =
+        "1234567890abcdefghijklmnopqrstuvxyz";
+    const int ID_LEN = 20;
+
+    std::mt19937 rng;
+    rng.seed(std::time(nullptr));
+    std::uniform_int_distribution<int> uint_dist(0, ID_LEN);
+
+    std::string result;
+    result.reserve(ID_LEN);
+    for (int i = 0; i < ID_LEN; ++i) {
+        result += LETTERS[uint_dist(rng)];
     }
-
-    listen(server_fd, max_clients_);
-    fds_.server_fd = server_fd;
+    return result;
 }
 
-void Server::acceptClient() {
-    int free_client_idx = getFirstFreeClient();
-    if (free_client_idx == -1)
-        throw InternalServerErr("Max number of clients exceeded.");
+RequestHandler* Server::findRequestHandler(const std::string& path) {
+    const auto& found_handler = handlers_map_.find(path);
+    if (found_handler == handlers_map_.end())
+        throw InternalServerErr("Requested path not found.");
 
-    int client_fd;
-    struct sockaddr_in client_address;
-    int address_len = sizeof(client_address);
-
-    client_fd = accept(fds_.server_fd, (struct sockaddr*)&client_address, (socklen_t*)&address_len);
-    fds_.client_fds[free_client_idx] = client_fd;
-    FD_SET(client_fd, &fds_.master_fds_set);
-    fds_.max_fd = std::max(fds_.max_fd, client_fd);
+    return found_handler->second;
 }
 
-int Server::getFirstFreeClient() {
-    for (int i = 0; i < max_clients_; ++i)
-        if (fds_.client_fds[i] != -1)
-            return i;
-    return -1;
+bool Server::isAuthorized(const std::string& session_id) {
+    return sessions_.find(session_id) != sessions_.end();
 }

@@ -2,7 +2,10 @@
 #define SERVER_HPP
 
 #include <string>
-#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+
+#include "server_connector.hpp"
 
 class RequestHandler;
 
@@ -12,24 +15,21 @@ public:
     Server(const std::string& config_file = "./config.json");
 
     void run();
-    void addHandler(RequestHandler* handler);
+    void addHandler(RequestHandler* handler, const std::string& path);
 
 private:
-    int port_;
-    std::string host_name_;
-    int max_clients_;
+    Connector connector_;
 
-    struct {
-        int server_fd;
-        std::vector<int> client_fds;
-        fd_set master_fds_set;
-        int max_fd;
-    } fds_;
+    std::unordered_set<std::string> sessions_;
+    std::unordered_map<std::string, RequestHandler*> handlers_map_;
 
-    void connectTCP();
-    void acceptClient();
+    void handleIncomingClient(Connector::Event event);
+    void handleIncomingRequest(Connector::Event event);
+    void handleSTDINCommand(Connector::Event event);
 
-    int getFirstFreeClient();
+    std::string genSessionID() const;
+    RequestHandler* findRequestHandler(const std::string& path);
+    bool isAuthorized(const std::string& session_id);
 };
 
 #endif
