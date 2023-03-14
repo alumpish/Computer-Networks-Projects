@@ -2,6 +2,7 @@
 #define CONSTS_HPP
 
 #include <string>
+
 namespace Consts {
 
 namespace Timer {

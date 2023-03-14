@@ -36,4 +36,10 @@ class Err403 : std::exception {
     }
 };
 
+class Err451 : std::exception {
+    const char* what() const throw() {
+        return "User already existed!";
+    }
+};
+
 #endif
