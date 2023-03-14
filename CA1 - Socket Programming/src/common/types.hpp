@@ -15,6 +15,7 @@ struct User {
         phone_number = user_json["phoneNumber"];
         address = user_json["address"];
     }
+    
     int id;
     std::string username;
     std::string password;
