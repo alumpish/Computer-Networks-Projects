@@ -12,6 +12,7 @@ public:
     void run();
 
 private:
+    CommandHandler cas_cmd_handler_;
     CommandHandler cmd_handler_;
     Connector connector_;
     std::string session_id_;
@@ -20,6 +21,12 @@ private:
         admin,
         ordinary
     } user_type_;
+
+    void signin(const std::vector<std::string>& input_args);
+    void signupUsername(const std::vector<std::string>& input_args);
+    void signupUserInfo(const std::vector<std::string>& input_args);
+
+    void authenticate();
 
     void viewUserInformation(const std::vector<std::string>& input_args);
 
@@ -45,6 +52,13 @@ private:
     void logout(const std::vector<std::string>& input_args);
 
     void sendRequest(const std::string& path, const std::string& body);
+
+    void setUserType();
+    void setupCASCmds();
+    void setupAdminCmds();
+    void setupOrdinaryUserCmds();
+
+    void dummyCommandNode(const std::vector<std::string>& input_args);
 };
 
 #endif
