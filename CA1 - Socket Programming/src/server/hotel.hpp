@@ -13,10 +13,13 @@ class Hotel {
     void readRooms();
     bool isUserExist(const std::string& username);
     void addSession(const std::string& session_id, std::string username);
-    void Hotel::removeSession(const std::string& session_id)
+    void removeSession(const std::string& session_id);
     std::string getUsername(const std::string& session_id);
-    json Hotel::getAllUsersInfo();
-    json Hotel::getAllRoomsInfo();
+    json getUserInfo(const std::string& username);
+    json getAllUsersInfo();
+    json getAllRoomsInfo();
+    void bookRoom(const std::string& username, int room_num, int num_of_beds);
+
 
 
     private:

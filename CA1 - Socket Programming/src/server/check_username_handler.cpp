@@ -14,5 +14,5 @@ Response CheckUsernameHandler::callback(const Request& request) {
 
     // Todo: send response to client to send other information
     Response response;
-    return Response();
+    return Response;
 }

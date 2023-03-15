@@ -41,6 +41,20 @@ std::string Hotel::getUsername(const std::string& session_id) {
     return sessions_un_map_[session_id];
 }
 
+json Hotel::getUserInfo(const std::string& username) {
+    json user_json;
+    User user = users_.getUser(username);
+
+    user_json["id"] = user.id;
+    user_json["user"] = user.username;
+    user_json["password"] = user.password;
+    user_json["admin"] = user.is_admin;
+    user_json["purse"] = user.purse;
+    user_json["phoneNumber"] = user.phone_number;
+    user_json["address"] = user.address;
+    return user_json;
+}
+
 json Hotel::getAllUsersInfo() {
     json users_json;
     for (auto user : users_.users) {
