@@ -5,6 +5,7 @@
 #include "client_connector.hpp"
 #include "command_handler.hpp"
 #include "json.hpp"
+#include "request.hpp"
 #include "response.hpp"
 
 using json = nlohmann::json;
@@ -160,9 +161,17 @@ void Client::removeRoom(const std::vector<std::string>& input_args) {
 
 void Client::logout(const std::vector<std::string>& input_args) {
     const std::string PATH = "";
-    
+
     sendRequest(PATH, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
     // TODO close connection
+}
+
+void Client::sendRequest(const std::string& path, const std::string& body) {
+    Request req;
+    req.setSessionID(session_id_);
+    req.setPath(path);
+    req.setBody(body);
+    connector_.sendMessage(req.toJSON());
 }
