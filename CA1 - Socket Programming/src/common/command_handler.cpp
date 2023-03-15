@@ -7,11 +7,14 @@
 #include "exceptions.hpp"
 
 CommandHandler::CommandHandler(std::istream& input_stream)
-    : input_stream_(input_stream) {}
+    : input_stream_(input_stream),
+      init_root_(new CommandHandler::CommandNode),
+      root_(init_root_) {}
 
 CommandHandler::CommandHandler(CommandHandler& other)
     : input_stream_(other.input_stream_),
-      root_(other.root_) {}
+      root_(other.root_),
+      init_root_(other.init_root_) {}
 
 void CommandHandler::addCommand(const std::string& cmd_name, Command* cmd) {
     CommandHandler::CommandNode* new_node = new CommandHandler::CommandNode;
@@ -39,6 +42,10 @@ void CommandHandler::runSingleCommand() {
 
     command->execCommand(input_args);
     root_ = new_root;
+}
+
+void CommandHandler::resetRoot() {
+    root_ = init_root_;
 }
 
 CommandHandler CommandHandler::operator[](const std::string& cmd_name) {

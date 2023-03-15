@@ -35,6 +35,7 @@ public:
 
     void addCommand(const std::string& cmd_name, Command* cmd);
     void runSingleCommand();
+    void resetRoot();
 
     CommandHandler operator[](const std::string& cmd_name);
 
@@ -46,7 +47,7 @@ private:
     struct CommandNode {
         std::unordered_map<std::string, CommandHandler::CommandNode*> sub_nodes;
         CommandHandler::Command* current_command;
-    }* root_;
+    } *root_, *init_root_;
 };
 
 #endif
