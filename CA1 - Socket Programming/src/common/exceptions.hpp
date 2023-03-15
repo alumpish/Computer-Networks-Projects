@@ -18,6 +18,12 @@ private:
     const std::string desc_;
 };
 
+class CommandNotFound : std::exception {
+    const char* what() const throw() {
+        return "Command not found.";
+    }
+};
+
 class Err503 : std::exception {
     const char* what() const throw() {
         return "503: Bad sequence of commands.";
