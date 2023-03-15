@@ -1,25 +1,18 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include <ctime>
-#include <string>
+#include "date/date.h"
+
 
 class Timer {
 public:
-    // time format : dd-mm-yyyy
-    void setTime(const std::string current_time);
-    std::string getTime();
+    Timer() : m_currentDate(date::floor<date::days>(date::current_time())) {}
+
+    void addDays(int days);
+    void printCurrentDate() const;
 
 private:
-    std::tm* system_time_;
-    struct {
-        int day;
-        int month;
-        int year;
-    } given_date_;
-
-    void updateDate();
-    bool givenDateIsValid(int day, int month, int year) const;
+    date::sys_days m_currentDate;
 };
 
 #endif

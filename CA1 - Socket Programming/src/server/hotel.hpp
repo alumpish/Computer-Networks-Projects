@@ -4,11 +4,11 @@
 #include <unordered_map>
 
 #include "../common/types.hpp"
+#include "date/date.h"
 #include "json.hpp"
 
-
 class Hotel {
-    public:
+public:
     void readUsers();
     void readRooms();
     bool isUserExist(const std::string& username);
@@ -18,11 +18,11 @@ class Hotel {
     json getUserInfo(const std::string& username);
     json getAllUsersInfo();
     json getAllRoomsInfo();
-    void bookRoom(const std::string& username, int room_num, int num_of_beds);
+    void bookRoom(const std::string& username, int room_num, int num_of_beds, data::sys_days check_in_date, data::sys_days check_out_date);
+    json getReservations(const std::string& username);
+    void cancelReservation(const std::string& username, int room_num, int count);
 
-
-
-    private:
+private:
     UserArray users_;
     RoomArray rooms_;
     std::unordered_map<std::string, std::string> sessions_un_map_;
