@@ -8,7 +8,6 @@
 
 class Connector {
 public:
-
     struct Event {
         enum class EventType {
             stdin_cmd,

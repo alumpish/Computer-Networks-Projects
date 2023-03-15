@@ -1,4 +1,4 @@
-#include "check_username.hpp"
+#include "check_username_handler.hpp"
 
 Response CheckUsernameHandler::callback(const Request& request) {
     std::string body = request.getBody();
@@ -6,4 +6,13 @@ Response CheckUsernameHandler::callback(const Request& request) {
 
     std::string username = body_json["username"];
 
+    if (hotel_->isUserExist(username)) {
+        throw Err451;
+    }
+
+    hotel_->addSession(request.getSessionId(), username);
+
+    // Todo: send response to client to send other information
+    Response response;
+    return Response();
 }

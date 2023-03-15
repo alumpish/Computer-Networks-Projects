@@ -3,13 +3,13 @@
 
 #include <string>
 
-#include "request_handler.hpp"
-#include "../common/utils.hpp"
 #include "../common/exceptions.hpp"
-
+#include "../common/utils.hpp"
+#include "request_handler.hpp"
 
 class SignupHandler : public RequestHandler {
 public:
+    SignupHandler(Hotel* hotel) : hotel_(hotel) {}
     Response callback(const Request& request);
 
 private:

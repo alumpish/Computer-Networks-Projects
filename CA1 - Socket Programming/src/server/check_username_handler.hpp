@@ -3,15 +3,15 @@
 
 #include <string>
 
+#include "../common/exeptions.hpp"
 #include "request_handler.hpp"
-
 
 class CheckUsernameHandler : public RequestHandler {
 public:
+    CheckUsernameHandler(Hotel* hotel) : hotel_(hotel) {}
     Response callback(const Request& request);
 
 private:
-    bool isPasswordValid(const std::string& password);
 };
 
 #endif

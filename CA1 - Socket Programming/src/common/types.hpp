@@ -5,7 +5,7 @@
 #include <vector>
 
 struct User {
-    User(int id, std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : id(id), username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
+    User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
     User(json user_json) {
         id = user_json["id"];
         username = user_json["user"];
@@ -26,9 +26,22 @@ struct User {
 };
 
 struct UserArray {
+    int next_id = 0;
     std::vector<User> users;
+    
     void addUser(User user) {
+        user.id = next_id;
         users.push_back(user);
+        next_id++;
+    }
+
+    User getUser(std::string username) {
+        for (auto user : users) {
+            if (user.username == username) {
+                return user;
+            }
+        }
+        throw BadRequest();
     }
 };
 
