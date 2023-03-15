@@ -9,7 +9,7 @@ using json = nlohmann::json;
 Request::Request() {}
 
 Request::Request(const std::string& request) {
-    deserializeFromJSON(request);
+    deserializeFromJSON(json::parse(request));
 }
 
 void Request::setPath(std::string path) {

@@ -108,7 +108,7 @@ void Connector::connect() {
 
 int Connector::getFirstFreeClient() {
     for (int i = 0; i < connection_info_.max_clients; ++i)
-        if (fds_.client_fds[i] != -1)
+        if (fds_.client_fds[i] == -1)
             return i;
     return -1;
 }

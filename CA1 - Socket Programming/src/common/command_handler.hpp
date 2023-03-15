@@ -13,14 +13,18 @@ using exec_func = std::function<void(const std::vector<std::string>&)>;
 class CommandHandler {
 public:
     struct Command {
-        std::vector<std::string> args_regex_;
-        std::string help_;
-        exec_func func_;
+        Command(std::vector<std::string> args_regex, std::string help, exec_func func)
+            : args_regex_(args_regex),
+              help_(help),
+              func_(func) {}
+        private: std::vector<std::string> args_regex_;
+        private: std::string help_;
+        private: exec_func func_;
 
-        int getArgsCount() const { return args_regex_.size(); };
-        void execCommand(const std::vector<std::string>& input_args) { func_(input_args); }
-        std::string help() const { return help_; };
-        bool matchArgsList(const std::vector<std::string>& input_args) const {
+        public: int getArgsCount() const { return args_regex_.size(); };
+        public: void execCommand(const std::vector<std::string>& input_args) { func_(input_args); }
+        public: std::string help() const { return help_; };
+        public: bool matchArgsList(const std::vector<std::string>& input_args) const {
             if (input_args.size() != args_regex_.size())
                 return false;
             for (int i = 0; i < args_regex_.size(); ++i)
@@ -31,13 +35,23 @@ public:
     };
 
     CommandHandler(std::istream& input_stream);
+    CommandHandler(CommandHandler& other);
+
     void addCommand(const std::string& cmd_name, Command* cmd);
     void runSingleCommand();
+    void resetRoot();
+
+    CommandHandler operator[](const std::string& cmd_name);
+
     ~CommandHandler();
 
 private:
     std::istream& input_stream_;
-    std::unordered_map<std::string, CommandHandler::Command*> commands_map_;
+
+    struct CommandNode {
+        std::unordered_map<std::string, CommandHandler::CommandNode*> sub_nodes;
+        CommandHandler::Command* current_command;
+    } *root_, *init_root_;
 };
 
 #endif
