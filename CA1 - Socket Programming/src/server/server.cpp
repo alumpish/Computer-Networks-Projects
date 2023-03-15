@@ -32,13 +32,15 @@ Server::Server(const std::string& config_file) {
 }
 
 void Server::run() {
-    auto event = connector_.pollForEvent();
-    if (event.type == Connector::Event::EventType::incoming_client)
-        handleIncomingClient(event);
-    else if (event.type == Connector::Event::EventType::stdin_cmd)
-        handleSTDINCommand(event);
-    else if (event.type == Connector::Event::EventType::client_req)
-        handleIncomingRequest(event);
+    while (true) {
+        auto event = connector_.pollForEvent();
+        if (event.type == Connector::Event::EventType::incoming_client)
+            handleIncomingClient(event);
+        else if (event.type == Connector::Event::EventType::stdin_cmd)
+            handleSTDINCommand(event);
+        else if (event.type == Connector::Event::EventType::client_req)
+            handleIncomingRequest(event);
+    }
 }
 
 void Server::addHandler(RequestHandler* handler, const std::string& path) {

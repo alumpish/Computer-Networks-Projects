@@ -12,7 +12,7 @@ class RequestHandler;
 class Server {
 public:
     Server() = delete;
-    Server(const std::string& config_file = "./config.json");
+    Server(const std::string& config_file);
 
     void run();
     void addHandler(RequestHandler* handler, const std::string& path);

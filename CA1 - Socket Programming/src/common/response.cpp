@@ -9,7 +9,7 @@ using json = nlohmann::json;
 Response::Response() {}
 
 Response::Response(const std::string& response) {
-    deserializeFromJSON(response);
+    deserializeFromJSON(json::parse(response));
 }
 
 void Response::setSessionID(std::string id) {
