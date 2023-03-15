@@ -9,14 +9,21 @@
 CommandHandler::CommandHandler(std::istream& input_stream)
     : input_stream_(input_stream) {}
 
+CommandHandler::CommandHandler(CommandHandler& other)
+    : input_stream_(other.input_stream_),
+      root_(other.root_) {}
+
 void CommandHandler::addCommand(const std::string& cmd_name, Command* cmd) {
-    commands_map_[cmd_name] = cmd;
+    CommandHandler::CommandNode* new_node = new CommandHandler::CommandNode;
+    new_node->current_command = cmd;
+    root_->sub_nodes[cmd_name] = new_node;
 }
 
 void CommandHandler::runSingleCommand() {
     std::string cmd_name;
     input_stream_ >> cmd_name;
-    Command* command = commands_map_[cmd_name];
+    CommandHandler::CommandNode* new_root = root_->sub_nodes[cmd_name];
+    Command* command = new_root->current_command;
 
     std::vector<std::string> input_args;
     input_args.reserve(command->getArgsCount());
@@ -31,9 +38,14 @@ void CommandHandler::runSingleCommand() {
         throw Err503();
 
     command->execCommand(input_args);
+    root_ = new_root;
+}
+
+CommandHandler CommandHandler::operator[](const std::string& cmd_name) {
+    CommandHandler result(*this);
+    result.root_ = result.root_->sub_nodes[cmd_name];
+    return result;
 }
 
 CommandHandler::~CommandHandler() {
-    for (const auto& cmd_pair : commands_map_)
-        delete cmd_pair.second;
 }

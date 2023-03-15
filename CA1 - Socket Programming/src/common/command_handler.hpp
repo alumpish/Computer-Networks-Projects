@@ -31,13 +31,22 @@ public:
     };
 
     CommandHandler(std::istream& input_stream);
+    CommandHandler(CommandHandler& other);
+
     void addCommand(const std::string& cmd_name, Command* cmd);
     void runSingleCommand();
+
+    CommandHandler operator[](const std::string& cmd_name);
+
     ~CommandHandler();
 
 private:
     std::istream& input_stream_;
-    std::unordered_map<std::string, CommandHandler::Command*> commands_map_;
+
+    struct CommandNode {
+        std::unordered_map<std::string, CommandHandler::CommandNode*> sub_nodes;
+        CommandHandler::Command* current_command;
+    }* root_;
 };
 
 #endif
