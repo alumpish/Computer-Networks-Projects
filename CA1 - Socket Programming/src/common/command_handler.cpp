@@ -7,9 +7,10 @@
 #include "exceptions.hpp"
 
 CommandHandler::CommandHandler(std::istream& input_stream)
-    : input_stream_(input_stream),
-      init_root_(new CommandHandler::CommandNode),
-      root_(init_root_) {}
+    : input_stream_(input_stream) {
+    init_root_ = new CommandHandler::CommandNode;
+    root_ = init_root_;
+}
 
 CommandHandler::CommandHandler(CommandHandler& other)
     : input_stream_(other.input_stream_),
