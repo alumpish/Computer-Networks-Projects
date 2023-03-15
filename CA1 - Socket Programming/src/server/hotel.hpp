@@ -21,6 +21,7 @@ public:
     void bookRoom(const std::string& username, int room_num, int num_of_beds, data::sys_days check_in_date, data::sys_days check_out_date);
     json getReservations(const std::string& username);
     void cancelReservation(const std::string& username, int room_num, int count);
+    void editInormation(const std::string& username, std::string password, std::string phone_number, std::string address);
 
 private:
     UserArray users_;

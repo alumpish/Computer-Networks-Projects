@@ -96,7 +96,7 @@ json Hotel::getAllRoomsInfo() {
     return rooms_json;
 }
 
-void bookRoom(const std::string& username, int room_num, int num_of_beds, , std::string check_in_date, std::string check_out_date) {
+void Hotel::bookRoom(const std::string& username, int room_num, int num_of_beds, , std::string check_in_date, std::string check_out_date) {
     User* user = users_.getUser(username);
     Room* room = rooms_.getRoom(room_num);
 
@@ -134,9 +134,16 @@ json Hotel::getReservations(const std::string& username) {
     return reservations_json;
 }
 
-void cancelReservation(const std::string& username, int room_num, int count) {
+void Hotel::cancelReservation(const std::string& username, int room_num, int count) {
     User* user = users_.getUser(username);
     Room* room = rooms_.getRoom(room_num);
 
     room->removeReservation(user->id, count);
+}
+
+void Hotel::editInformation(const std::string& username, const std::string& password, const std::string& phone_number, const std::string& address) {
+    User* user = users_.getUser(username);
+    user->password = password;
+    user->phone_number = phone_number;
+    user->address = address;
 }

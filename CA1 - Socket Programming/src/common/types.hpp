@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../common/utils.hpp"
+
 struct User {
     User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
     User(json user_json) {
@@ -25,6 +27,21 @@ struct User {
     int purse;
     std::string phone_number;
     std::string address;
+
+    void editInformation(std::string password, std::string phone_number, std::string address) {
+        if (!password.empty()) {
+            this->password = password;
+        }
+        if (!phone_number.empty()) {
+            if (!isNumber(phone_number) || phone_number.length() != 11 || phone_number[0] != '0' || phone_number[1] != '9') {
+                throw BadRequest();
+            }
+            this->phone_number = phone_number;
+        }
+        if (!address.empty()) {
+            this->address = address;
+        }
+    }
 };
 
 struct UserArray {
