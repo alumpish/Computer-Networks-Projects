@@ -17,9 +17,14 @@ The `Server` entity provides an interface to separate the back-end logic from co
 
 This is an abstract class that should only be used through inheriting other handlers from it. The abstraction is achieved by the pure virtual method `callback`; This method receives the request, processes it and returns a response.
 
-### `Important Types`
+<br/>
+<br/>
 
-`User`
+## `Structs`
+
+Most of logic is implemented in structs. There are 5 main structs:
+
+### `1.User`
 
 The struct has several member variables, including an integer ID, a username string, a password string, a boolean indicating whether the user is an administrator, an integer for the user's purse (perhaps representing their balance or account funds), a phone number string, and an address string.
 
@@ -44,7 +49,7 @@ struct User {
 }
 ```
 
-### Important Methods
+`Important Methods`
 
 - editInformation : This function is overloaded for ordinary and admin user.
 
@@ -54,7 +59,23 @@ void editInformation(std::string password, std::string phone_number, std::string
 void editInformation(std::string password);
 ```
 
-`Reservation`
+###  `2.UserArray`
+
+The `UserArray` struct contains a vector of `User` objects and provides methods to add and get users from the vector.
+
+### Properties
+
+- `next_id`: An integer representing the ID that will be assigned to the next `User` object added to the vector.
+
+### Methods
+
+- `addUser(User user)`: Adds a `User` object to the vector, assigning it the next available ID.
+- `getUser(std::string username)`: Returns a pointer to the `User` object with the specified username. Throws an `Err401` exception if the user does not exist in the vector.
+
+Note: `Err401` is a custom exception class that is not defined in this code snippet.
+
+
+### `3.Reservation`
 
 Reservation struct represents a user reservation for a certain number of beds during a specific time period, specified by check_in_date and check_out_date. It has two constructors, one taking the reservation details as individual parameters and the other taking a JSON object as input. The struct has four member variables: user_id, num_of_beds, check_in_date, and check_out_date
 
@@ -70,7 +91,7 @@ struct Reservation {
 };
 ```
 
-- `Room`
+### `4.Room`
 
 struct called Room that represents a hotel room with member variables for number, status, price, max_capacity, and a vector reservations. The struct has two constructors, one that takes four arguments and initializes member variables and another that takes a json object and extracts its values to initialize member variables and reservations vector.
 
@@ -142,14 +163,29 @@ void leaveRoom(User* user, date::sys_days cur_date) {
     }
 ```
 
+### `5.RoomArray`
+
+The `RoomArray` struct contains a vector of `Room` objects and provides methods to add, modify, remove, and get rooms from the vector.
+
+### Methods
+
+- `addRoom(Room room)`: Adds a `Room` object to the vector.
+- `addRoom(int room_num, int max_capacity, int price)`: Adds a new `Room` object to the vector with the specified room number, maximum capacity, and price. Throws an `Err111` exception if a room with the same number already exists in the vector.
+- `modifyRoom(int room_num, int max_capacity, int price)`: Modifies the maximum capacity and price of the `Room` object with the specified room number. Throws an `Err401` exception if the room does not exist in the vector.
+- `removeRoom(int room_num)`: Removes the `Room` object with the specified room number from the vector. Throws an `Err401` exception if the room does not exist in the vector.
+- `getRoom(int room_num)`: Returns a pointer to the `Room` object with the specified room number. Throws an `Err101` exception if the room does not exist in the vector.
+
+Note: `Err101`, `Err111`, and `Err401` are custom exception classes that are not defined in this code snippet.
+
+
 <br/>
 <br/>
 
-### `Hotel Class`
+## `Hotel Class`
 
 The Hotel class represents a hotel system with various functionalities such as managing user accounts, booking and canceling rooms, and managing room information.
 
-`Public Methods`
+### `Public Methods`
 
 ```cpp
 Hotel(const std::string& cur_date)
@@ -187,11 +223,11 @@ void removeSession(const std::string& session_id)
 
 Removes a session with the given session ID from the system.
 
-```cpp
-void addUser(User user)
-```
 
-Adds a new user to the system.
+```cpp
+    void signUp (const std::string& session_id, const std::string& password, int purse, const std::string& phone_number, const std::string& address);
+```
+Complete sign up process for a user by adding a new user to the system with the given username, password, purse, phone number, and address.
 
 ```cpp
 void signIn(const std::string& session_id, const std::string& username, const std::string& password)
@@ -242,18 +278,6 @@ void cancelReservation(const std::string& username, int room_num, int count)
 Cancels the reservation made by the given user for the specified room and the number of beds.
 
 ```cpp
-void editInformation(const std::string& session_id, const std::string& password, const std::string& phone_number, const std::string& address)
-```
-
-Edits the information of the user associated with the given session ID.
-
-```cpp
-void editInformation(const std::string& session_id, const std::string& password)
-```
-
-Edits the password of the user associated with the given session ID.
-
-```cpp
 void passDay(const std::string& session_id, int days)
 ```
 
@@ -302,3 +326,7 @@ private:
 - `rooms_` : A private member variable of type RoomArray, which is an array of Room objects. This array is used to store information about the available rooms in the hotel.
 
 - `sessions_un_map_` : A private member variable of type unordered_map. This map is used to store the session IDs and the corresponding usernames of the users who have signed in to the hotel system.
+
+
+
+## `Timer Class`
