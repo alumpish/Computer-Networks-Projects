@@ -72,7 +72,7 @@ class Err111 : std::exception {
     }
 };
 
-class Err 201 : std::exception{
+class Err201 : std::exception{
                     const char * what() const throw(){
                                      return "201: User logged out successfully.";
 }
