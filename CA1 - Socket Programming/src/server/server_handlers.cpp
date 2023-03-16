@@ -175,6 +175,13 @@ Response LeavingRoomHandler::handleResponse(const Request& request) {
     return result;
 }
 
+Response AdminLeavingRoomHandler::handleResponse(const Request& request) {
+    Response result;
+    result.setSessionID(request.getSessionID());
+    result.setBody("Not implemented.");
+    return result;
+}
+
 Response AddRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
