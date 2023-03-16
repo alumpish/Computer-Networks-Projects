@@ -98,9 +98,9 @@ struct UserArray {
     }
 
     json getUsersJson() {
-        Json users_json;
+        json users_json;
         for (auto& user : users) {
-            Json user_json;
+            json user_json;
             user_json["id"] = user.id;
             user_json["user"] = user.username;
             user_json["password"] = user.password;

@@ -12,7 +12,7 @@
 class Hotel {
 public:
     Hotel(Timer& timer);
-    Hotel::~Hotel();
+    ~Hotel();
     void readUsers();
     void readRooms();
     bool isUserExist(const std::string& username);

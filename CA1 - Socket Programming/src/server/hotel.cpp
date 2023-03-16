@@ -270,12 +270,12 @@ User::Type Hotel::getUserType(const std::string& session_id) {
 
 void Hotel::saveUsers() {
     std::ofstream users_info_file("UsersInfo.json");
-    users_info_file << users_.getUsersInfo();
+    users_info_file << users_.getUsersJson();
     users_info_file.close();
 }
 
 void Hotel::saveRooms() {
     std::ofstream rooms_info_file("RoomsInfo.json");
-    rooms_info_file << rooms_.getRoomsInfo(timer_.getCurrentDate());
+    rooms_info_file << rooms_.getRoomsJson(timer_.getCurrentDate());
     rooms_info_file.close();
 }
