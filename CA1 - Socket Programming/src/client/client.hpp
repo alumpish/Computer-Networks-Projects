@@ -17,6 +17,11 @@ private:
     Connector connector_;
     std::string session_id_;
 
+    struct {
+        bool is_terminated = false;
+        bool is_logged_out = true;
+    } cmd_flags_;
+
     enum class UserType {
         admin,
         ordinary
@@ -50,6 +55,8 @@ private:
     void removeRoom(const std::vector<std::string>& input_args);
 
     void logout(const std::vector<std::string>& input_args);
+
+    void terminate(const std::vector<std::string>& input_args);
 
     void sendRequest(const std::string& path, const std::string& body);
 

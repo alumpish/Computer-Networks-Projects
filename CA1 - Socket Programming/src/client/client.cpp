@@ -24,14 +24,27 @@ Client::Client()
 }
 
 void Client::run() {
-    authenticate();
-    if (user_type_ == UserType::admin)
-        setupAdminCmds();
-    else
-        setupOrdinaryUserCmds();
     while (true) {
-        cmd_handler_.runSingleCommand();
-        cmd_handler_.resetRoot();
+        authenticate();
+        if (user_type_ == UserType::admin)
+            setupAdminCmds();
+        else
+            setupOrdinaryUserCmds();
+        while (true) {
+            std::cout << cmd_handler_.currentLevelCommandsToString();
+            try {
+                cmd_handler_.runSingleCommand();
+            }
+            catch (std::exception& e) {
+                std::cout << e.what();
+                continue;
+            }
+            cmd_handler_.resetRoot();
+            if (cmd_flags_.is_logged_out)
+                break;
+        }
+        if (cmd_flags_.is_terminated)
+            break;
     }
 }
 
@@ -71,8 +84,15 @@ void Client::signupUserInfo(const std::vector<std::string>& input_args) {
 }
 
 void Client::authenticate() {
-    cas_cmd_handler_.runSingleCommand();
+    std::cout << cas_cmd_handler_.currentLevelCommandsToString();
+    try {
+        cas_cmd_handler_.runSingleCommand();
+    }
+    catch (std::exception& e) {
+        std::cout << e.what();
+    }
     setUserType();
+    cmd_flags_.is_logged_out = false;
     cas_cmd_handler_.resetRoot();
 }
 
@@ -201,7 +221,13 @@ void Client::logout(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::LOGOUT, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
+
+    cmd_flags_.is_logged_out = true;
     // TODO close connection
+}
+
+void Client::terminate(const std::vector<std::string>& input_args) {
+    cmd_flags_.is_terminated = true;
 }
 
 void Client::sendRequest(const std::string& path, const std::string& body) {
@@ -251,6 +277,8 @@ void Client::setupAdminCmds() {
         return std::bind(f, this, std::placeholders::_1);
     };
 
+    cmd_handler_.deleteCommands();
+
     cmd_handler_.addCommand("1", new Command({}, "View user information", bind(&Client::viewUserInformation)));
 
     cmd_handler_.addCommand("2", new Command({}, "View all users", bind(&Client::viewAllUsers)));
@@ -287,6 +315,8 @@ void Client::setupAdminCmds() {
         new Command({"\\d+"}, "remove <room num>", bind(&Client::removeRoom)));
 
     cmd_handler_.addCommand("8", new Command({}, "Logout", bind(&Client::logout)));
+
+    cmd_handler_.addCommand("9", new Command({}, "exit", bind(&Client::terminate)));
 }
 
 void Client::setupOrdinaryUserCmds() {
@@ -294,6 +324,8 @@ void Client::setupOrdinaryUserCmds() {
     auto bind = [this](void (Client::*f)(const std::vector<std::string>&)) {
         return std::bind(f, this, std::placeholders::_1);
     };
+
+    cmd_handler_.deleteCommands();
 
     cmd_handler_.addCommand("1", new Command({}, "View user information", bind(&Client::viewUserInformation)));
 
@@ -327,6 +359,8 @@ void Client::setupOrdinaryUserCmds() {
         new Command({"\\d+"}, "room <room number>", bind(&Client::leavingRoom)));
 
     cmd_handler_.addCommand("7", new Command({}, "Logout", bind(&Client::logout)));
+
+    cmd_handler_.addCommand("8", new Command({}, "exit", bind(&Client::terminate)));
 }
 
 void Client::dummyCommandNode(const std::vector<std::string>& input_args) {

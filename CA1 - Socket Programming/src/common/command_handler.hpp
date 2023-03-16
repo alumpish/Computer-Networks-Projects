@@ -41,7 +41,12 @@ public:
     void runSingleCommand();
     void resetRoot();
 
+    std::string currentLevelCommandsToString() const;
+    std::string allLevelsCommandsToString() const;
+
     CommandHandler operator[](const std::string& cmd_name);
+
+    void deleteCommands();
 
     ~CommandHandler();
 

@@ -1,6 +1,7 @@
 #include "command_handler.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,10 @@ void CommandHandler::addCommand(const std::string& cmd_name, Command* cmd) {
 void CommandHandler::runSingleCommand() {
     std::string cmd_name;
     input_stream_ >> cmd_name;
-    CommandHandler::CommandNode* new_root = root_->sub_nodes[cmd_name];
+    auto new_root_itr = root_->sub_nodes.find(cmd_name);
+    if (new_root_itr == root_->sub_nodes.end())
+        throw CommandNotFound();
+    CommandHandler::CommandNode* new_root = new_root_itr->second;
     Command* command = new_root->current_command;
 
     std::vector<std::string> input_args;
@@ -47,6 +51,19 @@ void CommandHandler::runSingleCommand() {
 
 void CommandHandler::resetRoot() {
     root_ = init_root_;
+}
+
+std::string CommandHandler::currentLevelCommandsToString() const {
+    std::ostringstream result;
+    for (const auto& cmd_map_pair : root_->sub_nodes) {
+        result << cmd_map_pair.first << " : " << cmd_map_pair.second->current_command->help();
+        result << std::endl;
+    }
+    return result.str();
+}
+
+std::string CommandHandler::allLevelsCommandsToString() const {
+    // TODO
 }
 
 CommandHandler CommandHandler::operator[](const std::string& cmd_name) {
