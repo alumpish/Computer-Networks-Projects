@@ -28,10 +28,11 @@ struct User {
         username = user_json["user"];
         password = user_json["password"];
 
-        if (user_json["admin"])
+        if (user_json["admin"]) {
             type = User::Type::admin;
-        else
-            type = User::Type::ordinary;
+            return;
+        }
+        type = User::Type::ordinary;
 
         purse = user_json["purse"];
         phone_number = user_json["phoneNumber"];
@@ -124,7 +125,7 @@ struct Room {
         status = room_json["status"];
         price = room_json["price"];
         max_capacity = room_json["maxCapacity"];
-        for (auto reservation : room_json["users"]) {
+        for (auto& reservation : room_json["users"]) {
             Reservation new_reservation(reservation);
             reservations.push_back(new_reservation);
         }

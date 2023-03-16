@@ -6,20 +6,20 @@ Hotel::Hotel(Timer& timer) : timer_(timer) {
 }
 
 void Hotel::readUsers() {
-    std::ifstream users_file("usersInfo.json");
+    std::ifstream users_file("UsersInfo.json");
     json users_json;
     users_file >> users_json;
-    for (auto user : users_json) {
+    for (auto& user : users_json["users"]) {
         User new_user(user);
         users_.addUser(new_user);
     }
 }
 
 void Hotel::readRooms() {
-    std::ifstream rooms_file("roomsInfo.json");
+    std::ifstream rooms_file("RoomsInfo.json");
     json rooms_json;
     rooms_file >> rooms_json;
-    for (auto room : rooms_json) {
+    for (auto& room : rooms_json["rooms"]) {
         Room new_room(room);
         rooms_.addRoom(new_room);
     }
