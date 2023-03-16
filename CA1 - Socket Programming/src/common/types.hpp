@@ -4,13 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "utils.hpp"
 #include "date.h"
 #include "exceptions.hpp"
 #include "json.hpp"
+#include "utils.hpp"
 
 using json = nlohmann::json;
-
 
 struct User {
     User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
@@ -34,6 +33,8 @@ struct User {
 
     void editInformation(std::string password, std::string phone_number, std::string address) {
         if (!password.empty()) {
+            if (!isPasswordValid(password))
+                throw Err401();
             this->password = password;
         }
         if (!phone_number.empty()) {
@@ -44,6 +45,15 @@ struct User {
         }
         if (!address.empty()) {
             this->address = address;
+        }
+    }
+
+    void editInformation(std::string password) {
+        if (!password.empty()) {
+            if (!isPasswordValid(password))
+                throw Err401();
+
+            this->password = password;
         }
     }
 };
@@ -132,9 +142,12 @@ struct Room {
         return (capacity >= num_of_beds) ? true : false;
     }
 
-    void removeReservation(int user_id, int count) {
+    void removeReservation(int user_id, int count, data::sys_days cur_date) {
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations[i].user_id == user_id) {
+                if (cur_date >= reservations[i].check_in_date) {
+                    throw Err401();
+                }
                 if (count > reservations[i].num_of_beds) {
                     throw Err401();
                 }
@@ -148,13 +161,67 @@ struct Room {
         }
         throw Err401();
     }
+
+    void updateReservation(date::sys_days cur_date) {
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations[i].check_out_date <= cur_date) {
+                reservations.erase(reservations.begin() + i);
+            }
+        }
+    }
+
+    void leaveRoom(int user_id, date::sys_days cur_date) {
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations[i].user_id == user_id) {
+                if (cur_date < reservations[i].check_out_date) {
+                    throw Err401();
+                }
+                reservations.erase(reservations.begin() + i);
+                return;
+            }
+        }
+        throw Err401();
+    }
 };
 
 struct RoomArray {
     std::vector<Room> rooms;
+
     void addRoom(Room room) {
         rooms.push_back(room);
     }
+
+    void addRoom(int room_num, int max_capacity, int price) {
+        for (auto room : rooms) {
+            if (room.number == room_num) {
+                throw Err401();
+            }
+        }
+        Room new_room(room_num, false, price, max_capacity);
+        rooms.push_back(new_room);  
+    }
+
+    void modifyRoom(int room_num, int max_capacity, int price) {
+        for (auto room : rooms) {
+            if (room.number == room_num) {
+                room.max_capacity = max_capacity;
+                room.price = price;
+                return;
+            }
+        }
+        throw Err401();
+    }
+
+    void removeRoom(int room_num) {
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms[i].number == room_num) {
+                rooms.erase(rooms.begin() + i);
+                return;
+            }
+        }
+        throw Err401();
+    }
+
     Room* getRoom(int room_num) {
         for (auto room : rooms) {
             if (room.number == room_num) {

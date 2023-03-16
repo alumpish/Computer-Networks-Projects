@@ -1,5 +1,11 @@
 #include "hotel.hpp"
 
+void Hotel::Hotel(date::sys_days cur_time) {
+    timer_ = Timer(cur_time);
+    readUsers();
+    readRooms();
+}
+
 void Hotel::readUsers() {
     std::ifstream users_file("usersInfo.json");
     json users_json;
@@ -39,6 +45,16 @@ void Hotel::removeSession(const std::string& session_id) {
 
 void Hotel::addUser(User user) {
     users_.addUser(user);
+}
+
+bool Hotel::isCredentialsValid(const std::string& session_id, const std::string& username, const std::string& password) {
+    for (auto user : users_.users) {
+        if (user.username == username && user.password == password) {
+            addSession(session_id, username);
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string Hotel::getUsername(const std::string& session_id) {
@@ -140,11 +156,46 @@ void Hotel::cancelReservation(const std::string& username, int room_num, int cou
     Room* room = rooms_.getRoom(room_num);
 
     room->removeReservation(user->id, count);
+    // todo if removing sussesful
+    user->purse += (room->price * count) / 2;
 }
 
 void Hotel::editInformation(const std::string& username, const std::string& password, const std::string& phone_number, const std::string& address) {
     User* user = users_.getUser(username);
-    user->password = password;
-    user->phone_number = phone_number;
-    user->address = address;
+    user->editInformation(password, phone_number, address);
+}
+
+void Hotel::editInformation(const std::string& username, const std::string& password) {
+    User* user = users_.getUser(username);
+    user->editInformation(password);
+}
+
+void Hotel::passDay(int days) {
+    timer_.addDays(days);
+    updateRooms(timer_.getCurrentDate());
+}
+
+void Hotel::updateRooms(date::sys_days cur_date) {
+    for (auto room : rooms_.rooms) {
+        room.updateReservations(cur_date);
+    }
+}
+
+void Hotel::leaveRoom(const std::string& username, int room_num) {
+    User* user = users_.getUser(username);
+    Room* room = rooms_.getRoom(room_num);
+
+    room->leaveRoom(user->id);
+}
+
+void Hotel::addRoom(int room_num, int max_capacity, int price) {
+    rooms_.addRoom(room_num, max_capacity, price);
+}
+
+void Hotel::modifyRoom(int room_num, int max_capacity, int price) {
+    rooms_.modifyRoom(room_num, max_capacity, price);
+}
+
+void Hotel::removeRoom(int room_num) {
+    rooms_.removeRoom(room_num);
 }
