@@ -95,10 +95,7 @@ Response BookingHandler::handleResponse(const Request& request) {
 
     hotel_->bookRoom(username, room_num, num_of_beds, check_in_date, check_out_date);
 
-    Response result;
-    // TODO set body
-
-    return result;
+    return response110();
 }
 
 Response ViewReservationsHandler::handleResponse(const Request& request) {
@@ -123,9 +120,7 @@ Response CancelRoomHandler::handleResponse(const Request& request) {
 
     hotel_->cancelReservation(username, room_num, count);
 
-    Response result;
-
-    return result;
+    return response110();
 }
 
 Response PassDayHandler::handleResponse(const Request& request) {
@@ -136,9 +131,7 @@ Response PassDayHandler::handleResponse(const Request& request) {
 
     hotel_->passDay(session_id, days);
 
-    Response result;
-
-    return result;
+    return response110();
 }
 
 Response AdminEditInformationHandler::handleResponse(const Request& request) {
@@ -150,9 +143,7 @@ Response AdminEditInformationHandler::handleResponse(const Request& request) {
 
     hotel_->editInformation(session_id, password);
 
-    Response result;
-
-    return result;
+    return response312();
 }
 
 Response EditInformationHandler::handleResponse(const Request& request) {
@@ -166,9 +157,7 @@ Response EditInformationHandler::handleResponse(const Request& request) {
 
     hotel_->editInformation(session_id, password, phone, address);
 
-    Response result;
-
-    return result;
+    return response312();
 }
 
 Response LeavingRoomHandler::handleResponse(const Request& request) {
@@ -180,9 +169,7 @@ Response LeavingRoomHandler::handleResponse(const Request& request) {
 
     hotel_->leaveRoom(session_id, room_num);
 
-    Response result;
-
-    return result;
+    return response413();
 }
 
 Response AdminLeavingRoomHandler::handleResponse(const Request& request) {
@@ -202,9 +189,7 @@ Response AddRoomHandler::handleResponse(const Request& request) {
 
     hotel_->addRoom(session_id, room_num, max_capacity, price);
 
-    Response result;
-
-    return result;
+    return response104();
 }
 
 Response ModifyRoomHandler::handleResponse(const Request& request) {
@@ -217,9 +202,7 @@ Response ModifyRoomHandler::handleResponse(const Request& request) {
 
     hotel_->modifyRoom(session_id, room_num, max_capacity, price);
 
-    Response result;
-
-    return result;
+    return response105();
 }
 
 Response RemoveRoomHandler::handleResponse(const Request& request) {
@@ -230,9 +213,7 @@ Response RemoveRoomHandler::handleResponse(const Request& request) {
 
     hotel_->removeRoom(session_id, room_num);
 
-    Response result;
-
-    return result;
+    return response106();
 }
 
 Response LogoutHandler::handleResponse(const Request& request) {
@@ -242,7 +223,7 @@ Response GetUserTypeHandler::handleResponse(const Request& request) {
     const std::string session_id = request.getSessionID();
 
     User::Type user_type = hotel_->getUserType(session_id);
-    
+
     Response result;
     if (user_type == User::Type::ordinary)
         result.setBody("ordinary_user");
