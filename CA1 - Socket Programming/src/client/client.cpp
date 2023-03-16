@@ -36,24 +36,20 @@ void Client::run() {
 }
 
 void Client::signin(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["username"] = input_args[0];
     req_body["password"] = input_args[1];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::SIGNIN, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::signupUsername(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["username"] = input_args[0];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::SIGNUP_USERNAME, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
     if (response.getStatus() != 311)
@@ -63,15 +59,13 @@ void Client::signupUsername(const std::vector<std::string>& input_args) {
 }
 
 void Client::signupUserInfo(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["password"] = input_args[0];
     req_body["purse"] = input_args[1];
     req_body["phone"] = input_args[2];
     req_body["address"] = input_args[3];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::SIGNUP_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
@@ -83,31 +77,24 @@ void Client::authenticate() {
 }
 
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
-    sendRequest(PATH, "");
+    sendRequest(Consts::Paths::VIEW_USER_INFO, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::viewAllUsers(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
-    sendRequest(PATH, "");
+    sendRequest(Consts::Paths::VIEW_ALL_USERS, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::viewRoomsInformation(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
-    sendRequest(PATH, "");
+    sendRequest(Consts::Paths::VIEW_ROOMS_INFO, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::booking(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
     std::string room_num = input_args[0];
     std::string num_of_beds = input_args[1];
     std::string check_in_date = input_args[2];
@@ -119,112 +106,99 @@ void Client::booking(const std::vector<std::string>& input_args) {
     body["check_in_date"] = check_in_date;
     body["check_out_date"] = check_out_date;
 
-    sendRequest(PATH, body.dump());
+    sendRequest(Consts::Paths::BOOKING, body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::canceling(const std::vector<std::string>& input_args) {
-    const std::string RESERVATIONS_PATH = "";
-
-    sendRequest(RESERVATIONS_PATH, "");
+    sendRequest(Consts::Paths::VIEW_RESERVATIONS, "");
     Response reservations_response = Response(connector_.rcvMessage());
     std::cout << reservations_response.getBody();
     cmd_handler_.runSingleCommand();
 }
 
 void Client::cancelRoom(const std::vector<std::string>& input_args) {
-    const std::string CANCELING_PATH = "";
-
     json req_body = {};
     req_body["room_num"] = input_args[0];
     req_body["num"] = input_args[1];
 
-    sendRequest(CANCELING_PATH, req_body.dump());
+    sendRequest(Consts::Paths::CANCEL_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::passDay(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["value"] = input_args[0];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::PASS_DAY, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::editInformation(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["pass"] = input_args[0];
     if (user_type_ == UserType::ordinary) {
         req_body["phone"] = input_args[1];
         req_body["address"] = input_args[2];
     }
-
-    sendRequest(PATH, req_body.dump());
+    if (user_type_ == UserType::ordinary)
+        sendRequest(Consts::Paths::EDIT_INFO, req_body.dump());
+    else
+        sendRequest(Consts::Paths::ADMIN_EDIT_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::leavingRoom(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["room"] = input_args[0];
     if (user_type_ == UserType::admin)
         req_body["capacity"] = input_args[1];
 
-    sendRequest(PATH, req_body.dump());
+    if (user_type_ == UserType::admin)
+        sendRequest(Consts::Paths::ADMIN_LEAVING_ROOM, req_body.dump());
+    else
+        sendRequest(Consts::Paths::LEAVING_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::addRoom(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["room_num"] = input_args[0];
     req_body["max_capacity"] = input_args[1];
     req_body["price"] = input_args[2];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::ADD_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::modifyRoom(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["room_num"] = input_args[0];
     req_body["max_capacity"] = input_args[1];
     req_body["new_price"] = input_args[2];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::MODIFY_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::removeRoom(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
     json req_body = {};
     req_body["room_num"] = input_args[0];
 
-    sendRequest(PATH, req_body.dump());
+    sendRequest(Consts::Paths::REMOVE_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
 }
 
 void Client::logout(const std::vector<std::string>& input_args) {
-    const std::string PATH = "";
-
-    sendRequest(PATH, "");
+    sendRequest(Consts::Paths::LOGOUT, "");
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody();
     // TODO close connection
@@ -239,9 +213,7 @@ void Client::sendRequest(const std::string& path, const std::string& body) {
 }
 
 void Client::setUserType() {
-    const std::string PATH = "";
-
-    sendRequest(PATH, "");
+    sendRequest(Consts::Paths::USER_TYPE, "");
 
     Response response = Response(connector_.rcvMessage());
     std::string type = json::parse(response.getBody())["type"];
@@ -260,21 +232,17 @@ void Client::setupCASCmds() {
 
     cas_cmd_handler_.addCommand(
         "signin",
-        new Command({".+", ".+"}, "signin <username> <password>", bind(&Client::signin))
-    );
+        new Command({".+", ".+"}, "signin <username> <password>", bind(&Client::signin)));
 
     cas_cmd_handler_.addCommand(
         "signup",
-        new Command({".+"}, "signup <username>", bind(&Client::signupUsername))
-    );
+        new Command({".+"}, "signup <username>", bind(&Client::signupUsername)));
     cas_cmd_handler_["signup"].addCommand(
         "info",
         new Command(
             {".+", "\\d+", "^09\\d{9}$", ".+"},
             "info <password> <purse> <phone> <address>",
-            bind(&Client::signupUserInfo)
-        )
-    );
+            bind(&Client::signupUserInfo)));
 }
 
 void Client::setupAdminCmds() {
@@ -292,8 +260,7 @@ void Client::setupAdminCmds() {
     cmd_handler_.addCommand("4", new Command({}, "Pass day", bind(&Client::dummyCommandNode)));
     cmd_handler_["4"].addCommand(
         "pass_day",
-        new Command({"\\d+"}, "pass_day <value>", bind(&Client::passDay))
-    );
+        new Command({"\\d+"}, "pass_day <value>", bind(&Client::passDay)));
 
     cmd_handler_.addCommand("5", new Command({}, "Edit Information", bind(&Client::dummyCommandNode)));
     cmd_handler_["5"].addCommand(
@@ -301,29 +268,23 @@ void Client::setupAdminCmds() {
         new Command(
             {".+"},
             "new_info <new password>",
-            bind(&Client::editInformation)
-        )
-    );
+            bind(&Client::editInformation)));
 
     cmd_handler_.addCommand("6", new Command({}, "Leaving room", bind(&Client::dummyCommandNode)));
     cmd_handler_["6"].addCommand(
         "room",
-        new Command({"\\d+", "\\d+"}, "room <room number> <new capacity>", bind(&Client::leavingRoom))
-    );
+        new Command({"\\d+", "\\d+"}, "room <room number> <new capacity>", bind(&Client::leavingRoom)));
 
     cmd_handler_.addCommand("7", new Command({}, "Rooms", bind(&Client::dummyCommandNode)));
     cmd_handler_["7"].addCommand(
         "add",
-        new Command({"\\d+", "\\d+", "\\d+"}, "add <room num> <capacity> <price>", bind(&Client::addRoom))
-    );
+        new Command({"\\d+", "\\d+", "\\d+"}, "add <room num> <capacity> <price>", bind(&Client::addRoom)));
     cmd_handler_["7"].addCommand(
         "modify",
-        new Command({"\\d+", "\\d+", "\\d+"}, "modify <room num> <new capacity> <new price>", bind(&Client::modifyRoom))
-    );
+        new Command({"\\d+", "\\d+", "\\d+"}, "modify <room num> <new capacity> <new price>", bind(&Client::modifyRoom)));
     cmd_handler_["7"].addCommand(
         "remove",
-        new Command({"\\d+"}, "remove <room num>", bind(&Client::removeRoom))
-    );
+        new Command({"\\d+"}, "remove <room num>", bind(&Client::removeRoom)));
 
     cmd_handler_.addCommand("8", new Command({}, "Logout", bind(&Client::logout)));
 }
@@ -344,14 +305,11 @@ void Client::setupOrdinaryUserCmds() {
         new Command(
             {"\\d+", "\\d+", Consts::Timer::DATE_FORMAT, Consts::Timer::DATE_FORMAT},
             "book <RoomNum> <NumOfBeds> <CheckInDate> <CheckoutDate>",
-            bind(&Client::booking)
-        )
-    );
+            bind(&Client::booking)));
 
     cmd_handler_.addCommand("4", new Command({}, "Canceling", bind(&Client::canceling)));
     cmd_handler_["4"].addCommand(
-        "cancel", new Command({"\\d+", "\\d+"}, "cancel <RoomNum> <Num>", bind(&Client::cancelRoom))
-    );
+        "cancel", new Command({"\\d+", "\\d+"}, "cancel <RoomNum> <Num>", bind(&Client::cancelRoom)));
 
     cmd_handler_.addCommand("5", new Command({}, "Edit Information", bind(&Client::dummyCommandNode)));
     cmd_handler_["5"].addCommand(
@@ -359,16 +317,14 @@ void Client::setupOrdinaryUserCmds() {
         new Command(
             {".+", "^09\\d{9}$", ".+"},
             "new_info <new password> <phone> <address>",
-            bind(&Client::editInformation)
-        )
+            bind(&Client::editInformation))
 
     );
 
     cmd_handler_.addCommand("6", new Command({}, "Leaving room", bind(&Client::dummyCommandNode)));
     cmd_handler_["6"].addCommand(
         "room",
-        new Command({"\\d+"}, "room <room number>", bind(&Client::leavingRoom))
-    );
+        new Command({"\\d+"}, "room <room number>", bind(&Client::leavingRoom)));
 
     cmd_handler_.addCommand("7", new Command({}, "Logout", bind(&Client::logout)));
 }

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "json.hpp"
+#include "exceptions.hpp"
 
 using json = nlohmann::json;
 
@@ -11,6 +12,7 @@ class Response {
 public:
     Response();
     Response(const std::string& response);
+    Response(const CustomException& exception);
 
     void setSessionID(std::string id);
     void setStatus(int status_code);

@@ -22,7 +22,7 @@ public:
     std::string getUsername(const std::string& session_id);
     json getUserInfo(const std::string& session_id);
     json getAllUsersInfo(const std::string& session_id);
-    json getAllRoomsInfo(const std::string& session_id, date::sys_days cur_time);
+    json getAllRoomsInfo(const std::string& session_id);
     void bookRoom(const std::string& username, int room_num, int num_of_beds, date::sys_days check_in_date, date::sys_days check_out_date);
     json getReservations(const std::string& username);
     void cancelReservation(const std::string& username, int room_num, int count);
