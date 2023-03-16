@@ -8,20 +8,26 @@
 #include <cmath>
 #include <ctime>
 #include <fstream>
+#include <iostream>
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
+#include "consts.hpp"
 #include "exceptions.hpp"
 #include "json.hpp"
 #include "request.hpp"
 #include "request_handler.hpp"
 #include "response.hpp"
 #include "server_connector.hpp"
+#include "timer.hpp"
 
 using json = nlohmann::json;
 
-Server::Server(const std::string& config_file) {
+Server::Server(const std::string& config_file, Timer& timer)
+    : cmd_handler_(std::cin),
+      timer_(timer) {
     std::ifstream f(config_file);
     json data = json::parse(f);
     int port = data["port"];
@@ -81,7 +87,7 @@ void Server::handleSTDINCommand(Connector::Event event) {
     if (event.type != Connector::Event::EventType::stdin_cmd)
         return;
 
-    // TODO handle stdin commands
+    cmd_handler_.runSingleCommand();
 }
 
 std::string Server::genSessionID() const {
@@ -111,4 +117,21 @@ RequestHandler* Server::findRequestHandler(const std::string& path) {
 
 bool Server::isAuthorized(const std::string& session_id) {
     return sessions_.find(session_id) != sessions_.end();
+}
+
+void Server::setupCommands() {
+    using Command = CommandHandler::Command;
+    auto bind = [this](void (Server::*f)(const std::vector<std::string>&)) {
+        return std::bind(f, this, std::placeholders::_1);
+    };
+
+    cmd_handler_.addCommand(
+        "setTime",
+        new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime)));
+}
+
+void Server::setTime(const std::vector<std::string>& input_args) {
+    std::string current_time = input_args[0];
+
+    timer_.setTime(current_time);
 }

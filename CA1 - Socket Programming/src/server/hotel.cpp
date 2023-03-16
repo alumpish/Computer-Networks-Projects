@@ -1,6 +1,6 @@
 #include "hotel.hpp"
 
-Hotel::Hotel(const std::string& cur_date) : timer_(cur_date) {
+Hotel::Hotel(Timer& timer) : timer_(timer) {
     readUsers();
     readRooms();
 }
