@@ -106,7 +106,7 @@ json Hotel::getAllUsersInfo(const std::string& session_id) {
     return users_json;
 }
 
-json Hotel::getAllRoomsInfo(const std::string& session_id, date::sys_days cur_time) {
+json Hotel::getAllRoomsInfo(const std::string& session_id) {
     std::string username = getUsername(session_id);
 
     json rooms_json;
@@ -116,7 +116,7 @@ json Hotel::getAllRoomsInfo(const std::string& session_id, date::sys_days cur_ti
         room_json["status"] = room.status;
         room_json["price"] = room.price;
         room_json["maxCapacity"] = room.max_capacity;
-        room_json["capacity"] = room.getCapacity(cur_time);
+        room_json["capacity"] = room.getCapacity(timer_.getCurrentDate());
 
         if (users_.getUser(username)->type == User::Type::admin) {
             json reservations_json;

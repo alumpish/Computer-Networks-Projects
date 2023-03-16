@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "exceptions.hpp"
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -10,6 +11,11 @@ Response::Response() {}
 
 Response::Response(const std::string& response) {
     deserializeFromJSON(json::parse(response));
+}
+
+Response::Response(const CustomException& exception) {
+    header_.status_code = exception.getStatus();
+    body_ = std::string(exception.what());
 }
 
 void Response::setSessionID(std::string id) {
@@ -28,13 +34,12 @@ std::string Response::getSessionID() const {
     return header_.session_id;
 }
 
-
 int Response::getStatus() const {
     return header_.status_code;
 }
 
 std::string Response::getBody() const {
-   return body_; 
+    return body_;
 }
 
 std::string Response::toJSON() const {
