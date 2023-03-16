@@ -13,6 +13,24 @@
 
 The `Server` entity provides an interface to separate the back-end logic from connection handling. This separation is done through the method `void addHandler(RequestHandler* handler)`. (see [`RequestHandler`](#requesthandler)) The `RequestHandler` will provide a callback function that'll receive a request, process the request and return a response.
 
+### `Server`'s construction
+
+The constructor of server takes a config file address to read its initial information needed for the connection, and a `Timer&` to retrieve and change the system's time. The constructor's definition also contains logger's initialization and command setup.
+
+### Methods:
+
+- `run`: This method waits for an event to occur. After that it checks what kind of event has occurred and decides which handler function to call.
+- `addHandler`: This method maps a path to its handler.
+- `handleIncomingClient`: This method checks for the incoming connections and accepts them if possible.
+- `handleIncomingRequest`: This method received the incoming request, extracts its path and call the proper handler for it. The rest is handled inside the `RequestHandler`.
+- `handleSTDINCommand`: This method simply calls the `CommandHandler`'s method to run a single command. Note that this method is called because there are some strings pending in stdin's buffer. Proper command handling method is called later by the `CommandHandler`.
+- `genSessionID`: Generates a random string to be used as clients' sessions IDs.
+- `findRequestHandler`: Search for the `RequestHandler` that is mapped to the given path.
+- `isAuthorized`: Checks if the given session ID is present among the active sessions.
+- `setupCommands`: Sets up the stdin commands. These commands are "setTime < date >" and "exit".
+- `setTime`: This method is the handler for the stdin's command with the same name.
+- `exit`: same as `setTime`.
+
 <br/>
 
 ## `RequestHandler`
