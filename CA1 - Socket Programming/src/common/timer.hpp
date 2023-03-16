@@ -1,15 +1,20 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "date/date.h"
+#include <string>
 
+#include "date.h"
+#include "utils.hpp"
 
 class Timer {
 public:
-    Timer() : m_currentDate(date::floor<date::days>(date::current_time())) {}
+    Timer(const std::string& date) {
+        parse(date, m_currentDate);
+    }
 
     void addDays(int days);
-    void printCurrentDate() const;
+    // void printCurrentDate() const;
+    date::sys_days getCurrentDate() const;
 
 private:
     date::sys_days m_currentDate;

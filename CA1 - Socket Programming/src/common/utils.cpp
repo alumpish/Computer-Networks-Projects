@@ -1,3 +1,31 @@
-# include "utils.hpp"
+#include "utils.hpp"
 
-bool isNumber(const std::string& str);
+
+bool isNumber(const std::string& str) {
+    if (str.empty()) {
+        return false;
+    }
+    for (char c : str) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool parse(const std::string& date, date::sys_days& res) {
+    date::sys_days ymd;
+    std::istringstream ss(date);
+    ss >> date::parse("%F", ymd);
+    if (ss.fail()) {
+        return false;
+    }
+    res = ymd;
+    return true;
+}
+
+std::string to_string(date::sys_days d) {
+    std::ostringstream ss;
+    ss << date::format("%F", d);
+    return ss.str();
+}

@@ -1,7 +1,7 @@
 #include "view_user_handler.hpp"
 
 Response ViewUserHandler::callback(const Request& request) {
-    std::string username = hotel_->getUsername(request.getSessionId());
+    std::string username = hotel_->getUsername(request.getSessionID());
     json response_json = hotel_->getUserInfo(username);
     
     Response response;

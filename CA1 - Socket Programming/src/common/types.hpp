@@ -1,12 +1,16 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
-#include <date/date.h>
-
 #include <string>
 #include <vector>
 
-#include "../common/utils.hpp"
+#include "utils.hpp"
+#include "date.h"
+#include "exceptions.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
+
 
 struct User {
     User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
@@ -34,7 +38,7 @@ struct User {
         }
         if (!phone_number.empty()) {
             if (!isNumber(phone_number) || phone_number.length() != 11 || phone_number[0] != '0' || phone_number[1] != '9') {
-                throw BadRequest();
+                throw Err401();
             }
             this->phone_number = phone_number;
         }
@@ -60,7 +64,7 @@ struct UserArray {
                 return &user;
             }
         }
-        throw BadRequest();
+        throw Err401();
     }
 };
 
@@ -74,8 +78,8 @@ struct Reservation {
     Reservation(json reservation_json) {
         this->user_id = reservation_json["id"];
         this->num_of_beds = reservation_json["numOfBeds"];
-        this->check_in_date = date::parse("%Y-%m-%d", reservation_json["checkInDate"]);
-        this->check_out_date = date::parse("%Y-%m-%d", reservation_json["checkOutDate"]);
+        parse(reservation_json["checkInDate"], this->check_in_date);
+        parse(reservation_json["checkOutDate"], this->check_out_date);
     }
 
     int user_id;
@@ -85,7 +89,7 @@ struct Reservation {
 };
 
 struct Room {
-    Room(int number, bool status, int price, int max_capacity, int capacity) : number(number), status(status), price(price), max_capacity(max_capacity), capacity(capacity) {}
+    Room(int number, bool status, int price, int max_capacity) : number(number), status(status), price(price), max_capacity(max_capacity) {}
     Room(json room_json) {
         number = room_json["number"];
         status = room_json["status"];
@@ -125,14 +129,14 @@ struct Room {
                 capacity -= reservation.num_of_beds;
             }
         }
-        return (capacity >= num_of_beds) : true ? false;
+        return (capacity >= num_of_beds) ? true : false;
     }
 
     void removeReservation(int user_id, int count) {
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations[i].user_id == user_id) {
                 if (count > reservations[i].num_of_beds) {
-                    throw BadRequest();
+                    throw Err401();
                 }
                 if (count == reservations[i].num_of_beds) {
                     reservations.erase(reservations.begin() + i);
@@ -142,7 +146,7 @@ struct Room {
                 return;
             }
         }
-        throw BadRequest();
+        throw Err401();
     }
 };
 
@@ -151,13 +155,13 @@ struct RoomArray {
     void addRoom(Room room) {
         rooms.push_back(room);
     }
-    Room getRoom(int room_num) {
+    Room* getRoom(int room_num) {
         for (auto room : rooms) {
             if (room.number == room_num) {
-                return room;
+                return &room;
             }
         }
-        throw BadRequest();
+        throw Err401();
     }
 };
 

@@ -7,12 +7,12 @@ Response CheckUsernameHandler::callback(const Request& request) {
     std::string username = body_json["username"];
 
     if (hotel_->isUserExist(username)) {
-        throw Err451;
+        throw Err451();
     }
 
-    hotel_->addSession(request.getSessionId(), username);
+    hotel_->addSession(request.getSessionID(), username);
 
     // Todo: send response to client to send other information
     Response response;
-    return Response;
+    return response;
 }

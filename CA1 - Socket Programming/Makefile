@@ -2,13 +2,10 @@ mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(mkfile_path)))
 
 # compile macro
-CC := gcc
 CXX:= g++
 
 # compile flags
-CFLAGS :=
-CXXFLAGS := -I $(PROJECT_PATH)/src/common -I $(PROJECT_PATH)/src/lib/nlohmann
-OBJCFLAGS := $(CFLAGS) -c
+CXXFLAGS := -I $(PROJECT_PATH)/src/common -I $(PROJECT_PATH)/src/lib
 OBJCXXFLAGS := $(CXXFLAGS) -c
 
 # target macros

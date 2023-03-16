@@ -9,7 +9,7 @@
 
 class SignupHandler : public RequestHandler {
 public:
-    SignupHandler(Hotel* hotel) : hotel_(hotel) {}
+    SignupHandler(Hotel* hotel) : RequestHandler(hotel) {}
     Response callback(const Request& request);
 
 private:

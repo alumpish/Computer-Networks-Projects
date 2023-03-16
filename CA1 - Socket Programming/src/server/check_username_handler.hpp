@@ -3,15 +3,14 @@
 
 #include <string>
 
-#include "../common/exeptions.hpp"
+#include "exceptions.hpp"
 #include "request_handler.hpp"
+
 
 class CheckUsernameHandler : public RequestHandler {
 public:
-    CheckUsernameHandler(Hotel* hotel) : hotel_(hotel) {}
+    CheckUsernameHandler(Hotel* hotel) : RequestHandler(hotel) {}
     Response callback(const Request& request);
-
-private:
 };
 
 #endif

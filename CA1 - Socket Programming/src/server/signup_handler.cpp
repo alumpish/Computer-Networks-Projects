@@ -12,17 +12,17 @@ Response SignupHandler::callback(const Request& request) {
         purse = body_json["purse"];
     }
     catch (const std::exception& e) {
-        throw Err503;
+        throw Err503();
     }
 
     if (!isPasswordValid(password) || !isNumber(phone)) {
-        hotel_->removeSession(request.getSessionId());
-        throw Err503;
+        hotel_->removeSession(request.getSessionID());
+        throw Err503();
     }
 
-    std::string username = hotel_->getUsername(request.getSessionId());
+    std::string username = hotel_->getUsername(request.getSessionID());
     User new_user(username, password, false, purse, phone, address);
-    hotel_->users_.addUser(new_user);
+    hotel_->addUser(new_user);
 }
 
 bool isPasswordValid(const std::string& password) {

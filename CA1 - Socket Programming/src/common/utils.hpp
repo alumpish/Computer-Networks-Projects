@@ -1,16 +1,11 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-bool isNumber(const std::string& str) {
-    if (str.empty()) {
-        return false;
-    }
-    for (char c : str) {
-        if (!isdigit(c)) {
-            return false;
-        }
-    }
-    return true;
-}
+#include "date.h"
+
+
+bool isNumber(const std::string& str);
+bool parse(const std::string& date, date::sys_days& res);
+std::string to_string(date::sys_days d);
 
 #endif

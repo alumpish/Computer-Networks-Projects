@@ -29,12 +29,16 @@ bool Hotel::isUserExist(const std::string& username) {
     return false;
 }
 
-void Hotel::addSession(const std::string& session_id, std::string username) {
+void Hotel::addSession(const std::string& session_id, const std::string& username) {
     sessions_un_map_[session_id] = username;
 }
 
 void Hotel::removeSession(const std::string& session_id) {
     sessions_un_map_.erase(session_id);
+}
+
+void Hotel::addUser(User user) {
+    users_.addUser(user);
 }
 
 std::string Hotel::getUsername(const std::string& session_id) {
@@ -70,7 +74,7 @@ json Hotel::getAllUsersInfo() {
     return users_json;
 }
 
-json Hotel::getAllRoomsInfo() {
+json Hotel::getAllRoomsInfo(date::sys_days cur_time) {
     json rooms_json;
     for (auto room : rooms_.rooms) {
         json room_json;
@@ -78,12 +82,12 @@ json Hotel::getAllRoomsInfo() {
         room_json["status"] = room.status;
         room_json["price"] = room.price;
         room_json["maxCapacity"] = room.max_capacity;
-        room_json["capacity"] = room.capacity;
+        room_json["capacity"] = room.getCapacity(cur_time);
 
         json reservations_json;
         for (auto reservation : room.reservations) {
             json reservation_json;
-            reservation_json["id"] = reservation.id;
+            reservation_json["id"] = reservation.user_id;
             reservation_json["numOfBeds"] = reservation.num_of_beds;
             // todo: add reserve_date and check_out_date
 
@@ -96,18 +100,15 @@ json Hotel::getAllRoomsInfo() {
     return rooms_json;
 }
 
-void Hotel::bookRoom(const std::string& username, int room_num, int num_of_beds, , std::string check_in_date, std::string check_out_date) {
+void Hotel::bookRoom(const std::string& username, int room_num, int num_of_beds, date::sys_days check_in_date, date::sys_days check_out_date) {
     User* user = users_.getUser(username);
     Room* room = rooms_.getRoom(room_num);
 
-    date::sys_days check_in_date_ = date::parse("%Y-%m-%d", check_in_date);
-    date::sys_days check_out_date_ = date::parse("%Y-%m-%d", check_out_date);
-
     if (user->purse < room->price * num_of_beds) {
-        throw PermissionDenied();
+        throw Err401();
     }
     if (room->isAvailable(num_of_beds, check_in_date, check_out_date) == false) {
-        throw PermissionDenied();
+        throw Err401();
     }
 
     user->purse -= room->price * num_of_beds;
@@ -121,12 +122,12 @@ json Hotel::getReservations(const std::string& username) {
     json reservations_json;
     for (auto room : rooms_.rooms) {
         for (auto reservation : room.reservations) {
-            if (reservation.id == user->id) {
+            if (reservation.user_id == user->id) {
                 json reservation_json;
                 reservation_json["roomNumber"] = room.number;
                 reservation_json["numOfBeds"] = reservation.num_of_beds;
-                reservation_json["checkInDate"] = reservation.check_in_date;
-                reservation_json["checkOutDate"] = reservation.check_out_date;
+                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
+                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
         }
