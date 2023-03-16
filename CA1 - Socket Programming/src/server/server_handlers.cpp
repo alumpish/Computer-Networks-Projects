@@ -217,6 +217,11 @@ Response RemoveRoomHandler::handleResponse(const Request& request) {
 }
 
 Response LogoutHandler::handleResponse(const Request& request) {
+    const std::string& session_id = request.getSessionID();
+
+    hotel_->logOut(session_id);
+
+    return response201();
 }
 
 Response GetUserTypeHandler::handleResponse(const Request& request) {

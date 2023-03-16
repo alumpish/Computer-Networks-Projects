@@ -31,6 +31,13 @@ Response response110() {
     return result;
 }
 
+Response response201() {
+    Response result;
+    result.setBody("User logged out successfully.");
+    result.setStatus(201);
+    return result;
+}
+
 Response response230() {
     Response result;
     result.setBody("User logged in.");
