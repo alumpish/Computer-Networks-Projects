@@ -40,6 +40,8 @@ Server::Server(const std::string& config_file, Timer& timer)
 
     log_file_ = std::ofstream("./log.txt");
     logger_.setStream(&log_file_);
+
+    setupCommands();
 }
 
 void Server::run() {
@@ -93,6 +95,7 @@ void Server::handleIncomingRequest(Connector::Event event) {
     Request req(request_string);
 
     logger_.info("Incoming request: ");
+    logger_.footer("Path: " + req.getPath());
     logger_.footer(req.getBody());
     logger_.footer("Session ID: " + req.getSessionID());
 
@@ -104,7 +107,7 @@ void Server::handleIncomingRequest(Connector::Event event) {
     response.setSessionID(req.getSessionID());
     connector_.sendMessage(event.sock_fd, response.toJSON());
 
-    logger_.info("Outgoing request: ");
+    logger_.info("Outgoing response: ");
     logger_.footer(response.getBody());
     logger_.footer(response.getSessionID());
 }
