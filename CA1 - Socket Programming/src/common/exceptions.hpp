@@ -31,7 +31,7 @@ private:
     const std::string desc_;
 };
 
-class CommandNotFound : CustomException {
+class CommandNotFound : public CustomException {
     const char* what() const throw() {
         return "Command not found.";
     }

@@ -36,7 +36,7 @@ void Client::run() {
                 cmd_handler_.runSingleCommand();
             }
             catch (std::exception& e) {
-                std::cout << e.what();
+                std::cout << e.what() << std::endl;
                 continue;
             }
             cmd_handler_.resetRoot();
@@ -55,7 +55,7 @@ void Client::signin(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::SIGNIN, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::signupUsername(const std::vector<std::string>& input_args) {
@@ -81,16 +81,20 @@ void Client::signupUserInfo(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::SIGNUP_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::authenticate() {
-    std::cout << cas_cmd_handler_.currentLevelCommandsToString();
-    try {
-        cas_cmd_handler_.runSingleCommand();
-    }
-    catch (std::exception& e) {
-        std::cout << e.what();
+    while (true) {
+        try {
+            std::cout << cas_cmd_handler_.currentLevelCommandsToString();
+            cas_cmd_handler_.runSingleCommand();
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+            continue;
+        }
+        break;
     }
     setUserType();
     cmd_flags_.is_logged_out = false;
@@ -100,19 +104,19 @@ void Client::authenticate() {
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_USER_INFO, "");
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::viewAllUsers(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ALL_USERS, "");
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::viewRoomsInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ROOMS_INFO, "");
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::booking(const std::vector<std::string>& input_args) {
@@ -129,7 +133,7 @@ void Client::booking(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::BOOKING, body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::canceling(const std::vector<std::string>& input_args) {
@@ -146,7 +150,7 @@ void Client::cancelRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::CANCEL_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::passDay(const std::vector<std::string>& input_args) {
@@ -155,7 +159,7 @@ void Client::passDay(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::PASS_DAY, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::editInformation(const std::vector<std::string>& input_args) {
@@ -170,7 +174,7 @@ void Client::editInformation(const std::vector<std::string>& input_args) {
     else
         sendRequest(Consts::Paths::ADMIN_EDIT_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::leavingRoom(const std::vector<std::string>& input_args) {
@@ -184,7 +188,7 @@ void Client::leavingRoom(const std::vector<std::string>& input_args) {
     else
         sendRequest(Consts::Paths::LEAVING_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::addRoom(const std::vector<std::string>& input_args) {
@@ -195,7 +199,7 @@ void Client::addRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::ADD_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::modifyRoom(const std::vector<std::string>& input_args) {
@@ -206,7 +210,7 @@ void Client::modifyRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::MODIFY_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::removeRoom(const std::vector<std::string>& input_args) {
@@ -215,13 +219,13 @@ void Client::removeRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::REMOVE_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 }
 
 void Client::logout(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::LOGOUT, "");
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
 
     cmd_flags_.is_logged_out = true;
     // TODO close connection
