@@ -103,6 +103,14 @@ public:
     Response callback(const Request& request) override;
 };
 
+class AdminLeavingRoomHandler : public HotelHandler {
+public:
+    AdminLeavingRoomHandler(Hotel* hotel)
+        : HotelHandler(hotel) {}
+
+    Response callback(const Request& request) override;
+};
+
 class LeavingRoomHandler : public HotelHandler {
 public:
     LeavingRoomHandler(Hotel* hotel)
