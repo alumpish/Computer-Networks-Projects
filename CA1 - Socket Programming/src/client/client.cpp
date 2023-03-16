@@ -68,6 +68,7 @@ void Client::signupUsername(const std::vector<std::string>& input_args) {
     if (response.getStatus() != 311)
         return;
 
+    std::cout << cas_cmd_handler_.currentLevelCommandsToString();
     cas_cmd_handler_.runSingleCommand();
 }
 
@@ -263,6 +264,7 @@ void Client::setupCASCmds() {
     cas_cmd_handler_.addCommand(
         "signup",
         new Command({".+"}, "signup <username>", bind(&Client::signupUsername)));
+
     cas_cmd_handler_["signup"].addCommand(
         "info",
         new Command(

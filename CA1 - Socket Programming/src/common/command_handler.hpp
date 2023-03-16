@@ -47,8 +47,7 @@ public:
     CommandHandler operator[](const std::string& cmd_name);
 
     void deleteCommands();
-
-    ~CommandHandler();
+    void deleteAll();
 
 private:
     std::istream& input_stream_;

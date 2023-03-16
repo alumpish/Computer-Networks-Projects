@@ -45,8 +45,8 @@ void CommandHandler::runSingleCommand() {
     if (!command->matchArgsList(input_args))
         throw Err503();
 
-    command->execCommand(input_args);
     root_ = new_root;
+    command->execCommand(input_args);
 }
 
 void CommandHandler::resetRoot() {
@@ -77,7 +77,7 @@ void CommandHandler::deleteCommands() {
         delete sub_nodes_pair.second;
 }
 
-CommandHandler::~CommandHandler() {
+void CommandHandler::deleteAll() {
     delete init_root_;
 }
 
