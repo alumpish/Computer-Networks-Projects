@@ -6,15 +6,36 @@
 #include "exceptions.hpp"
 #include "request.hpp"
 #include "response.hpp"
+#include "response_templates.hpp"
 #include "utils.hpp"
 
+using json = nlohmann::json;
+
 Response SignupUsernameHandler::handleResponse(const Request& request) {
+    const std::string& session_id = request.getSessionID();
+
+    json req_body = json::parse(request.getBody());
+    std::string username = req_body["username"];
+
+    if (hotel_->isUserExist(username))
+        throw Err451();
+
+    hotel_->addSession(session_id, username);
+    return response311();
 }
 
 Response SignupUserInfoHandler::handleResponse(const Request& request) {
 }
 
 Response SigninHandler::handleResponse(const Request& request) {
+    const std::string& session_id = request.getSessionID();
+
+    json req_body = json::parse(request.getBody());
+    std::string username = req_body["username"];
+    std::string password = req_body["password"];
+
+    hotel_->signIn(session_id, username, password);
+    return response230();
 }
 
 Response ViewUserInfoHandler::handleResponse(const Request& request) {
