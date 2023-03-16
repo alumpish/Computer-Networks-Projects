@@ -8,7 +8,9 @@
 
 class RequestHandler {
 public:
-    virtual Response callback(const Request& request) = 0;
+    Response callback(const Request& request);
+protected:
+    virtual Response handleResponse(const Request& request) = 0;
 };
 
 #endif

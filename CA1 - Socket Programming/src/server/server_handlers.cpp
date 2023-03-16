@@ -3,56 +3,54 @@
 #include <string>
 
 #include "date.h"
+#include "exceptions.hpp"
 #include "request.hpp"
 #include "response.hpp"
 #include "utils.hpp"
 
-Response SignupUsernameHandler::callback(const Request& request) {
+Response SignupUsernameHandler::handleResponse(const Request& request) {
 }
 
-Response SignupUserInfoHandler::callback(const Request& request) {
+Response SignupUserInfoHandler::handleResponse(const Request& request) {
 }
 
-Response SigninHandler::callback(const Request& request) {
+Response SigninHandler::handleResponse(const Request& request) {
 }
 
-Response ViewUserInfoHandler::callback(const Request& request) {
+Response ViewUserInfoHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json users_info = hotel_->getUserInfo(session_id);
 
     Response result;
-    result.setSessionID(session_id);
     result.setBody(users_info.dump());
 
     return result;
 }
 
-Response ViewAllUsersHandler::callback(const Request& request) {
+Response ViewAllUsersHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json users_list = hotel_->getAllUsersInfo(session_id);
 
     Response result;
-    result.setSessionID(session_id);
     result.setBody(users_list.dump());
 
     return result;
 }
 
-Response ViewRoomsInfoHandler::callback(const Request& request) {
+Response ViewRoomsInfoHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json rooms_list = hotel_->getAllRoomsInfo(session_id);
 
     Response result;
-    result.setSessionID(session_id);
     result.setBody(rooms_list.dump());
 
     return result;
 }
 
-Response BookingHandler::callback(const Request& request) {
+Response BookingHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
     const std::string& username = hotel_->getUsername(session_id);
 
@@ -67,26 +65,24 @@ Response BookingHandler::callback(const Request& request) {
     hotel_->bookRoom(username, room_num, num_of_beds, check_in_date, check_out_date);
 
     Response result;
-    result.setSessionID(session_id);
     // TODO set body
 
     return result;
 }
 
-Response ViewReservationsHandler::callback(const Request& request) {
+Response ViewReservationsHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
     const std::string& username = hotel_->getUsername(session_id);
 
     json reservations_list = hotel_->getReservations(username);
 
     Response result;
-    result.setSessionID(session_id);
     result.setBody(reservations_list.dump());
 
     return result;
 }
 
-Response CancelRoomHandler::callback(const Request& request) {
+Response CancelRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
     const std::string& username = hotel_->getUsername(session_id);
 
@@ -97,12 +93,11 @@ Response CancelRoomHandler::callback(const Request& request) {
     hotel_->cancelReservation(username, room_num, count);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response PassDayHandler::callback(const Request& request) {
+Response PassDayHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -111,12 +106,11 @@ Response PassDayHandler::callback(const Request& request) {
     hotel_->passDay(session_id, days);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response AdminEditInformationHandler::callback(const Request& request) {
+Response AdminEditInformationHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -126,12 +120,11 @@ Response AdminEditInformationHandler::callback(const Request& request) {
     hotel_->editInformation(session_id, password);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response EditInformationHandler::callback(const Request& request) {
+Response EditInformationHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -143,12 +136,11 @@ Response EditInformationHandler::callback(const Request& request) {
     hotel_->editInformation(session_id, password, phone, address);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response LeavingRoomHandler::callback(const Request& request) {
+Response LeavingRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -158,12 +150,11 @@ Response LeavingRoomHandler::callback(const Request& request) {
     hotel_->leaveRoom(session_id, room_num);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response AddRoomHandler::callback(const Request& request) {
+Response AddRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -174,12 +165,11 @@ Response AddRoomHandler::callback(const Request& request) {
     hotel_->addRoom(session_id, room_num, max_capacity, price);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response ModifyRoomHandler::callback(const Request& request) {
+Response ModifyRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -190,12 +180,11 @@ Response ModifyRoomHandler::callback(const Request& request) {
     hotel_->modifyRoom(session_id, room_num, max_capacity, price);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response RemoveRoomHandler::callback(const Request& request) {
+Response RemoveRoomHandler::handleResponse(const Request& request) {
     const std::string& session_id = request.getSessionID();
 
     json req_body = json::parse(request.getBody());
@@ -204,10 +193,9 @@ Response RemoveRoomHandler::callback(const Request& request) {
     hotel_->removeRoom(session_id, room_num);
 
     Response result;
-    result.setSessionID(session_id);
 
     return result;
 }
 
-Response LogoutHandler::callback(const Request& request) {
+Response LogoutHandler::handleResponse(const Request& request) {
 }
