@@ -29,3 +29,15 @@ std::string to_string(date::sys_days d) {
     ss << date::format("%F", d);
     return ss.str();
 }
+
+bool isPasswordValid(const std::string& password) {
+    if (password.empty()) {
+        return false;
+    }
+    for (char c : password) {
+        if (isspace(c)) {
+            return false;
+        }
+    }
+    return true;
+}

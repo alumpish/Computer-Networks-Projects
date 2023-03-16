@@ -24,15 +24,3 @@ Response SignupHandler::callback(const Request& request) {
     User new_user(username, password, false, purse, phone, address);
     hotel_->addUser(new_user);
 }
-
-bool isPasswordValid(const std::string& password) {
-    if (password.empty()) {
-        return false;
-    }
-    for (char c : password) {
-        if (isspace(c)) {
-            return false;
-        }
-    }
-    return true;
-}

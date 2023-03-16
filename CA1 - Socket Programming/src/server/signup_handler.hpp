@@ -13,7 +13,6 @@ public:
     Response callback(const Request& request);
 
 private:
-    bool isPasswordValid(const std::string& password);
 };
 
 #endif
