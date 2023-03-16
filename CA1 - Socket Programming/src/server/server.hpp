@@ -5,8 +5,10 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <fstream>
 
 #include "command_handler.hpp"
+#include "logger.hpp"
 #include "server_connector.hpp"
 #include "timer.hpp"
 
@@ -20,6 +22,8 @@ public:
     void run();
     void addHandler(RequestHandler* handler, const std::string& path);
 
+    ~Server();
+
 private:
     Connector connector_;
     CommandHandler cmd_handler_;
@@ -28,6 +32,9 @@ private:
     std::unordered_map<std::string, RequestHandler*> handlers_map_;
 
     Timer& timer_;
+
+    Logger logger_;
+    std::ofstream log_file_;
 
     void handleIncomingClient(Connector::Event event);
     void handleIncomingRequest(Connector::Event event);

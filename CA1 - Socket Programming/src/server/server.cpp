@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -27,7 +28,8 @@ using json = nlohmann::json;
 
 Server::Server(const std::string& config_file, Timer& timer)
     : cmd_handler_(std::cin),
-      timer_(timer) {
+      timer_(timer),
+      logger_(timer) {
     std::ifstream f(config_file);
     json data = json::parse(f);
     int port = data["port"];
@@ -35,22 +37,35 @@ Server::Server(const std::string& config_file, Timer& timer)
     int max_clients = data["maxClients"];
 
     connector_ = Connector(port, host_name, max_clients);
+
+    log_file_ = std::ofstream("./log.txt");
+    logger_.setStream(&log_file_);
 }
 
 void Server::run() {
     while (true) {
-        auto event = connector_.pollForEvent();
-        if (event.type == Connector::Event::EventType::incoming_client)
-            handleIncomingClient(event);
-        else if (event.type == Connector::Event::EventType::stdin_cmd)
-            handleSTDINCommand(event);
-        else if (event.type == Connector::Event::EventType::client_req)
-            handleIncomingRequest(event);
+        try {
+            auto event = connector_.pollForEvent();
+            if (event.type == Connector::Event::EventType::incoming_client)
+                handleIncomingClient(event);
+            else if (event.type == Connector::Event::EventType::stdin_cmd)
+                handleSTDINCommand(event);
+            else if (event.type == Connector::Event::EventType::client_req)
+                handleIncomingRequest(event);
+        }
+        catch (std::exception& e) {
+            logger_.error(e.what());
+        }
     }
 }
 
 void Server::addHandler(RequestHandler* handler, const std::string& path) {
     handlers_map_[path] = handler;
+}
+
+Server::~Server() {
+    logger_.info("Server shutdown.");
+    log_file_.close();
 }
 
 void Server::handleIncomingClient(Connector::Event event) {
@@ -65,6 +80,9 @@ void Server::handleIncomingClient(Connector::Event event) {
     Response response;
     response.setSessionID(new_session_id);
     connector_.sendMessage(new_client_fd, response.toJSON());
+
+    logger_.info("New client accepted.");
+    logger_.footer("Session ID: " + new_session_id);
 }
 
 void Server::handleIncomingRequest(Connector::Event event) {
@@ -74,6 +92,10 @@ void Server::handleIncomingRequest(Connector::Event event) {
     std::string request_string = connector_.rcvMessage(event.sock_fd);
     Request req(request_string);
 
+    logger_.info("Incoming request: ");
+    logger_.footer(req.getBody());
+    logger_.footer("Session ID: " + req.getSessionID());
+
     if (!isAuthorized(req.getSessionID()))
         throw Err403();
 
@@ -81,6 +103,10 @@ void Server::handleIncomingRequest(Connector::Event event) {
     Response response = handler->callback(req);
     response.setSessionID(req.getSessionID());
     connector_.sendMessage(event.sock_fd, response.toJSON());
+
+    logger_.info("Outgoing request: ");
+    logger_.footer(response.getBody());
+    logger_.footer(response.getSessionID());
 }
 
 void Server::handleSTDINCommand(Connector::Event event) {
