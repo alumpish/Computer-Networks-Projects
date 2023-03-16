@@ -56,6 +56,8 @@ void Client::signin(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::SIGNIN, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody() << std::endl;
+    if (response.getStatus() == 230)
+        cmd_flags_.authentication_finished = true;
 }
 
 void Client::signupUsername(const std::vector<std::string>& input_args) {
@@ -64,7 +66,7 @@ void Client::signupUsername(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::SIGNUP_USERNAME, req_body.dump());
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody();
+    std::cout << response.getBody() << std::endl;
     if (response.getStatus() != 311)
         return;
 
@@ -82,10 +84,13 @@ void Client::signupUserInfo(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::SIGNUP_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
     std::cout << response.getBody() << std::endl;
+    if (response.getStatus() == 231)
+        cmd_flags_.authentication_finished = true;
 }
 
 void Client::authenticate() {
-    while (true) {
+    while (!cmd_flags_.authentication_finished) {
+        cas_cmd_handler_.resetRoot();
         try {
             std::cout << cas_cmd_handler_.currentLevelCommandsToString();
             cas_cmd_handler_.runSingleCommand();
@@ -94,11 +99,9 @@ void Client::authenticate() {
             std::cout << e.what() << std::endl;
             continue;
         }
-        break;
     }
     setUserType();
     cmd_flags_.is_logged_out = false;
-    cas_cmd_handler_.resetRoot();
 }
 
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
@@ -228,6 +231,7 @@ void Client::logout(const std::vector<std::string>& input_args) {
     std::cout << response.getBody() << std::endl;
 
     cmd_flags_.is_logged_out = true;
+    cmd_flags_.authentication_finished = false;
     // TODO close connection
 }
 

@@ -1,1 +1,63 @@
-[{"capacity":2,"maxCapacity":2,"number":101,"price":100,"status":false},{"capacity":3,"maxCapacity":3,"number":102,"price":73,"status":false},{"capacity":2,"maxCapacity":2,"number":201,"price":100,"status":true},{"capacity":1,"maxCapacity":1,"number":301,"price":100,"status":false}]
+{
+    "rooms": [
+        {
+            "capacity": 2,
+            "maxCapacity": 2,
+            "number": 101,
+            "price": 100,
+            "reservations": null,
+            "status": false
+        },
+        {
+            "capacity": 3,
+            "maxCapacity": 3,
+            "number": 102,
+            "price": 73,
+            "reservations": [
+                {
+                    "checkInDate": "25-02-2023",
+                    "checkOutDate": "27-02-2023",
+                    "id": 1,
+                    "numOfBeds": 1
+                }
+            ],
+            "status": false
+        },
+        {
+            "capacity": 2,
+            "maxCapacity": 2,
+            "number": 201,
+            "price": 100,
+            "reservations": [
+                {
+                    "checkInDate": "25-02-2023",
+                    "checkOutDate": "27-02-2023",
+                    "id": 2,
+                    "numOfBeds": 2
+                }
+            ],
+            "status": true
+        },
+        {
+            "capacity": 1,
+            "maxCapacity": 1,
+            "number": 301,
+            "price": 100,
+            "reservations": [
+                {
+                    "checkInDate": "27-02-2023",
+                    "checkOutDate": "28-02-2023",
+                    "id": 2,
+                    "numOfBeds": 1
+                },
+                {
+                    "checkInDate": "25-02-2023",
+                    "checkOutDate": "26-02-2023",
+                    "id": 3,
+                    "numOfBeds": 1
+                }
+            ],
+            "status": false
+        }
+    ]
+}

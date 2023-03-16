@@ -20,6 +20,7 @@ private:
     struct {
         bool is_terminated = false;
         bool is_logged_out = true;
+        bool authentication_finished = false;
     } cmd_flags_;
 
     enum class UserType {
