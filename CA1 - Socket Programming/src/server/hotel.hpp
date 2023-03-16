@@ -17,7 +17,7 @@ public:
     bool isUserExist(const std::string& username);
     void addSession(const std::string& session_id, const std::string& username);
     void removeSession(const std::string& session_id);
-    void addUser(User user);
+    void signUp (const std::string& session_id, const std::string& password, int purse, const std::string& phone_number, const std::string& address);
     void signIn(const std::string& session_id, const std::string& username, const std::string& password);
     std::string getUsername(const std::string& session_id);
     json getUserInfo(const std::string& session_id);
@@ -34,6 +34,7 @@ public:
     void addRoom(const std::string& session_id, int room_num, int max_capacity, int price);
     void modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price);
     void removeRoom(const std::string& session_id, int room_num);
+    void logOut(const std::string& session_id);
     User::Type getUserType(const std::string& session_id);
 
 

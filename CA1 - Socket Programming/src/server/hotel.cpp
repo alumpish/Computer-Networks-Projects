@@ -42,8 +42,14 @@ void Hotel::removeSession(const std::string& session_id) {
     sessions_un_map_.erase(session_id);
 }
 
-void Hotel::addUser(User user) {
-    users_.addUser(user);
+void Hotel::signUp(const std::string& session_id, const std::string& password, int purse, const std::string& phone_number, const std::string& address) {
+    if (!isPasswordValid(password) || !isNumber(phone_number)){
+        removeSession(session_id);
+        throw Err503();
+    }
+    
+    User new_user(getUsername(session_id), password, false, purse, phone_number, address);
+    users_.addUser(new_user);
 }
 
 void Hotel::signIn(const std::string& session_id, const std::string& username, const std::string& password) {
@@ -243,6 +249,12 @@ void Hotel::removeRoom(const std::string& session_id, int room_num) {
         throw Err403();
     }
     rooms_.removeRoom(room_num);
+    return;
+}
+
+void Hotel::logOut(const std::string& session_id) {
+    std::string username = getUsername(session_id);
+    removeSession(username);
     return;
 }
 
