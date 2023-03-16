@@ -58,7 +58,7 @@ struct User {
             this->password = password;
         }
         if (!phone_number.empty()) {
-            if (!isNumber(phone_number) || phone_number.length() != 11 || phone_number[0] != '0' || phone_number[1] != '9') {
+            if (!isNumber(phone_number)) {
                 throw Err503();
             }
             this->phone_number = phone_number;
