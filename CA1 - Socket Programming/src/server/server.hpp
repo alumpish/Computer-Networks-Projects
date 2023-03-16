@@ -36,6 +36,8 @@ private:
     Logger logger_;
     std::ofstream log_file_;
 
+    bool exit_ = false;
+
     void handleIncomingClient(Connector::Event event);
     void handleIncomingRequest(Connector::Event event);
     void handleSTDINCommand(Connector::Event event);
@@ -46,6 +48,7 @@ private:
     void setupCommands();
 
     void setTime(const std::vector<std::string>& input_args);
+    void exit(const std::vector<std::string>& input_args);
 };
 
 #endif

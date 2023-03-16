@@ -33,4 +33,5 @@ int main() {
     Hotel* hotel = new Hotel(timer);
     setupServerHandlers(server, hotel);
     server.run();
+    delete hotel;
 }

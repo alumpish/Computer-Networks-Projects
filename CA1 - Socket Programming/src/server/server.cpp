@@ -43,7 +43,7 @@ Server::Server(const std::string& config_file, Timer& timer)
 }
 
 void Server::run() {
-    while (true) {
+    while (!exit) {
         try {
             auto event = connector_.pollForEvent();
             if (event.type == Connector::Event::EventType::incoming_client)
@@ -154,10 +154,18 @@ void Server::setupCommands() {
     cmd_handler_.addCommand(
         "setTime",
         new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime)));
+
+    cmd_handler_.addCommand(
+        "exit",
+        new Command({}, "exit", bind(&Server::exit)));
 }
 
 void Server::setTime(const std::vector<std::string>& input_args) {
     std::string current_time = input_args[0];
 
     timer_.setTime(current_time);
+}
+
+void Server::exit(const std::vector<std::string>& input_args) {
+    exit_ = true;
 }
