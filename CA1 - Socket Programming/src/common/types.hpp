@@ -96,6 +96,27 @@ struct UserArray {
         }
         throw Err401();
     }
+
+    json getUsersJson() {
+        Json users_json;
+        for (auto& user : users) {
+            Json user_json;
+            user_json["id"] = user.id;
+            user_json["user"] = user.username;
+            user_json["password"] = user.password;
+            if (user.type == User::Type::ordinary) {
+                user_json["admin"] = false;
+                user_json["purse"] = user.purse;
+                user_json["phoneNumber"] = user.phone_number;
+                user_json["address"] = user.address;
+            }
+            else {
+                user_json["admin"] = true;
+            }
+            users_json.push_back(user_json);
+        }
+        return users_json;
+    }
 };
 
 struct Reservation {
@@ -258,6 +279,30 @@ struct RoomArray {
             }
         }
         throw Err101();
+    }
+
+    json getRoomsJson(date::sys_days cur_date) {
+        json rooms_json;
+        for (auto room : rooms) {
+            json room_json;
+            room_json["number"] = room.number;
+            room_json["status"] = room.status;
+            room_json["price"] = room.price;
+            room_json["maxCapacity"] = room.max_capacity;
+            room_json["capacity"] = room.getCapacity(cur_date);
+            rooms_json.push_back(room_json);
+
+            json reservations_json;
+            for (auto reservation : room.reservations) {
+                json reservation_json;
+                reservation_json["id"] = reservation.user_id;
+                reservation_json["numOfBeds"] = reservation.num_of_beds;
+                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
+                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
+                reservations_json.push_back(reservation_json);
+            }
+        }
+        return rooms_json;
     }
 };
 

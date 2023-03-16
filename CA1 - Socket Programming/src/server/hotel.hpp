@@ -12,6 +12,7 @@
 class Hotel {
 public:
     Hotel(Timer& timer);
+    Hotel::~Hotel();
     void readUsers();
     void readRooms();
     bool isUserExist(const std::string& username);
@@ -36,6 +37,8 @@ public:
     void removeRoom(const std::string& session_id, int room_num);
     void logOut(const std::string& session_id);
     User::Type getUserType(const std::string& session_id);
+    void saveUsers();
+    void saveRooms();
 
 private:
     Timer& timer_;
