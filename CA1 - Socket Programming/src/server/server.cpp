@@ -43,7 +43,7 @@ Server::Server(const std::string& config_file, Timer& timer)
 }
 
 void Server::run() {
-    while (!exit) {
+    while (!exit_) {
         try {
             auto event = connector_.pollForEvent();
             if (event.type == Connector::Event::EventType::incoming_client)
