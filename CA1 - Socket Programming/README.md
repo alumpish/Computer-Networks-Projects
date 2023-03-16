@@ -7,17 +7,40 @@
 <br/>
 <br />
 
-## Server Side
+# Server Side
 
-### `Server`
+## `Server`
 
 The `Server` entity provides an interface to separate the back-end logic from connection handling. This separation is done through the method `void addHandler(RequestHandler* handler)`. (see [`RequestHandler`](#requesthandler)) The `RequestHandler` will provide a callback function that'll receive a request, process the request and return a response.
 
-### `RequestHandler`
+<br/>
+
+## `RequestHandler`
 
 This is an abstract class that should only be used through inheriting other handlers from it. The abstraction is achieved by the pure virtual method `callback`; This method receives the request, processes it and returns a response.
 
 <br/>
+
+## `ServerConnector Class`
+
+The `ServerConnector` class is responsible for connecting to the server and sending and receiving data. It has a `connect` method that takes the server's IP address and port number as arguments and connects to the server. It also has a `send` method that takes a string as an argument and sends it to the server. The `receive` method receives data from the server and returns it as a string.
+
+Main method of this class is `pollForEvent` that is responsible for receiving data from client using select system call.
+
+```cpp
+Connector::Event Connector::pollForEvent() {
+    fd_set working_set = fds_.master_fds_set;
+    select(fds_.max_fd + 1, &working_set, nullptr, nullptr, nullptr);
+    if (FD_ISSET(STDIN_FILENO, &working_set))
+        return {Connector::Event::EventType::stdin_cmd, STDIN_FILENO};
+    if (FD_ISSET(fds_.server_fd, &working_set))
+        return {Connector::Event::EventType::incoming_client, fds_.server_fd};
+    for (const auto& cur_client_fd : fds_.client_fds)
+        if (FD_ISSET(cur_client_fd, &working_set))
+            return {Connector::Event::EventType::client_req, cur_client_fd};
+}
+```
+
 <br/>
 
 ## `Structs`
@@ -59,7 +82,7 @@ void editInformation(std::string password, std::string phone_number, std::string
 void editInformation(std::string password);
 ```
 
-###  `2.UserArray`
+### `2.UserArray`
 
 The `UserArray` struct contains a vector of `User` objects and provides methods to add and get users from the vector.
 
@@ -73,7 +96,6 @@ The `UserArray` struct contains a vector of `User` objects and provides methods 
 - `getUser(std::string username)`: Returns a pointer to the `User` object with the specified username. Throws an `Err401` exception if the user does not exist in the vector.
 
 Note: `Err401` is a custom exception class that is not defined in this code snippet.
-
 
 ### `3.Reservation`
 
@@ -177,156 +199,114 @@ The `RoomArray` struct contains a vector of `Room` objects and provides methods 
 
 Note: `Err101`, `Err111`, and `Err401` are custom exception classes that are not defined in this code snippet.
 
-
-<br/>
 <br/>
 
 ## `Hotel Class`
 
-The Hotel class represents a hotel system with various functionalities such as managing user accounts, booking and canceling rooms, and managing room information.
-
-### `Public Methods`
-
-```cpp
-Hotel(const std::string& cur_date)
-```
-
-A constructor that initializes the hotel system with the current date.
-
-```cpp
-void readUsers()
-```
-
-Reads user information from a file.
-
-```cpp
-void readRooms()
-```
-
-Reads room information from a file.
-
-```cpp
-bool isUserExist(const std::string& username)
-```
-
-Returns a boolean indicating whether a user with the given username exists in the system.
-
-```cpp
-void addSession(const std::string& session_id, const std::string& username)
-```
-
-Adds a new session to the system with the given session ID and username.
-
-```cpp
-void removeSession(const std::string& session_id)
-```
-
-Removes a session with the given session ID from the system.
-
-
-```cpp
-    void signUp (const std::string& session_id, const std::string& password, int purse, const std::string& phone_number, const std::string& address);
-```
-Complete sign up process for a user by adding a new user to the system with the given username, password, purse, phone number, and address.
-
-```cpp
-void signIn(const std::string& session_id, const std::string& username, const std::string& password)
-```
-
-Authenticates a user by checking if the given username and password match the user's credentials in the system.
-
-```cpp
-std::string getUsername(const std::string& session_id)
-```
-
-Returns the username associated with the given session ID.
-
-```cpp
-json getUserInfo(const std::string& session_id)
-```
-
-Returns a JSON object containing the information of the user associated with the given session ID.
-
-```cpp
-json getAllUsersInfo(const std::string& session_id)
-```
-
-Returns a JSON array containing information of all the users in the system.
-
-```cpp
-json getAllRoomsInfo(const std::string& session_id, date::sys_days cur_time)
-```
-
-Returns a JSON array containing information of all the rooms in the system with their availability status.
-
-```cpp
-void bookRoom(const std::string& username, int room_num, int num_of_beds, date::sys_days check_in_date, date::sys_days check_out_date)
-```
-
-Books a room for the given user with the specified room number, number of beds, check-in date, and check-out date.
-
-```cpp
-json getReservations(const std::string& username)
-```
-
-Returns a JSON array containing information about all the reservations made by the given user.
-
-```cpp
-void cancelReservation(const std::string& username, int room_num, int count)
-```
-
-Cancels the reservation made by the given user for the specified room and the number of beds.
-
-```cpp
-void passDay(const std::string& session_id, int days)
-```
-
-Passes the specified number of days and updates the room availability status accordingly.
-
-```cpp
-void updateRooms(date::sys_days cur_date)
-```
-
-Updates the room availability status based on the current date.
-
-```cpp
-void leaveRoom(const std::string& session_id, int room_num)
-```
-
-Releases the specified room by the user associated with the given session ID.
-
-```cpp
-void addRoom(const std::string& session_id, int room_num, int max_capacity, int price)
-```
-
-Adds a new room with the specified room number, maximum capacity, and price.
-
-```cpp
-void modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price)
-```
-
-Modifies the information of the room with the specified room number.
+The `Hotel` class is responsible for storing and managing the hotel data. It includes a number of private variables, including a `RoomArray` object (`rooms_`), a `UserArray` object (`users_`), and a `Timer` object (`timer_`). It also includes a number of private functions, each of which corresponds to a specific command that the server can receive from a client.
 
 <br/>
 
-`Private`
+## `Timer Class`
+
+The `Timer` class is a simple class that represents a date and time. It has a public `constructor` that takes a `date::sys_days` object and initializes the `date_` member variable. It also has several public member functions that can be used to interact with the timer. These functions include:
+
+`getCurrentDate()`: returns the current date.
+
+`addDays(int days)`: advances the timer by the given number of days.
+
+<br/>
+<br/>
+
+# **Client Side**
+
+## `Client Class`
+
+`Client` class is responsible for handling various commands and interacting with a server via a `Connector` class. The `Client` class includes a few private variables, including two instances of a `CommandHandler` class (`cas_cmd_handler_` and `cmd_handler_`), a Connector object (`connector_`), and a string for storing a session ID (`session_id_`).
+
+The Client class also includes a number of private functions, each of which corresponds to a specific command that the client can handle. These functions include commands for user authentication (`signin`, `signupUsername`, `signupUserInfo`, `authenticate`), viewing user and room information (`viewUserInformation`, `viewAllUsers`, `viewRoomsInformation`), booking and cancelling rooms (`booking`, `canceling`, `cancelRoom`, `leavingRoom`), editing information (`editInformation`), adding/modifying/removing rooms (`addRoom`, `modifyRoom`, `removeRoom`), and logging out or terminating the client (`logout`, `terminate`).
+
+<br/>
+
+## `ClientConnector Class`
+
+Connector class represents a network socket connection. The constructor initializes a socket file descriptor (`sock_fd_`) with the given port number and host name.
+
+The `sendMessage` method sends a message to the connected socket by writing the provided message string to the socket file descriptor.
+
+The `rcvMessage` method receives a message from the connected socket by reading from the socket file descriptor and returning the received message as a string.
 
 ```cpp
+class Connector {
+public:
+    Connector(int port, const std::string& host_name);
+
+    void sendMessage(const std::string& msg);
+    std::string rcvMessage();
+
 private:
-    Timer timer_;
-    UserArray users_;
-    RoomArray rooms_;
-    std::unordered_map<std::string, std::string> sessions_un_map_;
+    int sock_fd_;
+};
 ```
 
-- `timer_` : A private member variable of type Timer used to keep track of time.
+<br/>
 
-- `users_` : A private member variable of type UserArray, which is an array of User objects. This array is used to store information about registered users.
+### And **`main`** code of Client is like this:
 
-- `rooms_` : A private member variable of type RoomArray, which is an array of Room objects. This array is used to store information about the available rooms in the hotel.
+```cpp
+int main() {
+    Client client;
+    client.run();
+}
+```
 
-- `sessions_un_map_` : A private member variable of type unordered_map. This map is used to store the session IDs and the corresponding usernames of the users who have signed in to the hotel system.
+<br/>
+<br/>
 
+# **Both Sides**
 
+The conncection between the client and the serrver is by Request-Response protocol. The client sends a request to the server and the server responds to the request. The client can send multiple requests to the server and the server can respond to multiple requests. The client and the server can send and receive messages in any order.
 
-## `Timer Class`
+The client sends a request to the server by sending a string that contains the command name and the arguments of the command. The server responds to the request by sending a string that contains the result of the command execution.
+
+<br/>
+
+## `Request class`
+
+The `Request` class is a simple class that represents a request and uses Json format. It has a public `constructor` that takes a `std::string` object and initializes the `request_` member variable. It also has several public member functions that can be used to interact with the request. These functions include:
+
+`setPath()`: sets the path of the request.  
+`setSessionID()`: sets the session_id of the request.
+`setBody()`: sets the body of the request.
+
+And get methods for each of the member variables.
+
+`toJSON()`: returns the request as a JSON string.
+
+<br/>
+
+## `Response class`
+
+It's structure is similar to the `Request` class.
+
+<br/>
+
+## `commandHandler class`
+
+This class can handle different commands. The constructor initializes the `input_stream_` variable and creates two instances of `CommandNode` objects: `init_root_` and `root_`, which are initially pointing to the same object. The class also provides methods to add a new command, run a single command, reset the root, and delete all commands.
+
+The `addCommand` method takes a command name and a pointer to a Command object and adds a new `CommandNode` to the tree structure with the provided name and Command pointer.
+
+The `runSingleCommand` method reads a command name from the input stream, searches for the CommandNode in the tree structure with the same name as the input, and executes the command by calling `execCommand` with the appropriate arguments. If the command is not found or the arguments do not match the expected number or types, an exception is thrown.
+
+The `resetRoot` method resets the `root_` variable to the initial root, effectively resetting the tree structure to its original state.
+
+The `currentLevelCommandsToString` method returns a string with a list of all the command names and their help messages for the current level of the tree structure.
+
+The `allLevelsCommandsToString` method is not yet implemented.
+
+The `operator[]` method returns a new `CommandHandler` object that has the `root_` variable set to the `CommandNode` with the provided command name.
+
+The `deleteCommand`s method deallocates all the `CommandNode `objects in the tree structure.
+
+Finally, the class provides a `destructor` that deallocates the initial root object.
