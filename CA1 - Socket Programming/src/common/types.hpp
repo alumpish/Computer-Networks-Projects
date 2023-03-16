@@ -88,7 +88,7 @@ struct UserArray {
     }
 
     User* getUser(std::string username) {
-        for (auto user : users) {
+        for (auto& user : users) {
             if (user.username == username) {
                 return &user;
             }
@@ -251,7 +251,7 @@ struct RoomArray {
     }
 
     Room* getRoom(int room_num) {
-        for (auto room : rooms) {
+        for (auto& room : rooms) {
             if (room.number == room_num) {
                 return &room;
             }
