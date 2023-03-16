@@ -55,6 +55,14 @@ public:
     Response callback(const Request& request) override;
 };
 
+class ViewRoomsInfoHandler : public HotelHandler {
+public:
+    ViewRoomsInfoHandler(Hotel* hotel)
+        : HotelHandler(hotel) {}
+
+    Response callback(const Request& request) override;
+};
+
 class BookingHandler : public HotelHandler {
 public:
     BookingHandler(Hotel* hotel)

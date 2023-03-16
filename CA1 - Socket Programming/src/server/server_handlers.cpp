@@ -18,6 +18,9 @@ Response ViewUserInfoHandler::callback(const Request& request) {
 Response ViewAllUsersHandler::callback(const Request& request) {
 }
 
+Response ViewRoomsInfoHandler::callback(const Request& request) {
+}
+
 Response BookingHandler::callback(const Request& request) {
 }
 
@@ -34,6 +37,9 @@ Response AdminEditInformationHandler::callback(const Request& request) {
 }
 
 Response EditInformationHandler::callback(const Request& request) {
+}
+
+Response AdminEditInformationHandler::callback(const Request& request) {
 }
 
 Response LeavingRoomHandler::callback(const Request& request) {
