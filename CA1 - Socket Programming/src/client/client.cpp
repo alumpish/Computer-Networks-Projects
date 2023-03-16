@@ -129,8 +129,8 @@ void Client::booking(const std::vector<std::string>& input_args) {
     std::string check_out_date = input_args[3];
 
     json body = {};
-    body["room_num"] = room_num;
-    body["num_of_beds"] = num_of_beds;
+    body["room_num"] = std::stoi(room_num);
+    body["num_of_beds"] = std::stoi(num_of_beds);
     body["check_in_date"] = check_in_date;
     body["check_out_date"] = check_out_date;
 
@@ -374,5 +374,6 @@ void Client::setupOrdinaryUserCmds() {
 }
 
 void Client::dummyCommandNode(const std::vector<std::string>& input_args) {
+    std::cout << cmd_handler_.currentLevelCommandsToString();
     cmd_handler_.runSingleCommand();
 }
