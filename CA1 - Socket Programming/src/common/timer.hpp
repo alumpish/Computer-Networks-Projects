@@ -8,13 +8,10 @@
 
 class Timer {
 public:
-    Timer(const std::string& date) {
-        parse(date, m_currentDate);
-    }
-
+    Timer(const std::string& date);
     void addDays(int days);
-    // void printCurrentDate() const;
     date::sys_days getCurrentDate() const;
+    // void printCurrentDate() const;
 
 private:
     date::sys_days m_currentDate;

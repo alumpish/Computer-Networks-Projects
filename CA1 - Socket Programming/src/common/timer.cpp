@@ -1,5 +1,8 @@
 #include "timer.hpp"
 
+Timer::Timer(const std::string& date) {
+    parse(date, m_currentDate);
+}
 
 void Timer::addDays(int days) {
     m_currentDate += date::days(days);

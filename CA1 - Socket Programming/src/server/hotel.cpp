@@ -1,7 +1,6 @@
 #include "hotel.hpp"
 
-void Hotel::Hotel(date::sys_days cur_time) {
-    timer_ = Timer(cur_time);
+Hotel::Hotel(const std::string& cur_date) : timer_(cur_date) {
     readUsers();
     readRooms();
 }
@@ -47,24 +46,25 @@ void Hotel::addUser(User user) {
     users_.addUser(user);
 }
 
-bool Hotel::isCredentialsValid(const std::string& session_id, const std::string& username, const std::string& password) {
+void Hotel::signIn(const std::string& session_id, const std::string& username, const std::string& password) {
     for (auto user : users_.users) {
         if (user.username == username && user.password == password) {
             addSession(session_id, username);
-            return true;
+            // throw Err230();
         }
     }
-    return false;
+    throw Err430();
 }
 
 std::string Hotel::getUsername(const std::string& session_id) {
     return sessions_un_map_[session_id];
 }
 
-json Hotel::getUserInfo(const std::string& username) {
-    json user_json;
+json Hotel::getUserInfo(const std::string& session_id) {
+    std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
 
+    json user_json;
     user_json["id"] = user->id;
     user_json["user"] = user->username;
     user_json["password"] = user->password;
@@ -75,7 +75,13 @@ json Hotel::getUserInfo(const std::string& username) {
     return user_json;
 }
 
-json Hotel::getAllUsersInfo() {
+json Hotel::getAllUsersInfo(const std::string& session_id) {
+    std::string username = getUsername(session_id);
+
+    if (users_.getUser(username)->is_admin == false) {
+        throw Err403();
+    }
+
     json users_json;
     for (auto user : users_.users) {
         json user_json;
@@ -90,7 +96,9 @@ json Hotel::getAllUsersInfo() {
     return users_json;
 }
 
-json Hotel::getAllRoomsInfo(date::sys_days cur_time) {
+json Hotel::getAllRoomsInfo(const std::string& session_id, date::sys_days cur_time) {
+    std::string username = getUsername(session_id);
+
     json rooms_json;
     for (auto room : rooms_.rooms) {
         json room_json;
@@ -100,16 +108,18 @@ json Hotel::getAllRoomsInfo(date::sys_days cur_time) {
         room_json["maxCapacity"] = room.max_capacity;
         room_json["capacity"] = room.getCapacity(cur_time);
 
-        json reservations_json;
-        for (auto reservation : room.reservations) {
-            json reservation_json;
-            reservation_json["id"] = reservation.user_id;
-            reservation_json["numOfBeds"] = reservation.num_of_beds;
-            // todo: add reserve_date and check_out_date
-
-            reservations_json.push_back(reservation_json);
+        if (users_.getUser(username)->is_admin) {
+            json reservations_json;
+            for (auto reservation : room.reservations) {
+                json reservation_json;
+                reservation_json["id"] = reservation.user_id;
+                reservation_json["numOfBeds"] = reservation.num_of_beds;
+                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
+                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
+                reservations_json.push_back(reservation_json);
+            }
+            room_json["users"] = reservations_json;
         }
-        room_json["users"] = reservations_json;
 
         rooms_json.push_back(room_json);
     }
@@ -121,10 +131,10 @@ void Hotel::bookRoom(const std::string& username, int room_num, int num_of_beds,
     Room* room = rooms_.getRoom(room_num);
 
     if (user->purse < room->price * num_of_beds) {
-        throw Err401();
+        throw Err108();
     }
     if (room->isAvailable(num_of_beds, check_in_date, check_out_date) == false) {
-        throw Err401();
+        throw Err109();
     }
 
     user->purse -= room->price * num_of_beds;
@@ -155,22 +165,31 @@ void Hotel::cancelReservation(const std::string& username, int room_num, int cou
     User* user = users_.getUser(username);
     Room* room = rooms_.getRoom(room_num);
 
-    room->removeReservation(user->id, count);
-    // todo if removing sussesful
+    room->removeReservation(user->id, count, timer_.getCurrentDate());
     user->purse += (room->price * count) / 2;
+    // throw Err110();
 }
 
-void Hotel::editInformation(const std::string& username, const std::string& password, const std::string& phone_number, const std::string& address) {
+void Hotel::editInformation(const std::string& session_id, const std::string& password, const std::string& phone_number, const std::string& address) {
+    std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
     user->editInformation(password, phone_number, address);
+    // throw Err312();
 }
 
-void Hotel::editInformation(const std::string& username, const std::string& password) {
+void Hotel::editInformation(const std::string& session_id, const std::string& password) {
+    std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
     user->editInformation(password);
+    // throw Err312();
 }
 
-void Hotel::passDay(int days) {
+void Hotel::passDay(const std::string& session_id, int days) {
+    std::string username = getUsername(session_id);
+    if (users_.getUser(username)->is_admin == false) {
+        throw Err403();
+    }
+
     timer_.addDays(days);
     updateRooms(timer_.getCurrentDate());
 }
@@ -181,21 +200,38 @@ void Hotel::updateRooms(date::sys_days cur_date) {
     }
 }
 
-void Hotel::leaveRoom(const std::string& username, int room_num) {
+void Hotel::leaveRoom(const std::string& session_id, int room_num) {
+    std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
     Room* room = rooms_.getRoom(room_num);
 
-    room->leaveRoom(user->id);
+    room->leaveRoom(user, timer_.getCurrentDate());
+    // throw Err413();
 }
 
-void Hotel::addRoom(int room_num, int max_capacity, int price) {
+void Hotel::addRoom(const std::string& session_id, int room_num, int max_capacity, int price) {
+    std::string username = getUsername(session_id);
+    if (users_.getUser(username)->is_admin == false) {
+        throw Err403();
+    }
     rooms_.addRoom(room_num, max_capacity, price);
+    // throw Err104();
 }
 
-void Hotel::modifyRoom(int room_num, int max_capacity, int price) {
+void Hotel::modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price) {
+    std::string username = getUsername(session_id);
+    if (users_.getUser(username)->is_admin == false) {
+        throw Err403();
+    }
     rooms_.modifyRoom(room_num, max_capacity, price);
+    // throw Err105();
 }
 
-void Hotel::removeRoom(int room_num) {
+void Hotel::removeRoom(const std::string& session_id, int room_num) {
+    std::string username = getUsername(session_id);
+    if (users_.getUser(username)->is_admin == false) {
+        throw Err403();
+    }
     rooms_.removeRoom(room_num);
+    // throw Err106();
 }

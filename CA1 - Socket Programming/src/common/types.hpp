@@ -34,12 +34,12 @@ struct User {
     void editInformation(std::string password, std::string phone_number, std::string address) {
         if (!password.empty()) {
             if (!isPasswordValid(password))
-                throw Err401();
+                throw Err503();
             this->password = password;
         }
         if (!phone_number.empty()) {
             if (!isNumber(phone_number) || phone_number.length() != 11 || phone_number[0] != '0' || phone_number[1] != '9') {
-                throw Err401();
+                throw Err503();
             }
             this->phone_number = phone_number;
         }
@@ -51,7 +51,7 @@ struct User {
     void editInformation(std::string password) {
         if (!password.empty()) {
             if (!isPasswordValid(password))
-                throw Err401();
+                throw Err503();
 
             this->password = password;
         }
@@ -142,14 +142,14 @@ struct Room {
         return (capacity >= num_of_beds) ? true : false;
     }
 
-    void removeReservation(int user_id, int count, data::sys_days cur_date) {
+    void removeReservation(int user_id, int count, date::sys_days cur_date) {
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations[i].user_id == user_id) {
                 if (cur_date >= reservations[i].check_in_date) {
-                    throw Err401();
+                    throw Err102();
                 }
                 if (count > reservations[i].num_of_beds) {
-                    throw Err401();
+                    throw Err102();
                 }
                 if (count == reservations[i].num_of_beds) {
                     reservations.erase(reservations.begin() + i);
@@ -159,10 +159,10 @@ struct Room {
                 return;
             }
         }
-        throw Err401();
+        throw Err102();
     }
 
-    void updateReservation(date::sys_days cur_date) {
+    void updateReservations(date::sys_days cur_date) {
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations[i].check_out_date <= cur_date) {
                 reservations.erase(reservations.begin() + i);
@@ -170,17 +170,26 @@ struct Room {
         }
     }
 
-    void leaveRoom(int user_id, date::sys_days cur_date) {
-        for (int i = 0; i < reservations.size(); i++) {
-            if (reservations[i].user_id == user_id) {
-                if (cur_date < reservations[i].check_out_date) {
-                    throw Err401();
-                }
+    void leaveRoom(User* user, date::sys_days cur_date) {
+        if (user->is_admin) {
+            for (int i = 0; i < reservations.size(); i++) {
+                if (cur_date < reservations[i].check_in_date)
+                    continue;
                 reservations.erase(reservations.begin() + i);
-                return;
             }
+            return;
         }
-        throw Err401();
+        else {
+            for (int i = 0; i < reservations.size(); i++) {
+                if (reservations[i].user_id == user->id) {
+                    if (cur_date < reservations[i].check_in_date)
+                        throw Err102();
+                    reservations.erase(reservations.begin() + i);
+                    return;
+                }
+            }
+            throw Err102();
+        }
     }
 };
 
@@ -194,11 +203,11 @@ struct RoomArray {
     void addRoom(int room_num, int max_capacity, int price) {
         for (auto room : rooms) {
             if (room.number == room_num) {
-                throw Err401();
+                throw Err111();
             }
         }
         Room new_room(room_num, false, price, max_capacity);
-        rooms.push_back(new_room);  
+        rooms.push_back(new_room);
     }
 
     void modifyRoom(int room_num, int max_capacity, int price) {
@@ -228,7 +237,7 @@ struct RoomArray {
                 return &room;
             }
         }
-        throw Err401();
+        throw Err101();
     }
 };
 
