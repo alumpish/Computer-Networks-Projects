@@ -8,10 +8,11 @@
 
 class Timer {
 public:
+    Timer();
     Timer(const std::string& date);
     void addDays(int days);
     date::sys_days getCurrentDate() const;
-    // void printCurrentDate() const;
+    void setTime(const std::string& date);
 
 private:
     date::sys_days m_currentDate;

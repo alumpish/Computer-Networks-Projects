@@ -6,12 +6,12 @@
 
 #include "date.h"
 #include "json.hpp"
-#include "types.hpp"
 #include "timer.hpp"
+#include "types.hpp"
 
 class Hotel {
 public:
-    Hotel(const std::string& cur_date);
+    Hotel(Timer& timer);
     void readUsers();
     void readRooms();
     bool isUserExist(const std::string& username);
@@ -37,9 +37,8 @@ public:
     void logOut(const std::string& session_id);
     User::Type getUserType(const std::string& session_id);
 
-
 private:
-    Timer timer_;
+    Timer& timer_;
     UserArray users_;
     RoomArray rooms_;
     std::unordered_map<std::string, std::string> sessions_un_map_;
