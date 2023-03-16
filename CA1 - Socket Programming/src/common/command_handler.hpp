@@ -56,6 +56,8 @@ private:
     struct CommandNode {
         std::unordered_map<std::string, CommandHandler::CommandNode*> sub_nodes;
         CommandHandler::Command* current_command;
+
+        ~CommandNode();
     } *root_, *init_root_;
 };
 

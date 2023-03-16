@@ -72,5 +72,17 @@ CommandHandler CommandHandler::operator[](const std::string& cmd_name) {
     return result;
 }
 
+void CommandHandler::deleteCommands() {
+    for (auto& sub_nodes_pair : init_root_->sub_nodes)
+        delete sub_nodes_pair.second;
+}
+
 CommandHandler::~CommandHandler() {
+    delete init_root_;
+}
+
+CommandHandler::CommandNode::~CommandNode() {
+    delete current_command;
+    for (auto& sub_nodes_pair : sub_nodes)
+        delete sub_nodes_pair.second;
 }
