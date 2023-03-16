@@ -177,4 +177,13 @@ protected:
     Response handleResponse(const Request& request) override;
 };
 
+class GetUserTypeHandler : public HotelHandler {
+public:
+    GetUserTypeHandler(Hotel* hotel)
+        : HotelHandler(hotel) {}
+
+protected:
+    Response handleResponse(const Request& request) override;
+};
+
 #endif

@@ -25,6 +25,16 @@ Response SignupUsernameHandler::handleResponse(const Request& request) {
 }
 
 Response SignupUserInfoHandler::handleResponse(const Request& request) {
+    const std::string& session_id = request.getSessionID();
+
+    json req_body = json::parse(request.getBody());
+    std::string password = req_body["password"];
+    int purse = req_body["purse"];
+    std::string phone_number = req_body["phone"];
+    std::string address = req_body["address"];
+
+    hotel_->signUp(session_id, password, purse, phone_number, address);
+    return response231();
 }
 
 Response SigninHandler::handleResponse(const Request& request) {
@@ -226,4 +236,18 @@ Response RemoveRoomHandler::handleResponse(const Request& request) {
 }
 
 Response LogoutHandler::handleResponse(const Request& request) {
+}
+
+Response GetUserTypeHandler::handleResponse(const Request& request) {
+    const std::string session_id = request.getSessionID();
+
+    User::Type user_type = hotel_->getUserType(session_id);
+    
+    Response result;
+    if (user_type == User::Type::ordinary)
+        result.setBody("ordinary_user");
+    else
+        result.setBody("admin");
+
+    return result;
 }

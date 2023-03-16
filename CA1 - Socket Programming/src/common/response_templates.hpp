@@ -17,4 +17,11 @@ Response response230() {
     return result;
 }
 
+Response response231() {
+    Response result;
+    result.setBody("User successfully signed up.");
+    result.setStatus(231);
+    return result;
+}
+
 #endif

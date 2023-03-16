@@ -75,7 +75,7 @@ void Client::signupUsername(const std::vector<std::string>& input_args) {
 void Client::signupUserInfo(const std::vector<std::string>& input_args) {
     json req_body = {};
     req_body["password"] = input_args[0];
-    req_body["purse"] = input_args[1];
+    req_body["purse"] = std::stoi(input_args[1]);
     req_body["phone"] = input_args[2];
     req_body["address"] = input_args[3];
 
@@ -243,7 +243,7 @@ void Client::setUserType() {
     sendRequest(Consts::Paths::USER_TYPE, "");
 
     Response response = Response(connector_.rcvMessage());
-    std::string type = json::parse(response.getBody())["type"];
+    std::string type = response.getBody();
 
     if (type == "ordinary_user")
         user_type_ = UserType::ordinary;

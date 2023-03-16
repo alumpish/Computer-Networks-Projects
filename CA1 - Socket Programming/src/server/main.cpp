@@ -24,6 +24,7 @@ void setupServerHandlers(Server& server, Hotel* hotel) {
     server.addHandler(new ModifyRoomHandler(hotel), MODIFY_ROOM);
     server.addHandler(new RemoveRoomHandler(hotel), REMOVE_ROOM);
     server.addHandler(new LogoutHandler(hotel), LOGOUT);
+    server.addHandler(new GetUserTypeHandler(hotel), USER_TYPE);
 }
 
 int main() {

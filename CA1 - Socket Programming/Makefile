@@ -5,7 +5,7 @@ PROJECT_PATH := $(patsubst %/,%,$(dir $(mkfile_path)))
 CXX:= g++
 
 # compile flags
-CXXFLAGS := -I $(PROJECT_PATH)/src/common -I $(PROJECT_PATH)/src/lib
+CXXFLAGS := -g -I $(PROJECT_PATH)/src/common -I $(PROJECT_PATH)/src/lib
 OBJCXXFLAGS := $(CXXFLAGS) -c
 
 # target macros
