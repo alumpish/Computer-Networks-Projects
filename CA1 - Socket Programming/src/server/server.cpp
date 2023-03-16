@@ -91,7 +91,16 @@ void Server::handleIncomingRequest(Connector::Event event) {
     if (event.type != Connector::Event::EventType::client_req)
         return;
 
-    std::string request_string = connector_.rcvMessage(event.sock_fd);
+    std::string request_string;
+    try {
+        request_string = connector_.rcvMessage(event.sock_fd);
+    }
+    catch (...) {
+        connector_.removeConnection(event.sock_fd);
+        logger_.info("Connection closed on socket " + std::to_string(event.sock_fd) + ".");
+        return;
+    }
+
     Request req(request_string);
 
     logger_.info("Incoming request: ");

@@ -23,6 +23,7 @@ public:
     std::string rcvMessage(int sock_fd);
     void sendMessage(int sock_fd, const std::string& msg);
     int acceptClient();
+    void removeConnection(int socket_fd);
 
     Connector::Event pollForEvent();
 

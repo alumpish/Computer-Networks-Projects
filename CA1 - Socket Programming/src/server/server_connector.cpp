@@ -6,7 +6,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "exceptions.hpp"
 
@@ -71,6 +73,17 @@ int Connector::acceptClient() {
     FD_SET(client_fd, &fds_.master_fds_set);
     fds_.max_fd = std::max(fds_.max_fd, client_fd);
     return client_fd;
+}
+
+void Connector::removeConnection(int sock_fd) {
+    for (auto& client : fds_.client_fds)
+        if (client == sock_fd)
+            client = -1;
+
+    if (sock_fd == fds_.max_fd)
+        fds_.max_fd = *std::max_element(fds_.client_fds.begin(), fds_.client_fds.end());
+
+    close(sock_fd);
 }
 
 Connector::Event Connector::pollForEvent() {
