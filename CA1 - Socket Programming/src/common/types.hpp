@@ -115,7 +115,9 @@ struct UserArray {
             }
             users_json.push_back(user_json);
         }
-        return users_json;
+        json final;
+        final["users"] = users_json;
+        return final;
     }
 };
 
@@ -290,7 +292,6 @@ struct RoomArray {
             room_json["price"] = room.price;
             room_json["maxCapacity"] = room.max_capacity;
             room_json["capacity"] = room.getCapacity(cur_date);
-            rooms_json.push_back(room_json);
 
             json reservations_json;
             for (auto reservation : room.reservations) {
@@ -301,8 +302,12 @@ struct RoomArray {
                 reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
+            room_json["reservations"] = reservations_json;
+            rooms_json.push_back(room_json);
         }
-        return rooms_json;
+        json final;
+        final["rooms"] = rooms_json;
+        return final;
     }
 };
 
