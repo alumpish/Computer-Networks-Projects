@@ -50,7 +50,7 @@ void Hotel::signIn(const std::string& session_id, const std::string& username, c
     for (auto user : users_.users) {
         if (user.username == username && user.password == password) {
             addSession(session_id, username);
-            // throw Err230();
+            return;
         }
     }
     throw Err430();
@@ -68,7 +68,12 @@ json Hotel::getUserInfo(const std::string& session_id) {
     user_json["id"] = user->id;
     user_json["user"] = user->username;
     user_json["password"] = user->password;
-    user_json["admin"] = user->is_admin;
+
+    if (user->type == User::Type::admin)
+        user_json["type"] = "admin";
+    else
+        user_json["type"] = "ordinary";
+
     user_json["purse"] = user->purse;
     user_json["phoneNumber"] = user->phone_number;
     user_json["address"] = user->address;
@@ -78,7 +83,7 @@ json Hotel::getUserInfo(const std::string& session_id) {
 json Hotel::getAllUsersInfo(const std::string& session_id) {
     std::string username = getUsername(session_id);
 
-    if (users_.getUser(username)->is_admin == false) {
+    if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
 
@@ -87,7 +92,12 @@ json Hotel::getAllUsersInfo(const std::string& session_id) {
         json user_json;
         user_json["id"] = user.id;
         user_json["username"] = user.username;
-        user_json["admin"] = user.is_admin;
+
+        if (user.type == User::Type::admin)
+            user_json["type"] = "admin";
+        else
+            user_json["type"] = "ordinary";
+
         user_json["purse"] = user.purse;
         user_json["phoneNumber"] = user.phone_number;
         user_json["address"] = user.address;
@@ -108,7 +118,7 @@ json Hotel::getAllRoomsInfo(const std::string& session_id) {
         room_json["maxCapacity"] = room.max_capacity;
         room_json["capacity"] = room.getCapacity(timer_.getCurrentDate());
 
-        if (users_.getUser(username)->is_admin) {
+        if (users_.getUser(username)->type == User::Type::admin) {
             json reservations_json;
             for (auto reservation : room.reservations) {
                 json reservation_json;
@@ -167,26 +177,26 @@ void Hotel::cancelReservation(const std::string& username, int room_num, int cou
 
     room->removeReservation(user->id, count, timer_.getCurrentDate());
     user->purse += (room->price * count) / 2;
-    // throw Err110();
+    return;
 }
 
 void Hotel::editInformation(const std::string& session_id, const std::string& password, const std::string& phone_number, const std::string& address) {
     std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
     user->editInformation(password, phone_number, address);
-    // throw Err312();
+    return;
 }
 
 void Hotel::editInformation(const std::string& session_id, const std::string& password) {
     std::string username = getUsername(session_id);
     User* user = users_.getUser(username);
     user->editInformation(password);
-    // throw Err312();
+    return;
 }
 
 void Hotel::passDay(const std::string& session_id, int days) {
     std::string username = getUsername(session_id);
-    if (users_.getUser(username)->is_admin == false) {
+    if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
 
@@ -206,32 +216,37 @@ void Hotel::leaveRoom(const std::string& session_id, int room_num) {
     Room* room = rooms_.getRoom(room_num);
 
     room->leaveRoom(user, timer_.getCurrentDate());
-    // throw Err413();
+    return;
 }
 
 void Hotel::addRoom(const std::string& session_id, int room_num, int max_capacity, int price) {
     std::string username = getUsername(session_id);
-    if (users_.getUser(username)->is_admin == false) {
+    if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
     rooms_.addRoom(room_num, max_capacity, price);
-    // throw Err104();
+    return;
 }
 
 void Hotel::modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price) {
     std::string username = getUsername(session_id);
-    if (users_.getUser(username)->is_admin == false) {
+    if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
     rooms_.modifyRoom(room_num, max_capacity, price);
-    // throw Err105();
+    return;
 }
 
 void Hotel::removeRoom(const std::string& session_id, int room_num) {
     std::string username = getUsername(session_id);
-    if (users_.getUser(username)->is_admin == false) {
+    if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
     rooms_.removeRoom(room_num);
-    // throw Err106();
+    return;
+}
+
+User::Type Hotel::getUserType(const std::string& session_id) {
+    std::string username = getUsername(session_id);
+    return users_.getUser(username)->type;
 }
