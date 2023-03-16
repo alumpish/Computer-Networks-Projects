@@ -19,7 +19,7 @@ This is an abstract class that should only be used through inheriting other hand
 
 ### `Important Types`
 
-- `User`
+`User`
 
 The struct has several member variables, including an integer ID, a username string, a password string, a boolean indicating whether the user is an administrator, an integer for the user's purse (perhaps representing their balance or account funds), a phone number string, and an address string.
 
@@ -44,7 +44,17 @@ struct User {
 }
 ```
 
-- `Reservation`
+### Important Methods
+
+- editInformation : This function is overloaded for ordinary and admin user.
+
+```cpp
+void editInformation(std::string password, std::string phone_number, std::string address);
+
+void editInformation(std::string password);
+```
+
+`Reservation`
 
 Reservation struct represents a user reservation for a certain number of beds during a specific time period, specified by check_in_date and check_out_date. It has two constructors, one taking the reservation details as individual parameters and the other taking a JSON object as input. The struct has four member variables: user_id, num_of_beds, check_in_date, and check_out_date
 
@@ -60,9 +70,80 @@ struct Reservation {
 };
 ```
 
-<br/>
-<br/>
+- `Room`
 
+struct called Room that represents a hotel room with member variables for number, status, price, max_capacity, and a vector reservations. The struct has two constructors, one that takes four arguments and initializes member variables and another that takes a json object and extracts its values to initialize member variables and reservations vector.
+
+```cpp
+struct Room {
+   Room(int number, bool status, int price, int max_capacity);
+   Room(json room_json);
+   int number;
+   bool status;
+   int price;
+   int max_capacity;
+   std::vector<Reservation> reservations;
+}
+```
+
+### Important Methods
+
+- isAvailable : Check if there are sufficient bed in given room and date.
+
+```cpp
+bool isAvailable(int num_of_beds, date::sys_days check_in_date, date::sys_days check_out_date) {
+    int capacity = max_capacity;
+    for (auto reservation : reservations) {
+        if (reservation.check_in_date <= check_in_date && check_in_date < reservation.check_out_date ||
+            reservation.check_in_date < check_out_date && check_out_date <= reservation.check_out_date ||
+            check_in_date <= reservation.check_in_date && reservation.check_out_date <= check_out_date) {
+            capacity -= reservation.num_of_beds;
+        }
+    }
+    return (capacity >= num_of_beds) ? true : false;
+}
+```
+
+- updateReservations : Remove reservations that their out date is passed.
+
+```cpp
+void updateReservations(date::sys_days cur_date) {
+    for (int i = 0; i < reservations.size(); i++) {
+        if (reservations[i].check_out_date <= cur_date) {
+            reservations.erase(reservations.begin() + i);
+        }
+    }
+}
+```
+
+- leaveRoom : This method is used to remove a current reservation from a room by admin or ordinary user.
+
+```cpp
+void leaveRoom(User* user, date::sys_days cur_date) {
+        if (user->type == User::Type::admin) {
+            for (int i = 0; i < reservations.size(); i++) {
+                if (cur_date < reservations[i].check_in_date)
+                    continue;
+                reservations.erase(reservations.begin() + i);
+            }
+            return;
+        }
+        else {
+            for (int i = 0; i < reservations.size(); i++) {
+                if (reservations[i].user_id == user->id) {
+                    if (cur_date < reservations[i].check_in_date)
+                        throw Err102();
+                    reservations.erase(reservations.begin() + i);
+                    return;
+                }
+            }
+            throw Err102();
+        }
+    }
+```
+
+<br/>
+<br/>
 
 ### `Hotel Class`
 
