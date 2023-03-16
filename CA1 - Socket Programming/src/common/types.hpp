@@ -12,21 +12,40 @@
 using json = nlohmann::json;
 
 struct User {
-    User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) : username(username), password(password), is_admin(is_admin), purse(purse), phone_number(phone_number), address(address) {}
+    User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) {
+        this->username = username;
+        this->password = password;
+        if (is_admin)
+            type = User::Type::admin;
+        else
+            type = User::Type::ordinary;
+        this->purse = purse;
+        this->phone_number = phone_number;
+        this->address = address;
+    }
     User(json user_json) {
         id = user_json["id"];
         username = user_json["user"];
         password = user_json["password"];
-        is_admin = user_json["admin"];
+
+        if (user_json["admin"])
+            type = User::Type::admin;
+        else
+            type = User::Type::ordinary;
+
         purse = user_json["purse"];
         phone_number = user_json["phoneNumber"];
         address = user_json["address"];
     }
 
+    enum class Type {
+        admin,
+        ordinary
+    } type;
+
     int id;
     std::string username;
     std::string password;
-    bool is_admin;
     int purse;
     std::string phone_number;
     std::string address;
@@ -171,7 +190,7 @@ struct Room {
     }
 
     void leaveRoom(User* user, date::sys_days cur_date) {
-        if (user->is_admin) {
+        if (user->type == User::Type::admin) {
             for (int i = 0; i < reservations.size(); i++) {
                 if (cur_date < reservations[i].check_in_date)
                     continue;

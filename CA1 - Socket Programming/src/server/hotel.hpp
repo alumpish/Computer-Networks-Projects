@@ -34,6 +34,7 @@ public:
     void addRoom(const std::string& session_id, int room_num, int max_capacity, int price);
     void modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price);
     void removeRoom(const std::string& session_id, int room_num);
+    User::Type getUserType(const std::string& session_id);
 
 
 private:
