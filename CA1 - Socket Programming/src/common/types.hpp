@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "date.h"
 #include "exceptions.hpp"
@@ -40,7 +41,7 @@ struct User {
     }
 
     std::string toString() const {
-        std::ostream os;
+        std::ostringstream os;
         os << "id: " << id << std::endl;
         os << "username: " << username << std::endl;
         os << "purse: " << purse << std::endl;
@@ -146,7 +147,7 @@ struct Reservation {
     }
 
     std::string toString() const {
-        std::ostream os;
+        std::ostringstream os;
         os << "user_id: " << user_id << std::endl;
         os << "num_of_beds: " << num_of_beds << std::endl;
         os << "check_in_date: " << date::format("%d-%m-%Y", check_in_date) << std::endl;
@@ -255,7 +256,7 @@ struct Room {
     }
 
     std::string toString() const {
-        std::ostream os;
+        std::ostringstream  os;
         os << "number: " << number << std::endl;
         os << "status: " << status << std::endl;
         os << "price: " << price << std::endl;
