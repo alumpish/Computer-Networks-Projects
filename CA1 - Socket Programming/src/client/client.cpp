@@ -208,9 +208,9 @@ void Client::editInformation(const std::vector<std::string>& input_args) {
 
 void Client::leavingRoom(const std::vector<std::string>& input_args) {
     json req_body = {};
-    req_body["room"] = input_args[0];
+    req_body["room"] = std::stoi(input_args[0]);
     if (user_type_ == UserType::admin)
-        req_body["capacity"] = input_args[1];
+        req_body["capacity"] = std::stoi(input_args[1]);
 
     if (user_type_ == UserType::admin)
         sendRequest(Consts::Paths::ADMIN_LEAVING_ROOM, req_body.dump());
