@@ -51,28 +51,6 @@ This is an abstract class that should only be used through inheriting other hand
 
 <br/>
 
-## `ServerConnector Class`
-
-The `ServerConnector` class is responsible for connecting to the server and sending and receiving data. It has a `connect` method that takes the server's IP address and port number as arguments and connects to the server. It also has a `send` method that takes a string as an argument and sends it to the server. The `receive` method receives data from the server and returns it as a string.
-
-Main method of this class is `pollForEvent` that is responsible for receiving data from client using select system call.
-
-```cpp
-Connector::Event Connector::pollForEvent() {
-    fd_set working_set = fds_.master_fds_set;
-    select(fds_.max_fd + 1, &working_set, nullptr, nullptr, nullptr);
-    if (FD_ISSET(STDIN_FILENO, &working_set))
-        return {Connector::Event::EventType::stdin_cmd, STDIN_FILENO};
-    if (FD_ISSET(fds_.server_fd, &working_set))
-        return {Connector::Event::EventType::incoming_client, fds_.server_fd};
-    for (const auto& cur_client_fd : fds_.client_fds)
-        if (FD_ISSET(cur_client_fd, &working_set))
-            return {Connector::Event::EventType::client_req, cur_client_fd};
-}
-```
-
-<br/>
-
 ## `Structs`
 
 Most of logic is implemented in structs. There are 5 main structs:
