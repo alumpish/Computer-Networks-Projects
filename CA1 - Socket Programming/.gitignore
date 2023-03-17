@@ -36,4 +36,4 @@
 
 src/server/RoomsInfo.json
 src/server/UsersInfo.json
-src/server/log.txt
+*.txt
