@@ -30,7 +30,7 @@ public:
     void editInformation(const std::string& session_id, const std::string& password, const std::string& phone_number, const std::string& address);
     void editInformation(const std::string& session_id, const std::string& password);
     void passDay(const std::string& session_id, int days);
-    void updateRooms(date::sys_days cur_date);
+    void updateRooms();
     void leaveRoom(const std::string& session_id, int room_num);
     void addRoom(const std::string& session_id, int room_num, int max_capacity, int price);
     void modifyRoom(const std::string& session_id, int room_num, int max_capacity, int price);

@@ -3,6 +3,7 @@
 Hotel::Hotel(Timer& timer) : timer_(timer) {
     readUsers();
     readRooms();
+    updateRooms();
 }
 
 Hotel::~Hotel() {
@@ -48,11 +49,11 @@ void Hotel::removeSession(const std::string& session_id) {
 }
 
 void Hotel::signUp(const std::string& session_id, const std::string& password, int purse, const std::string& phone_number, const std::string& address) {
-    if (!isPasswordValid(password) || !isNumber(phone_number)){
+    if (!isPasswordValid(password) || !isNumber(phone_number)) {
         removeSession(session_id);
         throw Err503();
     }
-    
+
     User new_user(getUsername(session_id), password, false, purse, phone_number, address);
     users_.addUser(new_user);
 }
@@ -212,12 +213,12 @@ void Hotel::passDay(const std::string& session_id, int days) {
     }
 
     timer_.addDays(days);
-    updateRooms(timer_.getCurrentDate());
+    updateRooms();
 }
 
-void Hotel::updateRooms(date::sys_days cur_date) {
+void Hotel::updateRooms() {
     for (auto room : rooms_.rooms) {
-        room.updateReservations(cur_date);
+        room.updateReservations(timer_.getCurrentDate());
     }
 }
 

@@ -1,9 +1,10 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
+#include <iostream>
 
 #include "date.h"
 #include "exceptions.hpp"
@@ -227,7 +228,10 @@ struct Room {
 
     void updateReservations(date::sys_days cur_date) {
         for (int i = 0; i < reservations.size(); i++) {
+            std::cout << "1" << std::endl;
             if (reservations[i].check_out_date <= cur_date) {
+                std::cout << "0" << std::endl;
+
                 reservations.erase(reservations.begin() + i);
             }
         }
@@ -256,7 +260,7 @@ struct Room {
     }
 
     std::string toString() const {
-        std::ostringstream  os;
+        std::ostringstream os;
         os << "number: " << number << std::endl;
         os << "status: " << status << std::endl;
         os << "price: " << price << std::endl;
