@@ -320,3 +320,107 @@ The `operator[]` method returns a new `CommandHandler` object that has the `root
 The `deleteCommand`s method deallocates all the `CommandNode`objects in the tree structure.
 
 Finally, the class provides a `destructor` that deallocates the initial root object.
+
+# **How to run**
+
+In root directory:
+```bash
+make
+```
+
+<br/>
+
+### **Server**
+
+```bash
+cd src/server && ./server.out
+```
+### then:
+```bash
+initTime <date: %d-%m-%Y>
+```
+
+<br/>
+
+### **Client**
+
+```bash
+cd src/client && ./client.out
+```
+### then:
+We can signin or signup
+If signin is successful, we can see the main menu of the client.
+Else we can see the error message.
+
+![alt text](./images/scr%20(1).png)
+
+<br/>
+Command showUserInfo shows the information of the user.
+
+![alt text](./images/scr%20(2).png)
+
+<br/>
+Command showAllUsers shows the information of all users.
+if you are not admin, you can't see the information of other users and you can see the error message.
+
+![alt text](./images/scr%20(3).png)
+
+<br/>
+You can modify your information by command editUserInfo.
+If values of arguments are not valid, you can see the error message.
+
+![alt text](./images/scr%20(7).png)
+
+![alt text](./images/scr%20(5).png)
+
+<br/>
+You can go ahead in date by command pass_day.
+If you are not admin, you can't pass the day and you can see the error message.
+
+![alt text](./images/scr%20(6).png)
+
+<br/>
+
+### Rooms commands:
+
+Add a room by command add_room.
+Id room num is exist you can see the error message.
+
+![alt text](./images/scr%20(8).png)
+
+![alt text](./images/scr%20(9).png)
+
+<br/>
+
+Remove a room by command remove_room. If room num is not exist, you can see the error message.
+
+![alt text](./images/scr%20(10).png)
+
+![alt text](./images/scr%20(11).png)
+
+<br/>
+
+Leave a room by command room <room_num>.
+If room num is not exist or you are not in this room, you can see the error message.
+
+![alt text](./images/scr%20(12).png)
+
+![alt text](./images/scr%20(13).png)
+
+![alt text](./images/scr%20(14).png)
+
+<br/>
+
+### Show rooms info in ordinary user and admin.
+
+Ordinary:
+
+![alt text](./images/scr%20(15).png)
+
+<br/>
+Admin:
+
+
+![alt text](./images/scr%20(16).png)
+
+<br/>

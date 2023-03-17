@@ -126,6 +126,7 @@ void Client::viewUserInformation(const std::vector<std::string>& input_args) {
 
     std::cout << "id: " << res_body["id"] << std::endl;
     std::cout << "username: " << res_body["user"] << std::endl;
+    std::cout << "password: " << res_body["password"] << std::endl;
     if (res_body["admin"])
         std::cout << "type: admin" << std::endl;
     else {
@@ -201,16 +202,12 @@ void Client::canceling(const std::vector<std::string>& input_args) {
     logger_.info("Received response: " + reservations_response.toJSON(), false);
     json res_body = json::parse(reservations_response.getBody());
 
-    std::vector<Reservation> reservations_list;
-    for (auto& reservation : reservations_list)
-        reservations_list.push_back(Reservation(reservation));
-
-    if (reservations_list.empty())
+    if (res_body.empty())
         std::cout << "No reservation to show." << std::endl;
-    else {
-        for (const auto& reservation : reservations_list)
-            std::cout << reservation.toString() << std::endl;
-    }
+
+    for (auto reservation : res_body)
+        std::cout << Reservation(reservation).toString() << std::endl;
+
 
     cmd_handler_.runSingleCommand();
 }

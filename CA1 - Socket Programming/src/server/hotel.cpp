@@ -211,13 +211,12 @@ void Hotel::passDay(const std::string& session_id, int days) {
     if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
-
     timer_.addDays(days);
     updateRooms();
 }
 
 void Hotel::updateRooms() {
-    for (auto room : rooms_.rooms) {
+    for (auto& room : rooms_.rooms) {
         room.updateReservations(timer_.getCurrentDate());
     }
 }
