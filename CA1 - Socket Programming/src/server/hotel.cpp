@@ -82,13 +82,13 @@ json Hotel::getUserInfo(const std::string& session_id) {
     user_json["password"] = user->password;
 
     if (user->type == User::Type::admin)
-        user_json["type"] = "admin";
-    else
-        user_json["type"] = "ordinary";
-
-    user_json["purse"] = user->purse;
-    user_json["phoneNumber"] = user->phone_number;
-    user_json["address"] = user->address;
+        user_json["admin"] = true;
+    else {
+        user_json["admin"] = false;
+        user_json["purse"] = user->purse;
+        user_json["phoneNumber"] = user->phone_number;
+        user_json["address"] = user->address;
+    }
     return user_json;
 }
 
@@ -103,16 +103,16 @@ json Hotel::getAllUsersInfo(const std::string& session_id) {
     for (auto user : users_.users) {
         json user_json;
         user_json["id"] = user.id;
-        user_json["username"] = user.username;
+        user_json["user"] = user.username;
 
         if (user.type == User::Type::admin)
-            user_json["type"] = "admin";
-        else
-            user_json["type"] = "ordinary";
-
-        user_json["purse"] = user.purse;
-        user_json["phoneNumber"] = user.phone_number;
-        user_json["address"] = user.address;
+            user_json["admin"] = true;
+        else {
+            user_json["admin"] = false;
+            user_json["purse"] = user.purse;
+            user_json["phoneNumber"] = user.phone_number;
+            user_json["address"] = user.address;
+        }
         users_json.push_back(user_json);
     }
     return users_json;
@@ -254,7 +254,7 @@ void Hotel::removeRoom(const std::string& session_id, int room_num) {
     if (users_.getUser(username)->type == User::Type::ordinary) {
         throw Err403();
     }
-    rooms_.removeRoom(room_num);
+    rooms_.removeRoom(room_num, timer_.getCurrentDate());
     return;
 }
 

@@ -4,7 +4,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "date.h"
 #include "exceptions.hpp"
@@ -228,10 +227,7 @@ struct Room {
 
     void updateReservations(date::sys_days cur_date) {
         for (int i = 0; i < reservations.size(); i++) {
-            std::cout << "1" << std::endl;
             if (reservations[i].check_out_date <= cur_date) {
-                std::cout << "0" << std::endl;
-
                 reservations.erase(reservations.begin() + i);
             }
         }
@@ -291,7 +287,7 @@ struct RoomArray {
     }
 
     void modifyRoom(int room_num, int max_capacity, int price) {
-        for (auto room : rooms) {
+        for (auto& room : rooms) {
             if (room.number == room_num) {
                 room.max_capacity = max_capacity;
                 room.price = price;
@@ -301,9 +297,11 @@ struct RoomArray {
         throw Err401();
     }
 
-    void removeRoom(int room_num) {
+    void removeRoom(int room_num, date::sys_days cur_date) {
         for (int i = 0; i < rooms.size(); i++) {
             if (rooms[i].number == room_num) {
+                if (rooms[i].getCapacity(cur_date) == 0)
+                    throw Err109();
                 rooms.erase(rooms.begin() + i);
                 return;
             }

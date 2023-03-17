@@ -108,14 +108,39 @@ void Client::authenticate() {
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_USER_INFO, "");
     Response response = Response(connector_.rcvMessage());
+    json res_body = json::parse(response.getBody());
 
-    std::cout << response.getBody() << std::endl;
+    std::cout << "id: " << res_body["id"] << std::endl;
+    std::cout << "username: " << res_body["user"] << std::endl;
+    if (res_body["admin"])
+        std::cout << "type: admin" << std::endl;
+    else {
+        std::cout << "type: ordinary user" << std::endl;
+        std::cout << "purse: " << res_body["purse"] << std::endl;
+        std::cout << "phone: " << res_body["phoneNumber"] << std::endl;
+        std::cout << "address: " << res_body["address"] << std::endl;
+        std::cout << std::endl;
+    }
 }
 
 void Client::viewAllUsers(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ALL_USERS, "");
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody() << std::endl;
+    json res_body = json::parse(response.getBody());
+
+    for (json user_json : res_body) {
+        std::cout << "id: " << user_json["id"] << std::endl;
+        std::cout << "username: " << user_json["user"] << std::endl;
+        if (user_json["admin"])
+            std::cout << "type: admin" << std::endl;
+        else {
+            std::cout << "type: ordinary user" << std::endl;
+            std::cout << "purse: " << user_json["purse"] << std::endl;
+            std::cout << "phone: " << user_json["phoneNumber"] << std::endl;
+            std::cout << "address: " << user_json["address"] << std::endl;
+            std::cout << std::endl;
+        }
+    }
 }
 
 void Client::viewRoomsInformation(const std::vector<std::string>& input_args) {
