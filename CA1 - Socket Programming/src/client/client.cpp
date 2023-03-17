@@ -228,7 +228,7 @@ void Client::cancelRoom(const std::vector<std::string>& input_args) {
 
 void Client::passDay(const std::vector<std::string>& input_args) {
     json req_body = {};
-    req_body["value"] = input_args[0];
+    req_body["value"] = std::stoi(input_args[0]);
 
     sendRequest(Consts::Paths::PASS_DAY, req_body.dump());
     Response response = Response(connector_.rcvMessage());
