@@ -39,7 +39,15 @@ struct User {
         address = user_json["address"];
     }
 
-    std::string toString() const {}
+    std::string toString() const {
+        std::ostream os;
+        os << "id: " << id << std::endl;
+        os << "username: " << username << std::endl;
+        os << "purse: " << purse << std::endl;
+        os << "phone_number: " << phone_number << std::endl;
+        os << "address: " << address << std::endl;
+        return os.str();
+    }
 
     enum class Type {
         admin,
@@ -137,7 +145,14 @@ struct Reservation {
         parse(reservation_json["checkOutDate"], this->check_out_date);
     }
 
-    std::string toString() const {}
+    std::string toString() const {
+        std::ostream os;
+        os << "user_id: " << user_id << std::endl;
+        os << "num_of_beds: " << num_of_beds << std::endl;
+        os << "check_in_date: " << date::format("%d-%m-%Y", check_in_date) << std::endl;
+        os << "check_out_date: " << date::format("%d-%m-%Y", check_out_date) << std::endl;
+        return os.str();
+    }
 
     int user_id;
     int num_of_beds;
@@ -239,7 +254,18 @@ struct Room {
         }
     }
 
-    std::string toString() const {}
+    std::string toString() const {
+        std::ostream os;
+        os << "number: " << number << std::endl;
+        os << "status: " << status << std::endl;
+        os << "price: " << price << std::endl;
+        os << "max_capacity: " << max_capacity << std::endl;
+        os << "reservations: " << std::endl;
+        for (auto reservation : reservations) {
+            os << reservation.toString();
+        }
+        return os.str();
+    }
 };
 
 struct RoomArray {
