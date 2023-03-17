@@ -11,6 +11,7 @@
 #include "json.hpp"
 #include "request.hpp"
 #include "response.hpp"
+#include "types.hpp"
 
 using json = nlohmann::json;
 
@@ -107,6 +108,7 @@ void Client::authenticate() {
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_USER_INFO, "");
     Response response = Response(connector_.rcvMessage());
+
     std::cout << response.getBody() << std::endl;
 }
 
@@ -118,8 +120,20 @@ void Client::viewAllUsers(const std::vector<std::string>& input_args) {
 
 void Client::viewRoomsInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ROOMS_INFO, "");
+
     Response response = Response(connector_.rcvMessage());
-    std::cout << response.getBody() << std::endl;
+    json res_body = json::parse(response.getBody());
+
+    std::vector<Room> rooms_list;
+    for (auto& room : res_body)
+        rooms_list.push_back(Room(room));
+    if (rooms_list.empty()) {
+        std::cout << "No room to show." << std::endl;
+        return;
+    }
+
+    for (const auto& room : rooms_list)
+        std::cout << room.toString() << std::endl;
 }
 
 void Client::booking(const std::vector<std::string>& input_args) {
@@ -142,7 +156,19 @@ void Client::booking(const std::vector<std::string>& input_args) {
 void Client::canceling(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_RESERVATIONS, "");
     Response reservations_response = Response(connector_.rcvMessage());
-    std::cout << reservations_response.getBody();
+    json res_body = json::parse(reservations_response.getBody());
+
+    std::vector<Reservation> reservations_list;
+    for (auto& reservation : reservations_list)
+        reservations_list.push_back(Reservation(reservation));
+
+    if (reservations_list.empty())
+        std::cout << "No reservation to show." << std::endl;
+    else {
+        for (const auto& reservation : reservations_list)
+            std::cout << reservation.toString() << std::endl;
+    }
+
     cmd_handler_.runSingleCommand();
 }
 
