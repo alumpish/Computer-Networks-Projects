@@ -39,6 +39,8 @@ struct User {
         address = user_json["address"];
     }
 
+    std::string toString() const {}
+
     enum class Type {
         admin,
         ordinary
@@ -134,6 +136,8 @@ struct Reservation {
         parse(reservation_json["checkInDate"], this->check_in_date);
         parse(reservation_json["checkOutDate"], this->check_out_date);
     }
+
+    std::string toString() const {}
 
     int user_id;
     int num_of_beds;
@@ -234,6 +238,8 @@ struct Room {
             throw Err102();
         }
     }
+
+    std::string toString() const {}
 };
 
 struct RoomArray {
