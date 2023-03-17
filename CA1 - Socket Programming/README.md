@@ -49,7 +49,9 @@ Note that there is no method to detect if the connection is closed from the clie
 
 This is an abstract class that should only be used through inheriting other handlers from it. The abstraction is achieved by the pure virtual method `callback`; This method receives the request, processes it and returns a response.
 
-<br/>
+## Server Handlers
+
+These are the custom handlers that has overridden the proper methods from `RequestHandle`. I won't get into the details as they are obvious by their names.
 
 ## `Structs`
 
