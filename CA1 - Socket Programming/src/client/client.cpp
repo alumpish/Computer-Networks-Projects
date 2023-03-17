@@ -222,9 +222,9 @@ void Client::leavingRoom(const std::vector<std::string>& input_args) {
 
 void Client::addRoom(const std::vector<std::string>& input_args) {
     json req_body = {};
-    req_body["room_num"] = input_args[0];
-    req_body["max_capacity"] = input_args[1];
-    req_body["price"] = input_args[2];
+    req_body["room_num"] = std::stoi(input_args[0]);
+    req_body["max_capacity"] = std::stoi(input_args[1]);
+    req_body["price"] = std::stoi(input_args[2]);
 
     sendRequest(Consts::Paths::ADD_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
@@ -233,9 +233,9 @@ void Client::addRoom(const std::vector<std::string>& input_args) {
 
 void Client::modifyRoom(const std::vector<std::string>& input_args) {
     json req_body = {};
-    req_body["room_num"] = input_args[0];
-    req_body["max_capacity"] = input_args[1];
-    req_body["new_price"] = input_args[2];
+    req_body["room_num"] = std::stoi(input_args[0]);
+    req_body["max_capacity"] = std::stoi(input_args[1]);
+    req_body["new_price"] = std::stoi(input_args[2]);
 
     sendRequest(Consts::Paths::MODIFY_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
@@ -244,7 +244,7 @@ void Client::modifyRoom(const std::vector<std::string>& input_args) {
 
 void Client::removeRoom(const std::vector<std::string>& input_args) {
     json req_body = {};
-    req_body["room_num"] = input_args[0];
+    req_body["room_num"] = std::stoi(input_args[0]);
 
     sendRequest(Consts::Paths::REMOVE_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
