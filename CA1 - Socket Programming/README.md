@@ -15,9 +15,7 @@ The `Server` entity provides an interface to separate the back-end logic from co
 
 ### `Server`'s construction
 
-The constructor of server takes a config file address to read its initial information needed for the connection, and a `Timer&` to retrieve and change the system's time. The constructor's definition also contains logger's initialization and command setup.
-
-### Methods:
+The constructor of server takes a config file address to read its initial information needed for the connection, and a `Timer&` to retrieve and change the system's time. The constructor's definition also contains logger's initialization and command setup. Here's a brief description of `Server`'s methods:
 
 - `run`: This method waits for an event to occur. After that it checks what kind of event has occurred and decides which handler function to call.
 - `addHandler`: This method maps a path to its handler.
@@ -32,6 +30,20 @@ The constructor of server takes a config file address to read its initial inform
 - `exit`: same as `setTime`.
 
 <br/>
+
+## Server's `Connector`
+
+As the server's responsibilities grew, the class declaration started to get big; The `Connector`'s purpose is to wrap around server's responsibilities and provide tcp connection functionalities. Here's a brief description of `Connector`'s methods:
+
+- `rcvMessage`: This method reads the given socket and return its message.
+- `sendMessage`: This one writes the given message to the given socket.
+- `acceptClient`: This method accepts an incoming client (if possible).
+- `removeConnection`: This method removes the given client's connection. This is done in several steps; First it will remove the client's socket fd from the list. Then it will update the information needed for `select` (This includes the `max_fd` and the `master_fds_set`). In the end it'll close the socket and return to the caller.
+- `pollForEvent`: This is actually a wrapper around the `select` method. It calls the `select` on the server + clients + stdin file descriptors and returns the event type along with the file descriptor related to the event.
+
+Note that there is no method to detect if the connection is closed from the client's side. To detect this issue we must do `read` on the client's socket and see if it returns 0. This can't be done because we don't know that the socket is waiting to send EOF or is actually sending a message; So we will watch the `rcvMessage` and in case of any errors thrown, we will close the connection. This isn't the best way to do this, but it's not the worst one either.
+
+### Methods
 
 ## `RequestHandler`
 
@@ -269,7 +281,7 @@ private:
 
 <br/>
 
-### And **`main`** code of Client is like this:
+### And **`main`** code of Client is like this
 
 ```cpp
 int main() {
@@ -325,6 +337,6 @@ The `allLevelsCommandsToString` method is not yet implemented.
 
 The `operator[]` method returns a new `CommandHandler` object that has the `root_` variable set to the `CommandNode` with the provided command name.
 
-The `deleteCommand`s method deallocates all the `CommandNode `objects in the tree structure.
+The `deleteCommand`s method deallocates all the `CommandNode`objects in the tree structure.
 
 Finally, the class provides a `destructor` that deallocates the initial root object.
