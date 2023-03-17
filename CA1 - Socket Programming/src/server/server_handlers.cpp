@@ -198,7 +198,7 @@ Response ModifyRoomHandler::handleResponse(const Request& request) {
     json req_body = json::parse(request.getBody());
     int room_num = req_body["room_num"];
     int max_capacity = req_body["max_capacity"];
-    int price = req_body["price"];
+    int price = req_body["new_price"];
 
     hotel_->modifyRoom(session_id, room_num, max_capacity, price);
 
