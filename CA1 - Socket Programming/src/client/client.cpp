@@ -258,7 +258,7 @@ void Client::logout(const std::vector<std::string>& input_args) {
 
     cmd_flags_.is_logged_out = true;
     cmd_flags_.authentication_finished = false;
-    // TODO close connection
+    resetConnection();
 }
 
 void Client::terminate(const std::vector<std::string>& input_args) {
@@ -397,6 +397,13 @@ void Client::setupOrdinaryUserCmds() {
     cmd_handler_.addCommand("7", new Command({}, "Logout", bind(&Client::logout)));
 
     cmd_handler_.addCommand("8", new Command({}, "exit", bind(&Client::terminate)));
+}
+
+void Client::resetConnection() {
+    connector_.closeConnection();
+    connector_ = Connector(8000, "127.0.0.1");
+    std::string init_response = connector_.rcvMessage();
+    session_id_ = Response(init_response).getSessionID();
 }
 
 void Client::dummyCommandNode(const std::vector<std::string>& input_args) {

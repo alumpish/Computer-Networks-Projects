@@ -9,6 +9,7 @@ public:
 
     void sendMessage(const std::string& msg);
     std::string rcvMessage();
+    void closeConnection();
 
 private:
     int sock_fd_;

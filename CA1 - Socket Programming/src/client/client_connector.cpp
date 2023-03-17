@@ -56,3 +56,7 @@ std::string Connector::rcvMessage() {
     result[total_size] = '\0';
     return std::string(result);
 }
+
+void Connector::closeConnection() {
+    close(sock_fd_);
+}

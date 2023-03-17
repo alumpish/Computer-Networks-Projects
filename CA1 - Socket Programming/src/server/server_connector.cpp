@@ -83,6 +83,8 @@ void Connector::removeConnection(int sock_fd) {
     if (sock_fd == fds_.max_fd)
         fds_.max_fd = *std::max_element(fds_.client_fds.begin(), fds_.client_fds.end());
 
+    FD_CLR(sock_fd, &fds_.master_fds_set);
+
     close(sock_fd);
 }
 

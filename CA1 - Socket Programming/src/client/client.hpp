@@ -65,6 +65,7 @@ private:
     void setupCASCmds();
     void setupAdminCmds();
     void setupOrdinaryUserCmds();
+    void resetConnection();
 
     void dummyCommandNode(const std::vector<std::string>& input_args);
 };
