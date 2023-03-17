@@ -1,6 +1,8 @@
 #include "client.hpp"
+#include "timer.hpp"
 
 int main() {
-    Client client;
+    Timer timer;
+    Client client(timer);
     client.run();
 }

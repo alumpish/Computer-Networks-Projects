@@ -38,7 +38,7 @@ Server::Server(const std::string& config_file, Timer& timer)
 
     connector_ = Connector(port, host_name, max_clients);
 
-    log_file_ = std::ofstream("./log.txt");
+    log_file_ = std::ofstream("./log.txt", std::ios::app);
     logger_.setStream(&log_file_);
 
     setupCommands();

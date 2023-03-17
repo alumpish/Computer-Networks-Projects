@@ -1,5 +1,8 @@
 #include "client.hpp"
 
+#include <sys/stat.h>
+
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -9,16 +12,20 @@
 #include "command_handler.hpp"
 #include "consts.hpp"
 #include "json.hpp"
+#include "logger.hpp"
 #include "request.hpp"
 #include "response.hpp"
+#include "timer.hpp"
 #include "types.hpp"
 
 using json = nlohmann::json;
 
-Client::Client()
+Client::Client(Timer& timer)
     : cas_cmd_handler_(std::cin),
       cmd_handler_(std::cin),
-      connector_(8000, "127.0.0.1") {
+      connector_(8000, "127.0.0.1"),
+      timer_(timer),
+      logger_(timer) {
     std::string init_response = connector_.rcvMessage();
     session_id_ = Response(init_response).getSessionID();
     setupCASCmds();
@@ -38,6 +45,7 @@ void Client::run() {
             }
             catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
+                logger_.error(e.what(), false);
                 continue;
             }
             cmd_handler_.resetRoot();
@@ -59,6 +67,7 @@ void Client::signin(const std::vector<std::string>& input_args) {
     std::cout << response.getBody() << std::endl;
     if (response.getStatus() == 230)
         cmd_flags_.authentication_finished = true;
+    username_ = input_args[0];
 }
 
 void Client::signupUsername(const std::vector<std::string>& input_args) {
@@ -72,6 +81,7 @@ void Client::signupUsername(const std::vector<std::string>& input_args) {
         return;
 
     std::cout << cas_cmd_handler_.currentLevelCommandsToString();
+    username_ = input_args[0];
     cas_cmd_handler_.runSingleCommand();
 }
 
@@ -103,11 +113,15 @@ void Client::authenticate() {
     }
     setUserType();
     cmd_flags_.is_logged_out = false;
+    mkdir(username_.c_str(), 0777);
+    log_file_ = new std::ofstream(username_ + "/log.txt", std::ios::app);
+    logger_.setStream(log_file_);
 }
 
 void Client::viewUserInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_USER_INFO, "");
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     json res_body = json::parse(response.getBody());
 
     std::cout << "id: " << res_body["id"] << std::endl;
@@ -126,6 +140,7 @@ void Client::viewUserInformation(const std::vector<std::string>& input_args) {
 void Client::viewAllUsers(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ALL_USERS, "");
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     json res_body = json::parse(response.getBody());
 
     for (json user_json : res_body) {
@@ -147,6 +162,7 @@ void Client::viewRoomsInformation(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_ROOMS_INFO, "");
 
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     json res_body = json::parse(response.getBody());
 
     std::vector<Room> rooms_list;
@@ -175,12 +191,14 @@ void Client::booking(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::BOOKING, body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
 void Client::canceling(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::VIEW_RESERVATIONS, "");
     Response reservations_response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + reservations_response.toJSON(), false);
     json res_body = json::parse(reservations_response.getBody());
 
     std::vector<Reservation> reservations_list;
@@ -204,6 +222,7 @@ void Client::cancelRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::CANCEL_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -213,6 +232,7 @@ void Client::passDay(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::PASS_DAY, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -228,6 +248,7 @@ void Client::editInformation(const std::vector<std::string>& input_args) {
     else
         sendRequest(Consts::Paths::ADMIN_EDIT_INFO, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -242,6 +263,7 @@ void Client::leavingRoom(const std::vector<std::string>& input_args) {
     else
         sendRequest(Consts::Paths::LEAVING_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -253,6 +275,7 @@ void Client::addRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::ADD_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -264,6 +287,7 @@ void Client::modifyRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::MODIFY_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
@@ -273,12 +297,14 @@ void Client::removeRoom(const std::vector<std::string>& input_args) {
 
     sendRequest(Consts::Paths::REMOVE_ROOM, req_body.dump());
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 }
 
 void Client::logout(const std::vector<std::string>& input_args) {
     sendRequest(Consts::Paths::LOGOUT, "");
     Response response = Response(connector_.rcvMessage());
+    logger_.info("Received response: " + response.toJSON(), false);
     std::cout << response.getBody() << std::endl;
 
     cmd_flags_.is_logged_out = true;

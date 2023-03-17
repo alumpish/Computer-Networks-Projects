@@ -5,10 +5,12 @@
 
 #include "client_connector.hpp"
 #include "command_handler.hpp"
+#include "logger.hpp"
+#include "timer.hpp"
 
 class Client {
 public:
-    Client();
+    Client(Timer& timer);
     void run();
 
 private:
@@ -16,6 +18,11 @@ private:
     CommandHandler cmd_handler_;
     Connector connector_;
     std::string session_id_;
+
+    Logger logger_;
+    std::ofstream* log_file_;
+    Timer& timer_;
+    std::string username_;
 
     struct {
         bool is_terminated = false;
