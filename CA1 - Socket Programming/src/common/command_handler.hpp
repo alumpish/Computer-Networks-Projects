@@ -5,7 +5,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 using exec_func = std::function<void(const std::vector<std::string>&)>;
@@ -53,7 +53,7 @@ private:
     std::istream& input_stream_;
 
     struct CommandNode {
-        std::unordered_map<std::string, CommandHandler::CommandNode*> sub_nodes;
+        std::map<std::string, CommandHandler::CommandNode*> sub_nodes;
         CommandHandler::Command* current_command;
 
         ~CommandNode();
