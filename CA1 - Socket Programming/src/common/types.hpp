@@ -148,10 +148,10 @@ struct Reservation {
 
     std::string toString() const {
         std::ostringstream os;
-        os << "user_id: " << user_id << std::endl;
-        os << "num_of_beds: " << num_of_beds << std::endl;
-        os << "check_in_date: " << date::format("%d-%m-%Y", check_in_date) << std::endl;
-        os << "check_out_date: " << date::format("%d-%m-%Y", check_out_date) << std::endl;
+        os << "  user_id: " << user_id << std::endl;
+        os << "  num_of_beds: " << num_of_beds << std::endl;
+        os << "  check_in_date: " << date::format("%d-%m-%Y", check_in_date) << std::endl;
+        os << "  check_out_date: " << date::format("%d-%m-%Y", check_out_date) << std::endl;
         return os.str();
     }
 
