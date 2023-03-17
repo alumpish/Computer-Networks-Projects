@@ -45,6 +45,9 @@ Server::Server(const std::string& config_file, Timer& timer)
 }
 
 void Server::run() {
+    std::cout << cmd_handler_.currentLevelCommandsToString() << std::endl;
+    cmd_handler_.runSingleCommand();
+
     while (!exit_) {
         try {
             auto event = connector_.pollForEvent();
@@ -164,12 +167,16 @@ void Server::setupCommands() {
     };
 
     cmd_handler_.addCommand(
-        "setTime",
-        new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime)));
+        "initTime",
+        new Command({Consts::Timer::DATE_FORMAT}, "initTime <date>", bind(&Server::setTime)));
 
-    cmd_handler_.addCommand(
+    cmd_handler_["initTime"].addCommand(
         "exit",
         new Command({}, "exit", bind(&Server::exit)));
+
+    cmd_handler_["initTime"].addCommand(
+        "setTime",
+        new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime)));
 }
 
 void Server::setTime(const std::vector<std::string>& input_args) {
