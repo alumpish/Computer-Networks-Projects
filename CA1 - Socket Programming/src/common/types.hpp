@@ -168,7 +168,7 @@ struct Room {
         status = room_json["status"];
         price = room_json["price"];
         max_capacity = room_json["maxCapacity"];
-        for (auto& reservation : room_json["users"]) {
+        for (auto& reservation : room_json["reservations"]) {
             Reservation new_reservation(reservation);
             reservations.push_back(new_reservation);
         }

@@ -139,7 +139,7 @@ json Hotel::getAllRoomsInfo(const std::string& session_id) {
                 reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
-            room_json["users"] = reservations_json;
+            room_json["reservations"] = reservations_json;
         }
 
         rooms_json.push_back(room_json);
