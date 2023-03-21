@@ -6,6 +6,7 @@
 #include "client_connector.hpp"
 #include "command_handler.hpp"
 #include "logger.hpp"
+#include "response.hpp"
 #include "timer.hpp"
 
 class Client {
@@ -35,7 +36,7 @@ private:
         ordinary
     } user_type_;
 
-    void signin(const std::vector<std::string>& input_args);
+    void signIn(const std::vector<std::string>& input_args);
     void signupUsername(const std::vector<std::string>& input_args);
     void signupUserInfo(const std::vector<std::string>& input_args);
 
@@ -67,6 +68,7 @@ private:
     void terminate(const std::vector<std::string>& input_args);
 
     void sendRequest(const std::string& path, const std::string& body);
+    Response rcvResponse();
 
     void setUserType();
     void setupCASCmds();
@@ -74,6 +76,7 @@ private:
     void setupOrdinaryUserCmds();
     void resetConnection();
 
+    void runCmds();
     void dummyCommandNode(const std::vector<std::string>& input_args);
 };
 
