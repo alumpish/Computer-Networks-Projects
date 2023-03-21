@@ -18,4 +18,5 @@ SpacesBeforeTrailingComments: 1
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AlignAfterOpenBracket: BlockIndent
 ...
