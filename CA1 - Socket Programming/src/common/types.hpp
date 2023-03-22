@@ -13,17 +13,26 @@
 using json = nlohmann::json;
 
 struct User {
-    User(std::string username, std::string password, bool is_admin, int purse, std::string phone_number, std::string address) {
+    User(
+        std::string username,
+        std::string password,
+        bool is_admin,
+        int purse,
+        std::string phone_number,
+        std::string address
+    ) {
         this->username = username;
         this->password = password;
-        if (is_admin)
+        if (is_admin) {
             type = User::Type::admin;
-        else
-            type = User::Type::ordinary;
+            return;
+        }
+        type = User::Type::ordinary;
         this->purse = purse;
         this->phone_number = phone_number;
         this->address = address;
     }
+
     User(json user_json) {
         id = user_json["id"];
         username = user_json["user"];
@@ -44,10 +53,61 @@ struct User {
         std::ostringstream os;
         os << "id: " << id << std::endl;
         os << "username: " << username << std::endl;
+        os << "password: " << password << std::endl;
+        if (type == Type::admin)
+            return os.str();
         os << "purse: " << purse << std::endl;
         os << "phone_number: " << phone_number << std::endl;
         os << "address: " << address << std::endl;
         return os.str();
+    }
+
+    json toJSON() const {
+        json result;
+        result["id"] = id;
+        result["user"] = username;
+        result["password"] = password;
+        if (type == Type::admin) {
+            result["admin"] = true;
+            return result;
+        }
+        result["admin"] = false;
+        result["purse"] = purse;
+        result["phoneNumber"] = phone_number;
+        result["address"] = address;
+        return result;
+    }
+
+    json safeViewToJSON() const {
+        json result;
+        result["id"] = id;
+        result["user"] = username;
+        if (type == Type::admin) {
+            result["admin"] = true;
+            return result;
+        }
+        result["admin"] = false;
+        result["purse"] = purse;
+        result["phoneNumber"] = phone_number;
+        result["address"] = address;
+        return result;
+    }
+
+    static std::string jsonSafeViewToString(const json& user_json) {
+        std::ostringstream os;
+        os << "id: " << user_json["id"] << std::endl;
+        os << "username: " << user_json["user"] << std::endl;
+        if (user_json["admin"])
+            return os.str();
+        os << "purse: " << user_json["purse"] << std::endl;
+        os << "phone_number: " << user_json["phoneNumber"] << std::endl;
+        os << "address: " << user_json["address"] << std::endl;
+        return os.str();
+    }
+
+    static std::string jsonToString(const json& user_json) {
+        User user(user_json);
+        return user.toString();
     }
 
     enum class Type {
@@ -91,49 +151,49 @@ struct User {
 
 struct UserArray {
     int next_id = 0;
-    std::vector<User> users;
+    std::vector<User*> users;
 
-    void addUser(User user) {
-        user.id = next_id;
+    void addUser(User* user) {
+        user->id = next_id;
         users.push_back(user);
         next_id++;
     }
 
     User* getUser(std::string username) {
         for (auto& user : users) {
-            if (user.username == username) {
-                return &user;
+            if (user->username == username) {
+                return user;
             }
         }
         throw Err401();
     }
 
-    json getUsersJson() {
+    json getUsersJson() const {
         json users_json;
-        for (auto& user : users) {
-            json user_json;
-            user_json["id"] = user.id;
-            user_json["user"] = user.username;
-            user_json["password"] = user.password;
-            if (user.type == User::Type::ordinary) {
-                user_json["admin"] = false;
-                user_json["purse"] = user.purse;
-                user_json["phoneNumber"] = user.phone_number;
-                user_json["address"] = user.address;
-            }
-            else {
-                user_json["admin"] = true;
-            }
-            users_json.push_back(user_json);
+        for (const auto& user : users) {
+            users_json.push_back(user->toJSON());
         }
         json final;
         final["users"] = users_json;
         return final;
     }
+
+    json getUsersSafeJSON() const {
+        json result;
+        for (const auto& user : users) {
+            result.push_back(user->safeViewToJSON());
+        }
+        return result;
+    }
 };
 
 struct Reservation {
-    Reservation(int user_id, int num_of_beds, date::sys_days check_in_date, date::sys_days check_out_date) {
+    Reservation(
+        int user_id,
+        int num_of_beds,
+        date::sys_days check_in_date,
+        date::sys_days check_out_date
+    ) {
         this->user_id = user_id;
         this->num_of_beds = num_of_beds;
         this->check_in_date = check_in_date;
@@ -162,7 +222,13 @@ struct Reservation {
 };
 
 struct Room {
-    Room(int number, bool status, int price, int max_capacity) : number(number), status(status), price(price), max_capacity(max_capacity) {}
+    Room(
+        int number, bool status, int price, int max_capacity
+    ) : number(number),
+        status(status),
+        price(price),
+        max_capacity(max_capacity) {}
+
     Room(json room_json) {
         number = room_json["number"];
         status = room_json["status"];
@@ -173,6 +239,7 @@ struct Room {
             reservations.push_back(new_reservation);
         }
     }
+
     int number;
     bool status;
     int price;

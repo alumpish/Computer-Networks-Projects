@@ -109,18 +109,7 @@ void Client::viewUserInformation(args_list input_args) {
     Response response = rcvResponse();
     json res_body = json::parse(response.getBody());
 
-    std::cout << "id: " << res_body["id"] << std::endl;
-    std::cout << "username: " << res_body["user"] << std::endl;
-    std::cout << "password: " << res_body["password"] << std::endl;
-    if (res_body["admin"])
-        std::cout << "type: admin" << std::endl;
-    else {
-        std::cout << "type: ordinary user" << std::endl;
-        std::cout << "purse: " << res_body["purse"] << std::endl;
-        std::cout << "phone: " << res_body["phoneNumber"] << std::endl;
-        std::cout << "address: " << res_body["address"] << std::endl;
-        std::cout << std::endl;
-    }
+    std::cout << User::jsonToString(res_body);
 }
 
 void Client::viewAllUsers(args_list input_args) {
@@ -129,17 +118,7 @@ void Client::viewAllUsers(args_list input_args) {
     json res_body = json::parse(response.getBody());
 
     for (json user_json : res_body) {
-        std::cout << "id: " << user_json["id"] << std::endl;
-        std::cout << "username: " << user_json["user"] << std::endl;
-        if (user_json["admin"])
-            std::cout << "type: admin" << std::endl;
-        else {
-            std::cout << "type: ordinary user" << std::endl;
-            std::cout << "purse: " << user_json["purse"] << std::endl;
-            std::cout << "phone: " << user_json["phoneNumber"] << std::endl;
-            std::cout << "address: " << user_json["address"] << std::endl;
-            std::cout << std::endl;
-        }
+        std::cout << User::jsonSafeViewToString(user_json);
     }
 }
 
@@ -320,18 +299,22 @@ void Client::setupCASCmds() {
 
     cas_cmd_handler_.addCommand(
         "signin",
-        new Command({".+", ".+"}, "signin <username> <password>", bind(&Client::signIn)));
+        new Command({".+", ".+"}, "signin <username> <password>", bind(&Client::signIn))
+    );
 
     cas_cmd_handler_.addCommand(
         "signup",
-        new Command({".+"}, "signup <username>", bind(&Client::signupUsername)));
+        new Command({".+"}, "signup <username>", bind(&Client::signupUsername))
+    );
 
     cas_cmd_handler_["signup"].addCommand(
         "info",
         new Command(
             {".+", "\\d+", "^09\\d{9}$", ".+"},
             "info <password> <purse> <phone> <address>",
-            bind(&Client::signupUserInfo)));
+            bind(&Client::signupUserInfo)
+        )
+    );
 }
 
 void Client::setupAdminCmds() {
@@ -351,7 +334,8 @@ void Client::setupAdminCmds() {
     cmd_handler_.addCommand("4", new Command({}, "Pass day", bind(&Client::dummyCommandNode)));
     cmd_handler_["4"].addCommand(
         "pass_day",
-        new Command({"\\d+"}, "pass_day <value>", bind(&Client::passDay)));
+        new Command({"\\d+"}, "pass_day <value>", bind(&Client::passDay))
+    );
 
     cmd_handler_.addCommand("5", new Command({}, "Edit Information", bind(&Client::dummyCommandNode)));
     cmd_handler_["5"].addCommand(
@@ -359,23 +343,29 @@ void Client::setupAdminCmds() {
         new Command(
             {".+"},
             "new_info <new password>",
-            bind(&Client::editInformation)));
+            bind(&Client::editInformation)
+        )
+    );
 
     cmd_handler_.addCommand("6", new Command({}, "Leaving room", bind(&Client::dummyCommandNode)));
     cmd_handler_["6"].addCommand(
         "room",
-        new Command({"\\d+", "\\d+"}, "room <room number> <new capacity>", bind(&Client::leavingRoom)));
+        new Command({"\\d+", "\\d+"}, "room <room number> <new capacity>", bind(&Client::leavingRoom))
+    );
 
     cmd_handler_.addCommand("7", new Command({}, "Rooms", bind(&Client::dummyCommandNode)));
     cmd_handler_["7"].addCommand(
         "add",
-        new Command({"\\d+", "\\d+", "\\d+"}, "add <room num> <capacity> <price>", bind(&Client::addRoom)));
+        new Command({"\\d+", "\\d+", "\\d+"}, "add <room num> <capacity> <price>", bind(&Client::addRoom))
+    );
     cmd_handler_["7"].addCommand(
         "modify",
-        new Command({"\\d+", "\\d+", "\\d+"}, "modify <room num> <new capacity> <new price>", bind(&Client::modifyRoom)));
+        new Command({"\\d+", "\\d+", "\\d+"}, "modify <room num> <new capacity> <new price>", bind(&Client::modifyRoom))
+    );
     cmd_handler_["7"].addCommand(
         "remove",
-        new Command({"\\d+"}, "remove <room num>", bind(&Client::removeRoom)));
+        new Command({"\\d+"}, "remove <room num>", bind(&Client::removeRoom))
+    );
 
     cmd_handler_.addCommand("8", new Command({}, "Logout", bind(&Client::logout)));
 
@@ -400,11 +390,14 @@ void Client::setupOrdinaryUserCmds() {
         new Command(
             {"\\d+", "\\d+", Consts::Timer::DATE_FORMAT, Consts::Timer::DATE_FORMAT},
             "book <RoomNum> <NumOfBeds> <CheckInDate> <CheckoutDate>",
-            bind(&Client::booking)));
+            bind(&Client::booking)
+        )
+    );
 
     cmd_handler_.addCommand("4", new Command({}, "Canceling", bind(&Client::canceling)));
     cmd_handler_["4"].addCommand(
-        "cancel", new Command({"\\d+", "\\d+"}, "cancel <RoomNum> <Num>", bind(&Client::cancelRoom)));
+        "cancel", new Command({"\\d+", "\\d+"}, "cancel <RoomNum> <Num>", bind(&Client::cancelRoom))
+    );
 
     cmd_handler_.addCommand("5", new Command({}, "Edit Information", bind(&Client::dummyCommandNode)));
     cmd_handler_["5"].addCommand(
@@ -412,14 +405,16 @@ void Client::setupOrdinaryUserCmds() {
         new Command(
             {".+", "^09\\d{9}$", ".+"},
             "new_info <new password> <phone> <address>",
-            bind(&Client::editInformation))
+            bind(&Client::editInformation)
+        )
 
     );
 
     cmd_handler_.addCommand("6", new Command({}, "Leaving room", bind(&Client::dummyCommandNode)));
     cmd_handler_["6"].addCommand(
         "room",
-        new Command({"\\d+"}, "room <room number>", bind(&Client::leavingRoom)));
+        new Command({"\\d+"}, "room <room number>", bind(&Client::leavingRoom))
+    );
 
     cmd_handler_.addCommand("7", new Command({}, "Logout", bind(&Client::logout)));
 

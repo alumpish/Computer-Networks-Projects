@@ -16,7 +16,7 @@ void Hotel::readUsers() {
     json users_json;
     users_file >> users_json;
     for (auto& user : users_json["users"]) {
-        User new_user(user);
+        User* new_user = new User(user);
         users_.addUser(new_user);
     }
 }
@@ -33,7 +33,7 @@ void Hotel::readRooms() {
 
 bool Hotel::isUserExist(const std::string& username) {
     for (auto user : users_.users) {
-        if (user.username == username) {
+        if (user->username == username) {
             return true;
         }
     }
@@ -54,13 +54,13 @@ void Hotel::signUp(const std::string& session_id, const std::string& password, i
         throw Err503();
     }
 
-    User new_user(getUsername(session_id), password, false, purse, phone_number, address);
+    User* new_user = new User(getUsername(session_id), password, false, purse, phone_number, address);
     users_.addUser(new_user);
 }
 
 void Hotel::signIn(const std::string& session_id, const std::string& username, const std::string& password) {
     for (auto user : users_.users) {
-        if (user.username == username && user.password == password) {
+        if (user->username == username && user->password == password) {
             addSession(session_id, username);
             return;
         }
@@ -99,23 +99,7 @@ json Hotel::getAllUsersInfo(const std::string& session_id) {
         throw Err403();
     }
 
-    json users_json;
-    for (auto user : users_.users) {
-        json user_json;
-        user_json["id"] = user.id;
-        user_json["user"] = user.username;
-
-        if (user.type == User::Type::admin)
-            user_json["admin"] = true;
-        else {
-            user_json["admin"] = false;
-            user_json["purse"] = user.purse;
-            user_json["phoneNumber"] = user.phone_number;
-            user_json["address"] = user.address;
-        }
-        users_json.push_back(user_json);
-    }
-    return users_json;
+    return users_.getUsersSafeJSON();
 }
 
 json Hotel::getAllRoomsInfo(const std::string& session_id) {
