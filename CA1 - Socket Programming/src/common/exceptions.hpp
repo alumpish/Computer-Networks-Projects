@@ -4,6 +4,30 @@
 #include <stdexcept>
 #include <string>
 
+namespace net {
+class SendErr : public std::exception {
+public:
+    const char* what() const throw() {
+        return "TCP send message failed.";
+    }
+};
+
+class ServerBindErr : public std::exception {
+public:
+    const char* what() const throw() {
+        return "Binding server address failed.";
+    }
+};
+
+class CLientConnectionErr : public std::exception {
+public:
+    const char* what() const throw() {
+        return "Connecting to server failed.";
+    }
+};
+
+} // namespace tcp
+
 class CustomException : public std::exception {
 public:
     CustomException()

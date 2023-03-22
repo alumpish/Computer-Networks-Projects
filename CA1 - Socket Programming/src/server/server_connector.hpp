@@ -40,8 +40,7 @@ private:
         fd_set master_fds_set;
         int max_fd;
     } fds_;
-
-    void connect();
+    
     int getFirstFreeClient();
 };
 
