@@ -11,7 +11,7 @@
 #include "net.hpp"
 
 Connector::Connector(int port, const std::string& host_name) {
-    net::connectTCPClient(host_name, port);
+    sock_fd_ = net::connectTCPClient(host_name, port);
 }
 
 void Connector::sendMessage(const std::string& msg) {

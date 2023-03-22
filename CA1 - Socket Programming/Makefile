@@ -7,6 +7,7 @@ CXX:= g++
 # compile flags
 CXXFLAGS := -g -I $(PROJECT_PATH)/src/common -I $(PROJECT_PATH)/src/lib
 OBJCXXFLAGS := $(CXXFLAGS) -c
+LDFLAGS := -pthread -lpthread -Wl,--no-as-needed
 
 # target macros
 TARGET_SERVER := ./src/server/server.out
@@ -25,10 +26,10 @@ default: all
 
 # non-phony targets
 $(TARGET_SERVER): $(SERVER_OBJS) $(COMMON_OBJS)
-	$(CXX) $(SERVER_OBJS) $(COMMON_OBJS) -o $@
+	$(CXX) $(LDFLAGS) $(SERVER_OBJS) $(COMMON_OBJS) -o $@
 
 $(TARGET_CLIENT): $(CLIENT_OBJS) $(COMMON_OBJS)
-	$(CXX) $(CLIENT_OBJS) $(COMMON_OBJS) -o $@
+	$(CXX) $(LDFLAGS) $(CLIENT_OBJS) $(COMMON_OBJS) -o $@
 
 %.o: %.cpp
 	$(CXX) $(OBJCXXFLAGS) $< -o $@

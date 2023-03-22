@@ -1,6 +1,12 @@
 {
-  "hostName":"127.0.0.1",
-  "port": 8000,
-  "maxClients": 10
+  "server": {
+    "hostName": "127.0.0.1",
+    "port": 8000,
+    "maxClients": 10
+  },
+  "timer_server": {
+    "hostName": "127.0.0.1",
+    "port": 8001,
+    "maxClients": 10
+  }
 }
-

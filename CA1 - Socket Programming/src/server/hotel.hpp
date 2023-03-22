@@ -7,11 +7,12 @@
 #include "date.h"
 #include "json.hpp"
 #include "timer.hpp"
+#include "server_timer.hpp"
 #include "types.hpp"
 
 class Hotel {
 public:
-    Hotel(Timer& timer);
+    Hotel(ServerTimer& server_timer);
     ~Hotel();
     void readUsers();
     void readRooms();
@@ -41,7 +42,7 @@ public:
     void saveRooms();
 
 private:
-    Timer& timer_;
+    ServerTimer& timer_;
     UserArray users_;
     RoomArray rooms_;
     std::unordered_map<std::string, std::string> sessions_un_map_;

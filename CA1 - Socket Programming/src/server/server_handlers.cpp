@@ -89,9 +89,9 @@ Response BookingHandler::handleResponse(const Request& request) {
     int room_num = req_body["room_num"];
     int num_of_beds = req_body["num_of_beds"];
     date::sys_days check_in_date;
-    parse(req_body["check_in_date"], check_in_date);
+    check_in_date = Timer::parseString(req_body["check_in_date"]);
     date::sys_days check_out_date;
-    parse(req_body["check_out_date"], check_out_date);
+    check_out_date = Timer::parseString(req_body["check_out_date"]);
 
     hotel_->bookRoom(username, room_num, num_of_beds, check_in_date, check_out_date);
 

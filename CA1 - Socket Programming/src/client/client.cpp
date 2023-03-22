@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "client_connector.hpp"
+#include "client_timer.hpp"
 #include "command_handler.hpp"
 #include "consts.hpp"
 #include "json.hpp"
@@ -154,7 +155,7 @@ void Client::booking(args_list input_args) {
 
     sendRequest(Consts::Paths::BOOKING, body.dump());
     Response response = Response(connector_.rcvMessage());
-    logger_.info("Received response: " + response.toJSON(), false);
+    logger_.info("Received response: " + response.toJSON());
     std::cout << response.getBody() << std::endl;
 }
 
@@ -275,7 +276,7 @@ void Client::sendRequest(const std::string& path, const std::string& body) {
 
 Response Client::rcvResponse() {
     std::string response_str = connector_.rcvMessage();
-    logger_.info("Received response: " + response_str, false);
+    logger_.info("Received response: " + response_str);
     return Response(response_str);
 }
 
@@ -436,7 +437,7 @@ void Client::runCmds() {
         }
         catch (std::exception& e) {
             std::cout << e.what() << std::endl;
-            logger_.error(e.what(), false);
+            logger_.error(e.what());
             continue;
         }
         cmd_handler_.resetRoot();

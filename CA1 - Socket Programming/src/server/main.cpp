@@ -2,6 +2,7 @@
 #include "hotel.hpp"
 #include "server.hpp"
 #include "server_handlers.hpp"
+#include "server_timer.hpp"
 #include "timer.hpp"
 
 void setupServerHandlers(Server& server, Hotel* hotel) {
@@ -29,8 +30,9 @@ void setupServerHandlers(Server& server, Hotel* hotel) {
 
 int main() {
     Timer timer;
-    Server server("./config.json", timer);
-    Hotel* hotel = new Hotel(timer);
+    ServerTimer server_timer("./config.json", timer);
+    Server server("./config.json", timer, server_timer);
+    Hotel* hotel = new Hotel(server_timer);
     setupServerHandlers(server, hotel);
     server.run();
     delete hotel;

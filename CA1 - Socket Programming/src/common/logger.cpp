@@ -19,6 +19,8 @@ void Logger::setStream(std::ostream* output_stream) {
 }
 
 void Logger::info(const std::string& info, bool include_time) {
+    if (output_stream_ == nullptr)
+        return;
     if (include_time)
         (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[INFO] ";
@@ -26,6 +28,8 @@ void Logger::info(const std::string& info, bool include_time) {
 }
 
 void Logger::warning(const std::string& warning, bool include_time) {
+    if (output_stream_ == nullptr)
+        return;
     if (include_time)
         (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[WARN] ";
@@ -33,6 +37,8 @@ void Logger::warning(const std::string& warning, bool include_time) {
 }
 
 void Logger::error(const std::string& error, bool include_time) {
+    if (output_stream_ == nullptr)
+        return;
     if (include_time)
         (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[ERR] ";

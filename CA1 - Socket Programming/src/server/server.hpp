@@ -1,15 +1,16 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <fstream>
 
 #include "command_handler.hpp"
 #include "logger.hpp"
 #include "server_connector.hpp"
+#include "server_timer.hpp"
 #include "timer.hpp"
 
 class RequestHandler;
@@ -17,7 +18,7 @@ class RequestHandler;
 class Server {
 public:
     Server() = delete;
-    Server(const std::string& config_file, Timer& timer);
+    Server(const std::string& config_file, Timer& timer, ServerTimer& server_timer);
 
     void run();
     void addHandler(RequestHandler* handler, const std::string& path);
@@ -31,7 +32,7 @@ private:
     std::unordered_set<std::string> sessions_;
     std::unordered_map<std::string, RequestHandler*> handlers_map_;
 
-    Timer& timer_;
+    ServerTimer& timer_;
 
     Logger logger_;
     std::ofstream log_file_;

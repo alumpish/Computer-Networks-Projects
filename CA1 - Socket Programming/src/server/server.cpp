@@ -22,16 +22,17 @@
 #include "request_handler.hpp"
 #include "response.hpp"
 #include "server_connector.hpp"
+#include "server_timer.hpp"
 #include "timer.hpp"
 
 using json = nlohmann::json;
 
-Server::Server(const std::string& config_file, Timer& timer)
+Server::Server(const std::string& config_file, Timer& timer, ServerTimer& server_timer)
     : cmd_handler_(std::cin),
-      timer_(timer),
+      timer_(server_timer),
       logger_(timer) {
     std::ifstream f(config_file);
-    json data = json::parse(f);
+    json data = json::parse(f)["server"];
     int port = data["port"];
     std::string host_name = data["hostName"];
     int max_clients = data["maxClients"];
@@ -168,15 +169,18 @@ void Server::setupCommands() {
 
     cmd_handler_.addCommand(
         "initTime",
-        new Command({Consts::Timer::DATE_FORMAT}, "initTime <date>", bind(&Server::setTime)));
+        new Command({Consts::Timer::DATE_FORMAT}, "initTime <date>", bind(&Server::setTime))
+    );
 
     cmd_handler_["initTime"].addCommand(
         "exit",
-        new Command({}, "exit", bind(&Server::exit)));
+        new Command({}, "exit", bind(&Server::exit))
+    );
 
     cmd_handler_["initTime"].addCommand(
         "setTime",
-        new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime)));
+        new Command({Consts::Timer::DATE_FORMAT}, "setTime <date>", bind(&Server::setTime))
+    );
 }
 
 void Server::setTime(const std::vector<std::string>& input_args) {

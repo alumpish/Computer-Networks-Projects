@@ -4,6 +4,7 @@
 #include <string>
 
 #include "client_connector.hpp"
+#include "client_timer.hpp"
 #include "command_handler.hpp"
 #include "logger.hpp"
 #include "response.hpp"
@@ -22,7 +23,7 @@ private:
 
     Logger logger_;
     std::ofstream* log_file_;
-    Timer& timer_;
+    ClientTimer timer_;
     std::string username_;
 
     struct {

@@ -1,6 +1,6 @@
 #include "hotel.hpp"
 
-Hotel::Hotel(Timer& timer) : timer_(timer) {
+Hotel::Hotel(ServerTimer& server_timer) : timer_(server_timer) {
     readUsers();
     readRooms();
     updateRooms();
