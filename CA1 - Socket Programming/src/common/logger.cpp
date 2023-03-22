@@ -20,21 +20,21 @@ void Logger::setStream(std::ostream* output_stream) {
 
 void Logger::info(const std::string& info, bool include_time) {
     if (include_time)
-        (*output_stream_) << to_string(timer_.getCurrentDate()) << std::endl;
+        (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[INFO] ";
     printMsg(info);
 }
 
 void Logger::warning(const std::string& warning, bool include_time) {
     if (include_time)
-        (*output_stream_) << to_string(timer_.getCurrentDate()) << std::endl;
+        (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[WARN] ";
     printMsg(warning);
 }
 
 void Logger::error(const std::string& error, bool include_time) {
     if (include_time)
-        (*output_stream_) << to_string(timer_.getCurrentDate()) << std::endl;
+        (*output_stream_) << Timer::dateToString(timer_.getCurrentDate()) << std::endl;
     (*output_stream_) << "[ERR] ";
     printMsg(error);
 }

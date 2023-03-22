@@ -9,18 +9,33 @@
 Timer::Timer() {}
 
 Timer::Timer(const std::string& date) {
-    parse(date, m_currentDate);
+    current_date_ = Timer::parseString(date);
 }
 
 void Timer::addDays(int days) {
-    m_currentDate += date::days(days);
+    current_date_ += date::days(days);
 }
 
 date::sys_days Timer::getCurrentDate() const {
-    return m_currentDate;
+    return current_date_;
 }
 
 void Timer::setTime(const std::string& date) {
-    if (!parse(date, m_currentDate))
+    current_date_ = Timer::parseString(date);
+}
+
+date::sys_days Timer::parseString(const std::string& date) {
+    date::sys_days ymd;
+    std::istringstream ss(date);
+    ss >> date::parse("%d-%m-%Y", ymd);
+    if (ss.fail()) {
         throw Err401();
+    }
+    return ymd;
+}
+
+std::string Timer::dateToString(const date::sys_days& date) {
+    std::ostringstream ss;
+    ss << date::format("%d-%m-%Y", date);
+    return ss.str();
 }

@@ -8,7 +8,7 @@
 #include "date.h"
 #include "exceptions.hpp"
 #include "json.hpp"
-#include "utils.hpp"
+#include "timer.hpp"
 
 using json = nlohmann::json;
 
@@ -202,8 +202,8 @@ struct Reservation {
     Reservation(json reservation_json) {
         this->user_id = reservation_json["id"];
         this->num_of_beds = reservation_json["numOfBeds"];
-        parse(reservation_json["checkInDate"], this->check_in_date);
-        parse(reservation_json["checkOutDate"], this->check_out_date);
+        check_in_date = Timer::parseString(reservation_json["checkInDate"]);
+        check_out_date = Timer::parseString(reservation_json["checkOutDate"]);
     }
 
     std::string toString() const {
@@ -400,8 +400,8 @@ struct RoomArray {
                 json reservation_json;
                 reservation_json["id"] = reservation.user_id;
                 reservation_json["numOfBeds"] = reservation.num_of_beds;
-                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
-                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
+                reservation_json["checkInDate"] = Timer::dateToString(reservation.check_in_date);
+                reservation_json["checkOutDate"] = Timer::dateToString(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
             room_json["reservations"] = reservations_json;

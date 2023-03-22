@@ -120,8 +120,8 @@ json Hotel::getAllRoomsInfo(const std::string& session_id) {
                 json reservation_json;
                 reservation_json["id"] = reservation.user_id;
                 reservation_json["numOfBeds"] = reservation.num_of_beds;
-                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
-                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
+                reservation_json["checkInDate"] = Timer::dateToString(reservation.check_in_date);
+                reservation_json["checkOutDate"] = Timer::dateToString(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
             room_json["reservations"] = reservations_json;
@@ -158,8 +158,8 @@ json Hotel::getReservations(const std::string& username) {
                 json reservation_json;
                 reservation_json["roomNumber"] = room.number;
                 reservation_json["numOfBeds"] = reservation.num_of_beds;
-                reservation_json["checkInDate"] = to_string(reservation.check_in_date);
-                reservation_json["checkOutDate"] = to_string(reservation.check_out_date);
+                reservation_json["checkInDate"] = Timer::dateToString(reservation.check_in_date);
+                reservation_json["checkOutDate"] = Timer::dateToString(reservation.check_out_date);
                 reservations_json.push_back(reservation_json);
             }
         }
