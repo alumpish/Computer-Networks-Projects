@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+# ns-3
+ns-3.*
+
+aux-files
