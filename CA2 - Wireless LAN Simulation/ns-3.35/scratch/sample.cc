@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include<time.h>
+#include <time.h>
 #include <stdio.h>
 #include <string>
 #include <fstream>
@@ -29,136 +29,131 @@
 
 using namespace ns3;
 using namespace std;
-NS_LOG_COMPONENT_DEFINE ("WifiTopology");
+NS_LOG_COMPONENT_DEFINE("WifiTopology");
 
-void
-ThroughputMonitor (FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon, double em)
+void ThroughputMonitor(FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon, double em)
 {
     uint16_t i = 0;
 
-    std::map<FlowId, FlowMonitor::FlowStats> flowStats = flowMon->GetFlowStats ();
+    std::map<FlowId, FlowMonitor::FlowStats> flowStats = flowMon->GetFlowStats();
 
-    Ptr<Ipv4FlowClassifier> classing = DynamicCast<Ipv4FlowClassifier> (fmhelper->GetClassifier ());
-    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator stats = flowStats.begin (); stats != flowStats.end (); ++stats)
+    Ptr<Ipv4FlowClassifier> classing = DynamicCast<Ipv4FlowClassifier>(fmhelper->GetClassifier());
+    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator stats = flowStats.begin(); stats != flowStats.end(); ++stats)
     {
-        Ipv4FlowClassifier::FiveTuple fiveTuple = classing->FindFlow (stats->first);
+        Ipv4FlowClassifier::FiveTuple fiveTuple = classing->FindFlow(stats->first);
 
-        std::cout << "Flow ID			: "<< stats->first << " ; " << fiveTuple.sourceAddress << " -----> " << fiveTuple.destinationAddress << std::endl;
+        std::cout << "Flow ID			: " << stats->first << " ; " << fiveTuple.sourceAddress << " -----> " << fiveTuple.destinationAddress << std::endl;
         std::cout << "Tx Packets = " << stats->second.txPackets << std::endl;
         std::cout << "Rx Packets = " << stats->second.rxPackets << std::endl;
-        std::cout << "Duration		: "<< (stats->second.timeLastRxPacket.GetSeconds () - stats->second.timeFirstTxPacket.GetSeconds ()) << std::endl;
-        std::cout << "Last Received Packet	: "<< stats->second.timeLastRxPacket.GetSeconds () << " Seconds" << std::endl;
-        std::cout << "Throughput: " << stats->second.rxBytes * 8.0 / (stats->second.timeLastRxPacket.GetSeconds () - stats->second.timeFirstTxPacket.GetSeconds ()) / 1024 / 1024  << " Mbps" << std::endl;
-    
+        std::cout << "Duration		: " << (stats->second.timeLastRxPacket.GetSeconds() - stats->second.timeFirstTxPacket.GetSeconds()) << std::endl;
+        std::cout << "Last Received Packet	: " << stats->second.timeLastRxPacket.GetSeconds() << " Seconds" << std::endl;
+        std::cout << "Throughput: " << stats->second.rxBytes * 8.0 / (stats->second.timeLastRxPacket.GetSeconds() - stats->second.timeFirstTxPacket.GetSeconds()) / 1024 / 1024 << " Mbps" << std::endl;
+
         i++;
 
         std::cout << "---------------------------------------------------------------------------" << std::endl;
     }
 
-    Simulator::Schedule (Seconds (10),&ThroughputMonitor, fmhelper, flowMon, em);
+    Simulator::Schedule(Seconds(10), &ThroughputMonitor, fmhelper, flowMon, em);
 }
 
-void
-AverageDelayMonitor (FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon, double em)
+void AverageDelayMonitor(FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon, double em)
 {
     uint16_t i = 0;
 
-    std::map<FlowId, FlowMonitor::FlowStats> flowStats = flowMon->GetFlowStats ();
-    Ptr<Ipv4FlowClassifier> classing = DynamicCast<Ipv4FlowClassifier> (fmhelper->GetClassifier ());
-    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator stats = flowStats.begin (); stats != flowStats.end (); ++stats)
+    std::map<FlowId, FlowMonitor::FlowStats> flowStats = flowMon->GetFlowStats();
+    Ptr<Ipv4FlowClassifier> classing = DynamicCast<Ipv4FlowClassifier>(fmhelper->GetClassifier());
+    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator stats = flowStats.begin(); stats != flowStats.end(); ++stats)
     {
-        Ipv4FlowClassifier::FiveTuple fiveTuple = classing->FindFlow (stats->first);
-        std::cout << "Flow ID			: "<< stats->first << " ; " << fiveTuple.sourceAddress << " -----> " << fiveTuple.destinationAddress << std::endl;
+        Ipv4FlowClassifier::FiveTuple fiveTuple = classing->FindFlow(stats->first);
+        std::cout << "Flow ID			: " << stats->first << " ; " << fiveTuple.sourceAddress << " -----> " << fiveTuple.destinationAddress << std::endl;
         std::cout << "Tx Packets = " << stats->second.txPackets << std::endl;
         std::cout << "Rx Packets = " << stats->second.rxPackets << std::endl;
-        std::cout << "Duration		: "<< (stats->second.timeLastRxPacket.GetSeconds () - stats->second.timeFirstTxPacket.GetSeconds ()) << std::endl;
-        std::cout << "Last Received Packet	: "<< stats->second.timeLastRxPacket.GetSeconds () << " Seconds" << std::endl;
-        std::cout << "Sum of e2e Delay: " << stats->second.delaySum.GetSeconds () << " s" << std::endl;
-        std::cout << "Average of e2e Delay: " << stats->second.delaySum.GetSeconds () / stats->second.rxPackets << " s" << std::endl;
-    
+        std::cout << "Duration		: " << (stats->second.timeLastRxPacket.GetSeconds() - stats->second.timeFirstTxPacket.GetSeconds()) << std::endl;
+        std::cout << "Last Received Packet	: " << stats->second.timeLastRxPacket.GetSeconds() << " Seconds" << std::endl;
+        std::cout << "Sum of e2e Delay: " << stats->second.delaySum.GetSeconds() << " s" << std::endl;
+        std::cout << "Average of e2e Delay: " << stats->second.delaySum.GetSeconds() / stats->second.rxPackets << " s" << std::endl;
+
         i++;
 
         std::cout << "---------------------------------------------------------------------------" << std::endl;
     }
 
-    Simulator::Schedule (Seconds (10),&AverageDelayMonitor, fmhelper, flowMon, em);
+    Simulator::Schedule(Seconds(10), &AverageDelayMonitor, fmhelper, flowMon, em);
 }
 
-class MyHeader : public Header 
+class MyHeader : public Header
 {
 public:
-    MyHeader ();
-    virtual ~MyHeader ();
-    void SetData (uint16_t data);
-    uint16_t GetData (void) const;
-    static TypeId GetTypeId (void);
-    virtual TypeId GetInstanceTypeId (void) const;
-    virtual void Print (std::ostream &os) const;
-    virtual void Serialize (Buffer::Iterator start) const;
-    virtual uint32_t Deserialize (Buffer::Iterator start);
-    virtual uint32_t GetSerializedSize (void) const;
+    MyHeader();
+    virtual ~MyHeader();
+    void SetData(uint16_t data);
+    uint16_t GetData(void) const;
+    static TypeId GetTypeId(void);
+    virtual TypeId GetInstanceTypeId(void) const;
+    virtual void Print(std::ostream &os) const;
+    virtual void Serialize(Buffer::Iterator start) const;
+    virtual uint32_t Deserialize(Buffer::Iterator start);
+    virtual uint32_t GetSerializedSize(void) const;
+
 private:
     uint16_t m_data;
 };
 
-MyHeader::MyHeader ()
+MyHeader::MyHeader()
 {
 }
 
-MyHeader::~MyHeader ()
+MyHeader::~MyHeader()
 {
 }
 
 TypeId
-MyHeader::GetTypeId (void)
+MyHeader::GetTypeId(void)
 {
-    static TypeId tid = TypeId ("ns3::MyHeader")
-        .SetParent<Header> ()
-        .AddConstructor<MyHeader> ()
-    ;
+    static TypeId tid = TypeId("ns3::MyHeader")
+                            .SetParent<Header>()
+                            .AddConstructor<MyHeader>();
     return tid;
 }
 
 TypeId
-MyHeader::GetInstanceTypeId (void) const
+MyHeader::GetInstanceTypeId(void) const
 {
-    return GetTypeId ();
+    return GetTypeId();
 }
 
-void
-MyHeader::Print (std::ostream &os) const
+void MyHeader::Print(std::ostream &os) const
 {
     os << "data = " << m_data << endl;
 }
 
 uint32_t
-MyHeader::GetSerializedSize (void) const
+MyHeader::GetSerializedSize(void) const
 {
     return 2;
 }
 
-void
-MyHeader::Serialize (Buffer::Iterator start) const
+void MyHeader::Serialize(Buffer::Iterator start) const
 {
-    start.WriteHtonU16 (m_data);
+    start.WriteHtonU16(m_data);
 }
 
 uint32_t
-MyHeader::Deserialize (Buffer::Iterator start)
+MyHeader::Deserialize(Buffer::Iterator start)
 {
-    m_data = start.ReadNtohU16 ();
+    m_data = start.ReadNtohU16();
 
     return 2;
 }
 
-void 
-MyHeader::SetData (uint16_t data)
+void MyHeader::SetData(uint16_t data)
 {
     m_data = data;
 }
 
-uint16_t 
-MyHeader::GetData (void) const
+uint16_t
+MyHeader::GetData(void) const
 {
     return m_data;
 }
@@ -166,35 +161,48 @@ MyHeader::GetData (void) const
 class master : public Application
 {
 public:
-    master (uint16_t port, Ipv4InterfaceContainer& ip);
-    virtual ~master ();
+    master(uint16_t port, Ipv4InterfaceContainer &ip);
+    virtual ~master();
+
 private:
-    virtual void StartApplication (void);
-    void HandleRead (Ptr<Socket> socket);
+    virtual void StartApplication(void);
+    void HandleRead(Ptr<Socket> socket);
 
     uint16_t port;
     Ipv4InterfaceContainer ip;
     Ptr<Socket> socket;
 };
-
 
 class client : public Application
 {
 public:
-    client (uint16_t port, Ipv4InterfaceContainer& ip);
-    virtual ~client ();
+    client(uint16_t port, Ipv4InterfaceContainer &ip);
+    virtual ~client();
 
 private:
-    virtual void StartApplication (void);
+    virtual void StartApplication(void);
 
     uint16_t port;
     Ipv4InterfaceContainer ip;
     Ptr<Socket> socket;
 };
 
+class mapper : public Application
+{
+public:
+    mapper(uint16_t port, Ipv4InterfaceContainer &ip);
+    virtual ~mapper();
 
-int
-main (int argc, char *argv[])
+private:
+    virtual void StartApplication(void);
+    void HandleRead(Ptr<Socket> socket);
+
+    uint16_t port;
+    Ipv4InterfaceContainer ip;
+    Ptr<Socket> socket;
+};
+
+int main(int argc, char *argv[])
 {
     double error = 0.000001;
     string bandwidth = "1Mbps";
@@ -204,181 +212,230 @@ main (int argc, char *argv[])
 
     srand(time(NULL));
 
-    CommandLine cmd (__FILE__);
-    cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
-    cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+    cmd.AddValue("tracing", "Enable pcap tracing", tracing);
 
-    cmd.Parse (argc,argv);
+    cmd.Parse(argc, argv);
 
     if (verbose)
     {
-        LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-        LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+        LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+        LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
     }
 
     NodeContainer wifiStaNodeClient;
-    wifiStaNodeClient.Create (1);
+    wifiStaNodeClient.Create(1);
 
     NodeContainer wifiStaNodeMaster;
-    wifiStaNodeMaster.Create (1);
+    wifiStaNodeMaster.Create(1);
 
-    YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+    NodeContainer wifiStaNodeMapper;
+    wifiStaNodeMapper.Create(3);
+
+    YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
 
     YansWifiPhyHelper phy;
-    phy.SetChannel (channel.Create ());
+    phy.SetChannel(channel.Create());
 
     WifiHelper wifi;
-    wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
+    wifi.SetRemoteStationManager("ns3::AarfWifiManager");
 
     WifiMacHelper mac;
-    Ssid ssid = Ssid ("ns-3-ssid");
-    mac.SetType ("ns3::StaWifiMac",
-                 "Ssid", SsidValue (ssid),
-                 "ActiveProbing", BooleanValue (false));
+    Ssid ssid = Ssid("ns-3-ssid");
 
+    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid), "ActiveProbing", BooleanValue(false));
     NetDeviceContainer staDeviceClient;
-    staDeviceClient = wifi.Install (phy, mac, wifiStaNodeClient);
+    staDeviceClient = wifi.Install(phy, mac, wifiStaNodeClient);
 
-    mac.SetType ("ns3::ApWifiMac", "Ssid", SsidValue (ssid));
-
+    mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
     NetDeviceContainer staDeviceMaster;
-    staDeviceMaster = wifi.Install (phy, mac, wifiStaNodeMaster);
+    staDeviceMaster = wifi.Install(phy, mac, wifiStaNodeMaster);
 
-    mac.SetType ("ns3::StaWifiMac","Ssid", SsidValue (ssid), "ActiveProbing", BooleanValue (false));
+    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid), "ActiveProbing", BooleanValue(false));
+    NetDeviceContainer staDeviceMapper;
+    staDeviceMapper = wifi.Install(phy, mac, wifiStaNodeMapper);
 
-    Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-    em->SetAttribute ("ErrorRate", DoubleValue (error));
+    Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
+    em->SetAttribute("ErrorRate", DoubleValue(error));
     phy.SetErrorRateModel("ns3::YansErrorRateModel");
 
     MobilityHelper mobility;
 
-    mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                   "MinX", DoubleValue (0.0),
-                                   "MinY", DoubleValue (0.0),
-                                   "DeltaX", DoubleValue (5.0),
-                                   "DeltaY", DoubleValue (10.0),
-                                   "GridWidth", UintegerValue (3),
-                                   "LayoutType", StringValue ("RowFirst"));
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX", DoubleValue(0.0),
+                                  "MinY", DoubleValue(0.0),
+                                  "DeltaX", DoubleValue(5.0),
+                                  "DeltaY", DoubleValue(10.0),
+                                  "GridWidth", UintegerValue(3),
+                                  "LayoutType", StringValue("RowFirst"));
 
-    mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                               "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
-    mobility.Install (wifiStaNodeClient);
+    mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+                              "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
+    mobility.Install(wifiStaNodeClient);
 
-    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    mobility.Install (wifiStaNodeMaster);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(wifiStaNodeMaster);
 
     InternetStackHelper stack;
-    stack.Install (wifiStaNodeClient);
-    stack.Install (wifiStaNodeMaster);
+    stack.Install(wifiStaNodeClient);
+    stack.Install(wifiStaNodeMaster);
+    stack.Install(wifiStaNodeMapper);
 
     Ipv4AddressHelper address;
 
     Ipv4InterfaceContainer staNodeClientInterface;
     Ipv4InterfaceContainer staNodesMasterInterface;
+    Ipv4InterfaceContainer staNodesMapperInterface;
 
-    address.SetBase ("10.1.3.0", "255.255.255.0");
-    staNodeClientInterface = address.Assign (staDeviceClient);
-    staNodesMasterInterface = address.Assign (staDeviceMaster);
+    address.SetBase("10.1.3.0", "255.255.255.0");
+    staNodeClientInterface = address.Assign(staDeviceClient);
+    staNodesMasterInterface = address.Assign(staDeviceMaster);
+    staNodesMapperInterface = address.Assign(staDeviceMapper);
 
-    Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     uint16_t port = 1102;
 
-    Ptr<client> clientApp = CreateObject<client> (port, staNodesMasterInterface);
-    wifiStaNodeClient.Get (0)->AddApplication (clientApp);
-    clientApp->SetStartTime (Seconds (0.0));
-    clientApp->SetStopTime (Seconds (duration));  
+    Ptr<client> clientApp = CreateObject<client>(port, staNodesMasterInterface);
+    wifiStaNodeClient.Get(0)->AddApplication(clientApp);
+    clientApp->SetStartTime(Seconds(0.0));
+    clientApp->SetStopTime(Seconds(duration));
 
-    Ptr<master> masterApp = CreateObject<master> (port, staNodesMasterInterface);
-    wifiStaNodeMaster.Get (0)->AddApplication (masterApp);
-    masterApp->SetStartTime (Seconds (0.0));
-    masterApp->SetStopTime (Seconds (duration));  
+    Ptr<master> masterApp = CreateObject<master>(port, staNodesMasterInterface);
+    wifiStaNodeMaster.Get(0)->AddApplication(masterApp);
+    masterApp->SetStartTime(Seconds(0.0));
+    masterApp->SetStopTime(Seconds(duration));
 
-    NS_LOG_INFO ("Run Simulation");
+    Ptr<mapper> mapperApp = CreateObject<mapper>(port, staNodesMapperInterface);
+    wifiStaNodeMapper.Get(0)->AddApplication(mapperApp);
+    wifiStaNodeMapper.Get(1)->AddApplication(mapperApp);
+    wifiStaNodeMapper.Get(2)->AddApplication(mapperApp);
+    mapperApp->SetStartTime(Seconds(0.0));
+    mapperApp->SetStopTime(Seconds(duration));
+
+
+    NS_LOG_INFO("Run Simulation");
 
     Ptr<FlowMonitor> flowMonitor;
     FlowMonitorHelper flowHelper;
     flowMonitor = flowHelper.InstallAll();
 
-    ThroughputMonitor (&flowHelper, flowMonitor, error);
-    AverageDelayMonitor (&flowHelper, flowMonitor, error);
+    ThroughputMonitor(&flowHelper, flowMonitor, error);
+    AverageDelayMonitor(&flowHelper, flowMonitor, error);
 
-    Simulator::Stop (Seconds (duration));
-    Simulator::Run ();
+    Simulator::Stop(Seconds(duration));
+    Simulator::Run();
 
     return 0;
 }
 
-client::client (uint16_t port, Ipv4InterfaceContainer& ip)
-        : port (port),
-          ip (ip)
+client::client(uint16_t port, Ipv4InterfaceContainer &ip)
+    : port(port),
+      ip(ip)
 {
-    std::srand (time(0));
+    std::srand(time(0));
 }
 
-client::~client ()
+client::~client()
 {
 }
 
-static void GenerateTraffic (Ptr<Socket> socket, uint16_t data)
+static void GenerateTraffic(Ptr<Socket> socket, uint16_t data)
 {
     Ptr<Packet> packet = new Packet();
     MyHeader m;
     m.SetData(data);
 
-    packet->AddHeader (m);
-    packet->Print (std::cout);
+    packet->AddHeader(m);
+    // std::cout << "Sending packet: ";
+    // packet->Print (std::cout);
     socket->Send(packet);
 
-    Simulator::Schedule (Seconds (0.1), &GenerateTraffic, socket, rand() % 26);
+    Simulator::Schedule(Seconds(0.1), &GenerateTraffic, socket, rand() % 26);
 }
 
-void
-client::StartApplication (void)
+void client::StartApplication(void)
 {
-    socket = Socket::CreateSocket (GetNode (), UdpSocketFactory::GetTypeId ());
-    InetSocketAddress sockAddr (ip.GetAddress(0), port);
-    socket->Connect (sockAddr);
+    socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
+    InetSocketAddress sockAddr(ip.GetAddress(0), port);
+    socket->Connect(sockAddr);
 
     GenerateTraffic(socket, 0);
 }
 
-master::master (uint16_t port, Ipv4InterfaceContainer& ip)
-        : port (port),
-          ip (ip)
+master::master(uint16_t port, Ipv4InterfaceContainer &ip)
+    : port(port),
+      ip(ip)
 {
-    std::srand (time(0));
+    std::srand(time(0));
 }
 
-master::~master ()
+master::~master()
 {
 }
 
-void
-master::StartApplication (void)
+void master::StartApplication(void)
 {
-    socket = Socket::CreateSocket (GetNode (), UdpSocketFactory::GetTypeId ());
-    InetSocketAddress local = InetSocketAddress (ip.GetAddress(0), port);
-    socket->Bind (local);
+    socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
+    InetSocketAddress local = InetSocketAddress(ip.GetAddress(0), port);
+    socket->Bind(local);
 
-    socket->SetRecvCallback (MakeCallback (&master::HandleRead, this));
+    socket->SetRecvCallback(MakeCallback(&master::HandleRead, this));
 }
 
-void 
-master::HandleRead (Ptr<Socket> socket)
+void master::HandleRead(Ptr<Socket> socket)
 {
     Ptr<Packet> packet;
 
-    while ((packet = socket->Recv ()))
+    while ((packet = socket->Recv()))
     {
-        if (packet->GetSize () == 0)
+        if (packet->GetSize() == 0)
         {
             break;
         }
 
         MyHeader destinationHeader;
-        packet->RemoveHeader (destinationHeader);
+        packet->RemoveHeader(destinationHeader);
+        std::cout << "Received packet: ";
         destinationHeader.Print(std::cout);
     }
 }
 
+mapper::mapper(uint16_t port, Ipv4InterfaceContainer &ip)
+    : port(port),
+      ip(ip)
+{
+    std::srand(time(0));
+}
+
+mapper::~mapper()
+{
+}
+
+void mapper::StartApplication(void)
+{
+    socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
+    InetSocketAddress local = InetSocketAddress(ip.GetAddress(0), port);
+    socket->Bind(local);
+
+    socket->SetRecvCallback(MakeCallback(&mapper::HandleRead, this));
+}
+
+void mapper::HandleRead(Ptr<Socket> socket)
+{
+    Ptr<Packet> packet;
+
+    while ((packet = socket->Recv()))
+    {
+        if (packet->GetSize() == 0)
+        {
+            break;
+        }
+
+        MyHeader destinationHeader;
+        packet->RemoveHeader(destinationHeader);
+        std::cout << "Received packet: ";
+        destinationHeader.Print(std::cout);
+    }
+}
