@@ -188,8 +188,8 @@ private:
     virtual void StartApplication (void);
 
     uint16_t port;
-    Ptr<Socket> socket;
     Ipv4InterfaceContainer ip;
+    Ptr<Socket> socket;
 };
 
 
@@ -336,11 +336,11 @@ static void GenerateTraffic (Ptr<Socket> socket, uint16_t data)
 void
 client::StartApplication (void)
 {
-    Ptr<Socket> sock = Socket::CreateSocket (GetNode (), UdpSocketFactory::GetTypeId ());
+    socket = Socket::CreateSocket (GetNode (), UdpSocketFactory::GetTypeId ());
     InetSocketAddress sockAddr (ip.GetAddress(0), port);
-    sock->Connect (sockAddr);
+    socket->Connect (sockAddr);
 
-    GenerateTraffic(sock, 0);
+    GenerateTraffic(socket, 0);
 }
 
 master::master (uint16_t port, Ipv4InterfaceContainer& ip)
