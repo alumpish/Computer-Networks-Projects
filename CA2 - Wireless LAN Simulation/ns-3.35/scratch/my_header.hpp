@@ -7,31 +7,11 @@
 #include <string>
 #include <fstream>
 
-#include "ns3/core-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/network-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/csma-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/yans-wifi-helper.h"
-#include "ns3/ssid.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/network-module.h"
-#include "ns3/packet-sink.h"
-#include "ns3/error-model.h"
 #include "ns3/udp-header.h"
-#include "ns3/enum.h"
-#include "ns3/event-id.h"
-#include "ns3/ipv4-global-routing-helper.h"
-
+#include "ns3/yans-wifi-helper.h"
 
 using namespace ns3;
 using namespace std;
-
-
 
 class MyHeader : public Header
 {

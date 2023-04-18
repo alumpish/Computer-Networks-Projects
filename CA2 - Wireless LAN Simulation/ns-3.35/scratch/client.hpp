@@ -7,30 +7,12 @@
 #include <string>
 #include <fstream>
 
-#include "ns3/core-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/network-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/yans-wifi-helper.h"
-#include "ns3/ssid.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/network-module.h"
-#include "ns3/packet-sink.h"
-#include "ns3/error-model.h"
-#include "ns3/udp-header.h"
-#include "ns3/enum.h"
-#include "ns3/event-id.h"
-#include "ns3/flow-monitor-helper.h"
-#include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/traffic-control-module.h"
-#include "ns3/flow-monitor-module.h"
+
 
 #include "my_header.hpp"
+#include "utils.hpp"
 
 using namespace ns3;
 using namespace std;
@@ -83,21 +65,6 @@ uint16_t client::GetPort()
 Ptr<Socket> client::GetSocket()
 {
     return socketUDPmaster;
-}
-
-static void GenerateTraffic(Ptr<Socket> socket, Ipv4InterfaceContainer ip, uint16_t port, uint16_t data)
-{
-    Ptr<Packet> packet = new Packet();
-    MyHeader m;
-    m.SetData(data);
-    m.SetIp(ip.GetAddress(0));
-    m.SetPort(port);
-
-    packet->AddHeader(m);
-    packet->Print(std::cout);
-    socket->Send(packet);
-
-    Simulator::Schedule(Seconds(0.1), &GenerateTraffic, socket, ip, port, rand() % 26);
 }
 
 void client::StartApplication(void)
