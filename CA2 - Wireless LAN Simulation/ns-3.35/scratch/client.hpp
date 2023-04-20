@@ -36,6 +36,7 @@ private:
     Ptr<Socket> socketUDPmaster, socketUDPmapper;
     uint16_t master_port;
     Ipv4InterfaceContainer master_ip;
+    std::string msg;
 };
 
 
@@ -50,6 +51,7 @@ client::client(uint16_t port, Ipv4InterfaceContainer &ip, uint16_t master_port, 
 
 client::~client()
 {
+    std::cout << "Recieved: " << msg << std::endl;
 }
 
 Ipv4InterfaceContainer client::GetIp()
@@ -95,6 +97,8 @@ void client::HandleRead(Ptr<Socket> socket)
         MyHeader m;
         packet->RemoveHeader(m);
         std::cout << "Received packet from mapper " << m.GetId() << ": " << static_cast<char>(m.GetData()) << std::endl;
+        msg += static_cast<char>(m.GetData());
+
     }
 }
 
