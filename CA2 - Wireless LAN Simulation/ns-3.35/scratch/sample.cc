@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
     FlowMonitorHelper flowHelper;
     flowMonitor = flowHelper.InstallAll();
 
-    ThroughputMonitor(&flowHelper, flowMonitor, error);
-    AverageDelayMonitor(&flowHelper, flowMonitor, error);
+    ThroughputAndAvgDelayMonitor(&flowHelper, flowMonitor, error);
 
     Simulator::Stop(Seconds(duration));
     Simulator::Run();
