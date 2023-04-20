@@ -10,7 +10,6 @@
 #include "ns3/applications-module.h"
 #include "ns3/internet-module.h"
 
-
 #include "my_header.hpp"
 #include "utils.hpp"
 
@@ -29,6 +28,7 @@ public:
 private:
     virtual void StartApplication(void);
     void HandleRead(Ptr<Socket> socket);
+    static void GenerateTraffic(Ptr<Socket> socket, Ipv4InterfaceContainer ip, uint16_t port, uint16_t data);
 
     uint16_t port;
     Ipv4InterfaceContainer ip;
@@ -87,7 +87,6 @@ void client::HandleRead(Ptr<Socket> socket)
     Ptr<Packet> packet;
     while ((packet = socket->Recv()))
     {
-        std::cout << "hiiiiiiiiiiii\n";
         if (packet->GetSize() == 0)
         {
             break;
@@ -96,6 +95,20 @@ void client::HandleRead(Ptr<Socket> socket)
         packet->RemoveHeader(m);
         std::cout << "Received packet from " << m.GetIp() << ":" << m.GetPort() << " with data " << static_cast<char>(m.GetData()) << std::endl;
     }
+}
+
+void client::GenerateTraffic(Ptr<Socket> socket, Ipv4InterfaceContainer ip, uint16_t port, uint16_t data) {
+    Ptr<Packet> packet = new Packet();
+    MyHeader m;
+    m.SetData(data);
+    m.SetIp(ip.GetAddress(0));
+    m.SetPort(port);
+
+    packet->AddHeader(m);
+    packet->Print(std::cout);
+    socket->Send(packet);
+
+    Simulator::Schedule(Seconds(0.1), &GenerateTraffic, socket, ip, port, rand() % 26);
 }
 
 #endif
