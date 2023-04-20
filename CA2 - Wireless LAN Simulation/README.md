@@ -500,3 +500,9 @@ Mappers have received 93 (or 92) packets and will send 47 (or 47) ACKs (half of 
 ![Mappers to client](report-assets/mappers-to-client.png)
 
 Mappers have each received 93 (or 92) packets. They will each find the corresponding letter in their internal map and send the result to the client. In case if not finding any mapped letter, they will ignore the received packet and will not send anything to the client. This is why the flow of packets is distributed unequally among the mappers.
+
+### Final Printed Packets
+
+![Final printed msg](report-assets/final-printed-msg.png)
+
+In the end, The received message is being printed.
