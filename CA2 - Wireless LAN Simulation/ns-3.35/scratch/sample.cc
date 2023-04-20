@@ -4,7 +4,6 @@
 #include <string>
 #include <fstream>
 #include <array>
-#include <map>
 
 #include "ns3/core-module.h"
 #include "ns3/point-to-point-module.h"
@@ -18,32 +17,20 @@
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/network-module.h"
-#include "ns3/packet-sink.h"
 #include "ns3/error-model.h"
-#include "ns3/udp-header.h"
-#include "ns3/enum.h"
-#include "ns3/event-id.h"
-#include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/traffic-control-module.h"
-#include "ns3/flow-monitor-module.h"
+
 
 #include "master.hpp"
 #include "client.hpp"
 #include "mapper.hpp"
 #include "my_header.hpp"
 #include "utils.hpp"
+#include "consts.hpp"
 
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE("WifiTopology");
-
-std::map<int, char> mapper1_mapping = {{0, 'a'}, {1, 'b'}, {2, 'c'}, {3, 'd'}, {4, 'e'}, {5, 'f'}, {6, 'g'}, {7, 'h'}, {8, 'i'}};
-std::map<int, char> mapper2_mapping = {{9, 'j'}, {10, 'k'}, {11, 'l'}, {12, 'm'}, {13, 'n'}, {14, 'o'}, {15, 'p'}, {16, 'q'}, {17, 'r'}};
-std::map<int, char> mapper3_mapping = {{18, 's'}, {19, 't'}, {20, 'u'}, {21, 'v'}, {22, 'w'}, {23, 'x'}, {24, 'y'}, {25, 'z'}};
-
 
 int main(int argc, char *argv[])
 {
@@ -153,17 +140,17 @@ int main(int argc, char *argv[])
     masterApp->SetStartTime(Seconds(0.0));
     masterApp->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_1 = CreateObject<mapper>(port, staNodesMapperInterface, mapper1_mapping, 9, 1);
+    Ptr<mapper> mapperApp_1 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper1, 9, 1);
     wifiStaNodeMapper.Get(1)->AddApplication(mapperApp_1);
     mapperApp_1->SetStartTime(Seconds(0.0));
     mapperApp_1->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_2 = CreateObject<mapper>(port, staNodesMapperInterface, mapper2_mapping, 9, 0);
+    Ptr<mapper> mapperApp_2 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper2, 9, 0);
     wifiStaNodeMapper.Get(0)->AddApplication(mapperApp_2);
     mapperApp_2->SetStartTime(Seconds(0.0));
     mapperApp_2->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_3 = CreateObject<mapper>(port, staNodesMapperInterface, mapper3_mapping, 8, 2);
+    Ptr<mapper> mapperApp_3 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper3, 8, 2);
     wifiStaNodeMapper.Get(2)->AddApplication(mapperApp_3);
     mapperApp_3->SetStartTime(Seconds(0.0));
     mapperApp_3->SetStopTime(Seconds(duration));

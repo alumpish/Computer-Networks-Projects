@@ -11,7 +11,6 @@
 #include "ns3/yans-wifi-helper.h"
 
 using namespace ns3;
-using namespace std;
 
 class MyHeader : public Header
 {
@@ -62,7 +61,7 @@ MyHeader::GetInstanceTypeId(void) const
 
 void MyHeader::Print(std::ostream &os) const
 {
-    os << "data = " << m_data << endl;
+    os << "data = " << m_data << std::endl;
 }
 
 uint32_t

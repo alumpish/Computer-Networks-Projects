@@ -13,8 +13,6 @@
 #include "my_header.hpp"
 
 using namespace ns3;
-using namespace std;
-
 
 class mapper : public Application
 {
@@ -61,32 +59,33 @@ void mapper::StartApplication(void)
 
 void mapper::HandleRead(Ptr<Socket> socket)
 {
-    Ptr<Packet> packet;
+    Ptr<Packet> g_packet;
 
-    while ((packet = socket->Recv()))
+    while ((g_packet = socket->Recv()))
     {
-        if (packet->GetSize() == 0)
+        if (g_packet->GetSize() == 0)
             break;
 
-        MyHeader header;
-        packet->RemoveHeader(header);
+        MyHeader g_header;
+        g_packet->RemoveHeader(g_header);
 
-        uint16_t data = header.GetData();
-        Ipv4Address ip = header.GetIp();
-        uint16_t port = header.GetPort();
+        uint16_t data = g_header.GetData();
+        Ipv4Address ip = g_header.GetIp();
+        uint16_t port = g_header.GetPort();
+
         for (const auto &kv : map_set)
         {
             if (kv.first == data)
             {
-                MyHeader header1;
+                MyHeader s_header;
                 char new_data = kv.second;
-                header1.SetData(new_data);
-                Ptr<Packet> packet1 = Create<Packet>(header1.GetSerializedSize());
-                packet1->AddHeader(header1);
+                s_header.SetData(new_data);
+                Ptr<Packet> s_packet = Create<Packet>(s_header.GetSerializedSize());
+                s_packet->AddHeader(s_header);
                 Ptr<Socket> socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
                 InetSocketAddress remote = InetSocketAddress(ip, port);
                 socket->Connect(remote);
-                socket->Send(packet1);
+                socket->Send(s_packet);
                 socket->Close();
                 break;
             }

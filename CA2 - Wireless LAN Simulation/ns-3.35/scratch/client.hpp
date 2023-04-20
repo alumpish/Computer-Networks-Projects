@@ -15,7 +15,6 @@
 #include "utils.hpp"
 
 using namespace ns3;
-using namespace std;
 
 
 class client : public Application
@@ -88,7 +87,7 @@ void client::HandleRead(Ptr<Socket> socket)
     Ptr<Packet> packet;
     while ((packet = socket->Recv()))
     {
-        cout << "hiiiiiiiiiiii\n";
+        std::cout << "hiiiiiiiiiiii\n";
         if (packet->GetSize() == 0)
         {
             break;

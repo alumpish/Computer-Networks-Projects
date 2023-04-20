@@ -17,8 +17,6 @@
 #include "my_header.hpp"
 
 using namespace ns3;
-using namespace std;
-
 
 void ThroughputMonitor(FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon, double em)
 {

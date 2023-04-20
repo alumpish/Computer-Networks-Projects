@@ -14,7 +14,6 @@
 #include "my_header.hpp"
 
 using namespace ns3;
-using namespace std;
 
 const int MAPPERS_COUNT = 3;
 
