@@ -27,8 +27,9 @@ private:
 
     uint16_t id;
     uint16_t port;
-    Ptr<Socket> socket;
+    Ptr<Socket> server_socket;
     Ipv4InterfaceContainer ip;
+    Ptr<Socket> client_socket;
     std::map<int, char> map_set;
     int size;
     int i;
@@ -52,11 +53,13 @@ mapper::~mapper()
 
 void mapper::StartApplication(void)
 {
-    Ptr<Socket> socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
+    server_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
     InetSocketAddress local = InetSocketAddress(ip.GetAddress(i), port);
-    socket->Bind(local);
-    socket->Listen();
-    socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address &>(), MakeCallback(&mapper::HandleAccept, this));
+    server_socket->Bind(local);
+    server_socket->Listen();
+    server_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address &>(), MakeCallback(&mapper::HandleAccept, this));
+
+    client_socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
 }
 
 void mapper::HandleRead(Ptr<Socket> socket)
@@ -85,11 +88,10 @@ void mapper::HandleRead(Ptr<Socket> socket)
                 s_header.SetId(id);
                 Ptr<Packet> s_packet = Create<Packet>(s_header.GetSerializedSize());
                 s_packet->AddHeader(s_header);
-                Ptr<Socket> socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
-                InetSocketAddress remote = InetSocketAddress(ip, port);
-                socket->Connect(remote);
-                socket->Send(s_packet);
-                socket->Close();
+                
+                InetSocketAddress remote = InetSocketAddress (ip, port);
+                client_socket->SendTo(s_packet, 0, remote);
+                // socket->Close();
                 break;
             }
         }
