@@ -456,3 +456,47 @@ For each application created, the appropriate node is obtained (e.g., `wifiStaNo
 The `mapper` applications are created with additional arguments that specify their ID and other configuration details. The `mapper` applications are added to different nodes, with `mapperApp_1` added to node 1, `mapperApp_2` added to node 0, and `mapperApp_3` added to node 2.
 
 ## Simulation Results Report
+
+This program sends a burst of data in which, each letter is sent every 0.1s. The sent string is defined as a constant in the consts.hpp. The client will print every character that it receives from the mappers:
+
+![Received msg](report-assets/received-msg.png)
+
+To test and find the Throughput and Avg e2e delay, we use the `FlowMonitor`. There is a function called `ThroughputAndAvgDelayMonitor` in the utils.hpp file that will help us in this matter. Here's the values our code calculate:
+
+- Flow ID and its path
+- Transmitted packets count
+- Received packets count
+- Time of the last received packet
+- Duration since the sending of the first packet
+- Throughput Which is equal to:
+$$
+\frac{RxPackets \times 8}{Duration \times 1024 \times 1024}
+$$
+- Sum of e2e delay
+- Average of e2e delay
+
+### Description of 10 flows
+
+#### Flow 1: Client to Master
+
+![Client to master](report-assets/client-to-master.png)
+
+Here, client has sent 100 packets to the master and 98 of them were received by the master. This packet loss is because of the error rate we inserted in our code. Other statistics can be seen from the picture.
+
+### Flows 2, 3, 4: Master to Mappers
+
+![Master to mappers](report-assets/master-to-mappers.png)
+
+Master has received 92 packets and will send all of them to every mapper.
+
+### Flows 5, 6, 7: Mappers to Master
+
+![Mappers to master](report-assets/mappers-to-master-acks.png)
+
+Mappers have received 93 (or 92) packets and will send 47 (or 47) ACKs (half of the packets).
+
+### Flows 8, 9, 10: Mappers to Client
+
+![Mappers to client](report-assets/mappers-to-client.png)
+
+Mappers have each received 93 (or 92) packets. They will each find the corresponding letter in their internal map and send the result to the client. In case if not finding any mapped letter, they will ignore the received packet and will not send anything to the client. This is why the flow of packets is distributed unequally among the mappers.
