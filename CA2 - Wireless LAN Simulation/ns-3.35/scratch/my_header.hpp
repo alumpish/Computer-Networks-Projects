@@ -29,11 +29,14 @@ public:
     Ipv4Address GetIp(void) const;
     void SetPort(uint16_t port);
     uint16_t GetPort(void) const;
+    void SetId(uint16_t id);
+    uint16_t GetId(void) const;
 
 private:
     uint16_t m_data;
     Ipv4Address m_ip;
     uint16_t m_port;
+    uint16_t mapper_id;
 };
 
 MyHeader::MyHeader()
@@ -67,7 +70,7 @@ void MyHeader::Print(std::ostream &os) const
 uint32_t
 MyHeader::GetSerializedSize(void) const
 {
-    return 8;
+    return 10;
 }
 
 void MyHeader::Serialize(Buffer::Iterator start) const
@@ -75,6 +78,7 @@ void MyHeader::Serialize(Buffer::Iterator start) const
     start.WriteHtonU16(m_data);
     start.WriteHtonU32(m_ip.Get());
     start.WriteHtonU16(m_port);
+    start.WriteHtonU16(mapper_id);
 }
 
 uint32_t
@@ -83,8 +87,9 @@ MyHeader::Deserialize(Buffer::Iterator start)
     m_data = start.ReadNtohU16();
     m_ip.Set(start.ReadNtohU32());
     m_port = start.ReadNtohU16();
+    mapper_id = start.ReadNtohU16();
 
-    return 8;
+    return 10;
 }
 
 void MyHeader::SetData(uint16_t data)
@@ -118,6 +123,17 @@ uint16_t
 MyHeader::GetPort(void) const
 {
     return m_port;
+}
+
+void MyHeader::SetId(uint16_t id)
+{
+    mapper_id = id;
+}
+
+uint16_t
+MyHeader::GetId(void) const
+{
+    return mapper_id;
 }
 
 

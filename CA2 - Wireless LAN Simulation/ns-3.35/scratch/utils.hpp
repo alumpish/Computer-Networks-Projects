@@ -166,17 +166,17 @@ void SetupSim(double duration, double error) {
     masterApp->SetStartTime(Seconds(0.0));
     masterApp->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_1 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper1, 9, 1);
+    Ptr<mapper> mapperApp_1 = CreateObject<mapper>(1, port, staNodesMapperInterface, kMapper1, 9, 1);
     wifiStaNodeMapper.Get(1)->AddApplication(mapperApp_1);
     mapperApp_1->SetStartTime(Seconds(0.0));
     mapperApp_1->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_2 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper2, 9, 0);
+    Ptr<mapper> mapperApp_2 = CreateObject<mapper>(2, port, staNodesMapperInterface, kMapper2, 9, 0);
     wifiStaNodeMapper.Get(0)->AddApplication(mapperApp_2);
     mapperApp_2->SetStartTime(Seconds(0.0));
     mapperApp_2->SetStopTime(Seconds(duration));
 
-    Ptr<mapper> mapperApp_3 = CreateObject<mapper>(port, staNodesMapperInterface, kMapper3, 8, 2);
+    Ptr<mapper> mapperApp_3 = CreateObject<mapper>(3, port, staNodesMapperInterface, kMapper3, 8, 2);
     wifiStaNodeMapper.Get(2)->AddApplication(mapperApp_3);
     mapperApp_3->SetStartTime(Seconds(0.0));
     mapperApp_3->SetStopTime(Seconds(duration));

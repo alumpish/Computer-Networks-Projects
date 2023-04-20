@@ -17,7 +17,7 @@ using namespace ns3;
 class mapper : public Application
 {
 public:
-    mapper(uint16_t port, Ipv4InterfaceContainer &ip, std::map<int, char> map_set, int size, int i);
+    mapper(uint16_t id, uint16_t port, Ipv4InterfaceContainer &ip, std::map<int, char> map_set, int size, int i);
     virtual ~mapper();
 
 private:
@@ -25,6 +25,7 @@ private:
     void HandleRead(Ptr<Socket> socket);
     void HandleAccept(Ptr<Socket> socket, const Address &from);
 
+    uint16_t id;
     uint16_t port;
     Ptr<Socket> socket;
     Ipv4InterfaceContainer ip;
@@ -33,8 +34,9 @@ private:
     int i;
 };
 
-mapper::mapper(uint16_t port, Ipv4InterfaceContainer &ip, std::map<int, char> map, int size, int i)
-    : port(port),
+mapper::mapper(uint16_t id, uint16_t port, Ipv4InterfaceContainer &ip, std::map<int, char> map, int size, int i)
+    : id(id),
+      port(port),
       ip(ip),
       map_set(map),
       size(size),
@@ -80,6 +82,7 @@ void mapper::HandleRead(Ptr<Socket> socket)
                 MyHeader s_header;
                 char new_data = kv.second;
                 s_header.SetData(new_data);
+                s_header.SetId(id);
                 Ptr<Packet> s_packet = Create<Packet>(s_header.GetSerializedSize());
                 s_packet->AddHeader(s_header);
                 Ptr<Socket> socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
