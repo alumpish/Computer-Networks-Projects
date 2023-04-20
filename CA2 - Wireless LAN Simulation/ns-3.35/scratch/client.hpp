@@ -12,10 +12,11 @@
 
 #include "my_header.hpp"
 #include "utils.hpp"
+#include "consts.hpp"
 
 using namespace ns3;
 
-
+int idx = 0;
 class client : public Application
 {
 public:
@@ -108,7 +109,8 @@ void client::GenerateTraffic(Ptr<Socket> socket, Ipv4InterfaceContainer ip, uint
     packet->Print(std::cout);
     socket->Send(packet);
 
-    Simulator::Schedule(Seconds(0.1), &GenerateTraffic, socket, ip, port, rand() % 26);
+    Simulator::Schedule(Seconds(0.1), &GenerateTraffic, socket, ip, port, MSG[idx] - 97);
+    idx = (idx + 1) % MSG.size();
 }
 
 #endif
