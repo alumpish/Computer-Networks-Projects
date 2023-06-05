@@ -9,14 +9,24 @@ NetworkHandler::NetworkHandler(Network network)
     : network_(network) {}
 
 std::string NetworkHandler::lsrp(const Cli::ArgumentGroups& args) {
-    int node = std::stoi(args.getArgumentGroups()[0][0]);
-    network_.lsrp(node);
+    if (args.getArgumentGroups().size() == 0) {
+        network_.lsrp();
+    }
+    else {
+        int node = std::stoi(args.getArgumentGroups()[0][0]);
+        network_.lsrp(node);
+    }
     return "";
 }
 
 std::string NetworkHandler::dvrp(const Cli::ArgumentGroups& args) {
-    int node = std::stoi(args.getArgumentGroups()[0][0]);
-    network_.dvrp(node);
+    if (args.getArgumentGroups().size() == 0) {
+        network_.dvrp();
+    }
+    else {
+        int node = std::stoi(args.getArgumentGroups()[0][0]);
+        network_.dvrp(node);
+    }
     return "";
 }
 
