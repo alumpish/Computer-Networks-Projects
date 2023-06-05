@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 
+#include "utils.hpp"
+
 Cli::ArgumentGroups::ArgumentGroups() {}
 
 void Cli::ArgumentGroups::parse(const std::string& args_line) {
@@ -43,13 +45,13 @@ void Cli::run() {
     std::string current_command;
     while (input_stream_ >> current_command) {
         try {
-            auto found_command = findMatchingCommand(current_command);
+            auto found_command = findMatchingCommand(trim(current_command));
             std::string current_args;
-            input_stream_ >> current_args;
-            output_stream_ << found_command.run(current_args);
+            std::getline(input_stream_, current_args);
+            output_stream_ << found_command.run(trim(current_args)) << std::endl;
         }
         catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
+            std::cerr << e.what() << std::endl;
         }
     }
 }
