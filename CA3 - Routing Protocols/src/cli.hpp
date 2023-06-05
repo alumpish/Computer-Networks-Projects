@@ -11,7 +11,7 @@ public:
     class ArgumentGroups {
     public:
         using Argument = std::string;
-        using ArgumentGroup = std::vector<const Argument&>;
+        using ArgumentGroup = std::vector<Argument>;
 
         ArgumentGroups();
 

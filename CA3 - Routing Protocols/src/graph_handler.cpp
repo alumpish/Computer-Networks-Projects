@@ -1,9 +1,11 @@
 #include "graph_handler.hpp"
 
+#include <functional>
+#include <string>
+#include <vector>
+
 #include "cli.hpp"
-#include "functional"
 #include "graph.hpp"
-#include "string"
 
 GraphHandler::GraphHandler(Graph& graph)
     : graph_(graph) {}
@@ -20,7 +22,7 @@ std::string GraphHandler::topology(const Cli::ArgumentGroups& args) {
 
     auto findNodesCount = [](const Cli::ArgumentGroups args) -> int {
         int max_node_id = 0;
-        for (const auto& arg_group : args.getArgumentGroups()) {
+        for (const auto arg_group : args.getArgumentGroups()) {
             int src = std::stoi(arg_group[0]);
             int dest = std::stoi(arg_group[1]);
             max_node_id = std::max(max_node_id, std::max(src, dest));
@@ -29,7 +31,7 @@ std::string GraphHandler::topology(const Cli::ArgumentGroups& args) {
     };
 
     graph_.setNodesCount(findNodesCount(args));
-    for (const auto& arg_group : args.getArgumentGroups())
+    for (const auto arg_group : args.getArgumentGroups())
         addLink(arg_group, graph_);
 
     return "OK";
@@ -40,13 +42,13 @@ std::string GraphHandler::show(const Cli::ArgumentGroups& args) {
 }
 
 std::string GraphHandler::modify(const Cli::ArgumentGroups& args) {
-    const auto& arg_group = args.getArgumentGroups()[0];
+    const auto arg_group = args.getArgumentGroups()[0];
     graph_.changeLinkCost(std::stoi(arg_group[0]), std::stoi(arg_group[1]), std::stoi(arg_group[2]));
     return "OK";
 }
 
 std::string GraphHandler::remove(const Cli::ArgumentGroups& args) {
-    const auto& arg_group = args.getArgumentGroups()[0];
+    const auto arg_group = args.getArgumentGroups()[0];
     graph_.removeLink(std::stoi(arg_group[0]), std::stoi(arg_group[1]));
     return "OK";
 }
@@ -57,8 +59,8 @@ void GraphHandler::setupCli(Cli& cli) {
         return std::bind(f, this, std::placeholders::_1);
     };
 
-    cli.addCommand(Command("topology", bind(topology)));
-    cli.addCommand(Command("show", bind(show)));
-    cli.addCommand(Command("modify", bind(modify)));
-    cli.addCommand(Command("remove", bind(remove)));
+    cli.addCommand(Command("topology", bind(&GraphHandler::topology)));
+    cli.addCommand(Command("show", bind(&GraphHandler::show)));
+    cli.addCommand(Command("modify", bind(&GraphHandler::modify)));
+    cli.addCommand(Command("remove", bind(&GraphHandler::remove)));
 }

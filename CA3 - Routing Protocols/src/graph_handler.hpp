@@ -1,8 +1,10 @@
 #ifndef GRAPH_HANDLER_HPP
 #define GRAPH_HANDLER_HPP
 
-#include "graph.hpp"
+#include <string>
+
 #include "cli.hpp"
+#include "graph.hpp"
 
 class GraphHandler {
 public:
