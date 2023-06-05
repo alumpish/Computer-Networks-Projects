@@ -34,6 +34,10 @@ int Graph::getCost(int src, int dest) const {
     return adj_vec_[src - 1][dest - 1].cost_;
 }
 
+int Graph::getNodesCount() const {
+    return adj_vec_.size();
+}
+
 std::string Graph::toString() const {
     std::ostringstream output_str;
     output_str << std::setw(5) << " ";

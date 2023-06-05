@@ -1,10 +1,13 @@
 #include "network.hpp"
 
+#include <limits.h>
+
 #include <iostream>
+#include <vector>
 
 Network::Network(Graph& graph) : graph_(graph) {}
 
-int minDistance(std::vector<int> dist, std::vector<bool> visited) {
+int Network::minDistance(std::vector<int> dist, std::vector<bool> visited) {
     int min = INT_MAX, min_index;
 
     for (int v = 0; v < dist.size(); ++v) {
