@@ -4,8 +4,12 @@
 #include <string>
 #include <vector>
 
-Graph::Graph(int nodes_count)
-    : adj_vec_(nodes_count, std::vector<Graph::Link>(nodes_count)) {}
+Graph::Graph() {}
+
+void Graph::setNodesCount(int nodes_count) {
+    adj_vec_ = std::vector<std::vector<Link>>(
+        nodes_count, std::vector<Link>(nodes_count));
+}
 
 void Graph::addLink(int src, int dest, int cost) {
     adj_vec_[src - 1][dest - 1].cost_ = cost;
@@ -18,6 +22,11 @@ void Graph::addLink(int src, int dest, int cost) {
 void Graph::changeLinkCost(int src, int dest, int new_cost) {
     adj_vec_[src - 1][dest - 1].cost_ = new_cost;
     adj_vec_[dest - 1][src - 1].cost_ = new_cost;
+}
+
+void Graph::removeLink(int src, int dest) {
+    adj_vec_[src - 1][dest - 1].cost_ = -1;
+    adj_vec_[dest - 1][src - 1].cost_ = -1;
 }
 
 int Graph::getCost(int src, int dest) const {

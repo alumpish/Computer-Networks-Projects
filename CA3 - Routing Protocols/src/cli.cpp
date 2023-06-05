@@ -18,12 +18,8 @@ void Cli::ArgumentGroups::parse(const std::string& args_line) {
     }
 }
 
-Cli::ArgumentGroups::ArgumentGroup Cli::ArgumentGroups::getArgumentGroup(int arg_group_num) const {
-    return arg_groups_[arg_group_num];
-}
-
-Cli::ArgumentGroups::ArgumentGroup Cli::ArgumentGroups::operator[](int arg_group_num) const {
-    return getArgumentGroup(arg_group_num);
+std::vector<Cli::ArgumentGroups::ArgumentGroup> Cli::ArgumentGroups::getArgumentGroups() const {
+    return arg_groups_;
 }
 
 Cli::Command::Command(const std::string& cmd_name, ExecFunc exec_func)
