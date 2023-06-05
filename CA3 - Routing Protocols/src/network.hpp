@@ -8,10 +8,12 @@
 class Network {
 public:
     Network(Graph& graph);
+    int minDistance(std::vector<int> dist, std::vector<bool> visited);
+    void printDist(std::vector<int> dist);
+    void printPath(std::vector<int> parent, int j);
+    void printNode(int source, std::vector<int> dist, std::vector<int> parent, int n);
     void lsrp();
     void lsrp(int source);
-    int minDistance(std::vector<int> dist, std::vector<bool> visited);
-    void printPath(std::vector<int> parent, int j);
     void dvrp();
     void dvrp(int source);
 

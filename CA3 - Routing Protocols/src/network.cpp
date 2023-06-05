@@ -8,7 +8,7 @@
 Network::Network(Graph& graph) : graph_(graph) {}
 
 int Network::minDistance(std::vector<int> dist, std::vector<bool> visited) {
-    int min = INT_MAX, min_index;
+    int min = INT_MAX, min_index = 0;
 
     for (int v = 0; v < dist.size(); ++v) {
         if (!visited[v] && dist[v] <= min) {
@@ -18,6 +18,37 @@ int Network::minDistance(std::vector<int> dist, std::vector<bool> visited) {
     }
 
     return min_index;
+}
+
+void Network::printDist(std::vector<int> dist) {
+    std::cout << "Node\tDistance" << std::endl;
+    for (int i = 0; i < dist.size(); ++i) {
+        if (dist[i] == INT_MAX) 
+            std::cout << i + 1 << "\t" << "-" << std::endl;
+        else
+            std::cout << i + 1 << "\t" << dist[i] << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void Network::printPath(std::vector<int> parent, int j) {
+    if (parent[j] == -1) {
+        return;
+    }
+
+    printPath(parent, parent[j] - 1);
+    std::cout << " > " << j + 1;
+}
+
+void Network::printNode(int source, std::vector<int> dist, std::vector<int> parent, int n) {
+    std::cout << "Source: " << source << std::endl;
+    std::cout << "Node\tDistance\tPath" << std::endl;
+    for (int i = 0; i < n; ++i) {
+        std::cout << i + 1 << "\t" << dist[i] << "\t\t" << source;
+        printPath(parent, i);
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void Network::lsrp() {
@@ -34,7 +65,6 @@ void Network::lsrp(int source) {
     std::vector<int> parent(n, -1);
 
     dist[source - 1] = 0;
-    parent[source - 1] = source;
 
     for (int i = 0; i < n - 1; ++i) {
         int u = minDistance(dist, visited);
@@ -47,25 +77,13 @@ void Network::lsrp(int source) {
                 parent[v] = u + 1;
             }
         }
+
+        std::cout << "Iter " << i << " Src:" << source << std::endl;
+        std::cout << "-----------------------------" << std::endl;
+        printDist(dist);
     }
 
-    std::cout << "Source: " << source << std::endl;
-    std::cout << "Node\tDistance\tPath" << std::endl;
-    for (int i = 0; i < n; ++i) {
-        std::cout << i + 1 << "\t" << dist[i] << "\t\t";
-        printPath(parent, i);
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Network::printPath(std::vector<int> parent, int j) {
-    if (parent[j] == -1) {
-        return;
-    }
-
-    printPath(parent, parent[j] - 1);
-    std::cout << j + 1 << " ";
+    printNode(source, dist, parent, n);
 }
 
 void Network::dvrp() {
@@ -82,7 +100,6 @@ void Network::dvrp(int source) {
     std::vector<int> parent(n, -1);
 
     dist[source - 1] = 0;
-    parent[source - 1] = source;
 
     for (int i = 0; i < n - 1; ++i) {
         int u = minDistance(dist, visited);
@@ -95,14 +112,11 @@ void Network::dvrp(int source) {
                 parent[v] = u + 1;
             }
         }
+
+        std::cout << "Iter " << i << " Src:" << source << std::endl;
+        std::cout << "-----------------------------" << std::endl;
+        printDist(dist);
     }
 
-    std::cout << "Source: " << source << std::endl;
-    std::cout << "Node\tDistance\tPath" << std::endl;
-    for (int i = 0; i < n; ++i) {
-        std::cout << i + 1 << "\t" << dist[i] << "\t\t";
-        printPath(parent, i);
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    printNode(source, dist, parent, n);
 }

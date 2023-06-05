@@ -24,7 +24,6 @@ public:
     int getNodesCount() const;
     
     std::string toString() const;
-    std::vector<int> shortestPath(int src, int dest) const;
 
 private:
     std::vector<std::vector<Link>> adj_vec_;
