@@ -22,8 +22,7 @@ void Graph::Node::addNeighbor(Node* neighbor, int link_cost) {
         new_link,
         [](const std::pair<int, Node*> f, const std::pair<int, Node*> s) {
             return f.second->getId() < s.second->getId();
-        }
-    );
+        });
     neighbors_.insert(found_upper_bound, new_link);
 }
 
@@ -45,8 +44,7 @@ std::pair<int, Graph::Node*> Graph::Node::findLink(int neighbor_id) const {
         neighbors_.end(),
         [neighbor_id](const std::pair<int, Node&> x) {
             return x.second.getId() == neighbor_id;
-        }
-    );
+        });
 
     if (found_neighbor == neighbors_.end())
         ; // Throw link not found;
@@ -72,8 +70,7 @@ Graph::Node* Graph::findNode(int node_id) const {
         nodes_.end(),
         [node_id](const Node* x) {
             return x->getId() == node_id;
-        }
-    );
+        });
 
     if (found_node == nodes_.end())
         ; // Throw node not found
