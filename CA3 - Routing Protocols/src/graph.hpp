@@ -21,7 +21,8 @@ public:
     void changeLinkCost(int src, int dest, int new_cost);
     void removeLink(int src, int dest);
     int getCost(int src, int dest) const;
-
+    int getNodesCount() const;
+    
     std::string toString() const;
 
 private:
