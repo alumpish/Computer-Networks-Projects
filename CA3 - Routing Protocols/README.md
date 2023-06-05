@@ -6,6 +6,7 @@
   - [Command Line Interface](#command-line-interface)
   - [Graph](#graph)
   - [Graph's Command Handlin](#graphs-command-handling)
+  - [Network's Command Handling](#networks-command-handling)
 
 ## Code Documentation
 
@@ -110,3 +111,8 @@ void GraphHandler::setupCli(Cli& cli) {
 ```
 
 The only part that might need an explanation is the bind lambda. This method simply binds the function pointer with an instance of the `GraphHandler` so that it will be useable by the `Cli` class. Then the `addCommand` of the `Cli` class is called to, ofcourse, add the commands.
+
+## Network's Command Handling
+
+This is exactly similar to `GraphHandler`; So similar that we should have made an interface ot something out of it!!<br>
+We will finish this section here as there is no need for further explanations.
