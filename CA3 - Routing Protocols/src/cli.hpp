@@ -11,13 +11,12 @@ public:
     class ArgumentGroups {
     public:
         using Argument = std::string;
-        using ArgumentGroup = std::vector<const Argument&>;
+        using ArgumentGroup = std::vector<Argument>;
 
         ArgumentGroups();
 
         void parse(const std::string& args_line);
-        ArgumentGroup getArgumentGroup(int arg_group_num) const;
-        ArgumentGroup operator[](int arg_group_num) const;
+        std::vector<ArgumentGroup> getArgumentGroups() const;
 
     private:
         std::vector<ArgumentGroup> arg_groups_;

@@ -13,9 +13,13 @@ public:
     };
 
     // Node ids are 1 based
-    Graph(int nodes_count);
+    Graph();
+
+    void setNodesCount(int nodes_count);
+
     void addLink(int src, int dest, int cost);
     void changeLinkCost(int src, int dest, int new_cost);
+    void removeLink(int src, int dest);
     int getCost(int src, int dest) const;
     int getNodesCount() const;
     

@@ -1,6 +1,9 @@
-#include <cli.hpp>
+#include "cli.hpp"
+
 #include <sstream>
 #include <string>
+
+#include "utils.hpp"
 
 Cli::ArgumentGroups::ArgumentGroups() {}
 
@@ -18,12 +21,8 @@ void Cli::ArgumentGroups::parse(const std::string& args_line) {
     }
 }
 
-Cli::ArgumentGroups::ArgumentGroup Cli::ArgumentGroups::getArgumentGroup(int arg_group_num) const {
-    return arg_groups_[arg_group_num];
-}
-
-Cli::ArgumentGroups::ArgumentGroup Cli::ArgumentGroups::operator[](int arg_group_num) const {
-    return getArgumentGroup(arg_group_num);
+std::vector<Cli::ArgumentGroups::ArgumentGroup> Cli::ArgumentGroups::getArgumentGroups() const {
+    return arg_groups_;
 }
 
 Cli::Command::Command(const std::string& cmd_name, ExecFunc exec_func)
@@ -46,13 +45,13 @@ void Cli::run() {
     std::string current_command;
     while (input_stream_ >> current_command) {
         try {
-            auto found_command = findMatchingCommand(current_command);
+            auto found_command = findMatchingCommand(trim(current_command));
             std::string current_args;
-            input_stream_ >> current_args;
-            output_stream_ << found_command.run(current_args);
+            std::getline(input_stream_, current_args);
+            output_stream_ << found_command.run(trim(current_args)) << std::endl;
         }
         catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
+            std::cerr << e.what() << std::endl;
         }
     }
 }
