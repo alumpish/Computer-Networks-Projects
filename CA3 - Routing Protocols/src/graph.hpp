@@ -17,8 +17,10 @@ public:
     void addLink(int src, int dest, int cost);
     void changeLinkCost(int src, int dest, int new_cost);
     int getCost(int src, int dest) const;
-
+    int getNodesCount() const;
+    
     std::string toString() const;
+    std::vector<int> shortestPath(int src, int dest) const;
 
 private:
     std::vector<std::vector<Link>> adj_vec_;

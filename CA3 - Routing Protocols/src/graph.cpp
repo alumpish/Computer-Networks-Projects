@@ -20,5 +20,6 @@ int Graph::getCost(int src, int dest) const {
     return adj_vec_[src - 1][dest - 1].cost_;
 }
 
-std::string Graph::toString() const {
+int Graph::getNodesCount() const {
+    return adj_vec_.size();
 }
