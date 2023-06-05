@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 
+#include "exceptions.hpp"
 #include "utils.hpp"
 
 Cli::ArgumentGroups::ArgumentGroups() {}
@@ -32,7 +33,14 @@ Cli::Command::Command(const std::string& cmd_name, ExecFunc exec_func)
 std::string Cli::Command::run(const std::string& args_line) {
     ArgumentGroups args_groups;
     args_groups.parse(args_line);
-    return exec_func_(args_groups);
+    std::string result;
+    try {
+        result = exec_func_(args_groups);
+    }
+    catch (std::exception& e) {
+        result = e.what();
+    }
+    return result;
 }
 
 bool Cli::Command::matchName(const std::string& name) const {
@@ -50,8 +58,13 @@ void Cli::run() {
             std::getline(input_stream_, current_args);
             output_stream_ << found_command.run(trim(current_args)) << std::endl;
         }
+        catch (const CommandNotFound& e) {
+            std::string flushed_line;
+            std::getline(std::cin, flushed_line);
+            std::cout << e.what() << std::endl;
+        }
         catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            std::cout << e.what() << std::endl;
         }
     }
 }
@@ -64,5 +77,5 @@ const Cli::Command& Cli::findMatchingCommand(const std::string& command_name) co
     for (auto& current_command : commands_list_)
         if (current_command.matchName(command_name))
             return current_command;
-    // Throw NotFound
+    throw CommandNotFound();
 }

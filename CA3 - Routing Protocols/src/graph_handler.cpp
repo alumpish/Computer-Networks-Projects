@@ -6,6 +6,7 @@
 
 #include "cli.hpp"
 #include "graph.hpp"
+#include "exceptions.hpp"
 
 GraphHandler::GraphHandler(Graph& graph)
     : graph_(graph) {}
@@ -16,7 +17,7 @@ std::string GraphHandler::topology(const Cli::ArgumentGroups& args) {
         int dest = std::stoi(arg_group[1]);
         int cost = std::stoi(arg_group[2]);
         if (src == dest)
-            ; // Throw exception
+            throw IntraLinkDisallowed();
         graph.addLink(src, dest, cost);
     };
 
@@ -49,7 +50,13 @@ std::string GraphHandler::modify(const Cli::ArgumentGroups& args) {
 
 std::string GraphHandler::remove(const Cli::ArgumentGroups& args) {
     const auto arg_group = args.getArgumentGroups()[0];
-    graph_.removeLink(std::stoi(arg_group[0]), std::stoi(arg_group[1]));
+    int src = std::stoi(arg_group[0]);
+    int dest = std::stoi(arg_group[1]);
+    if (src == dest)
+        throw IntraLinkDisallowed();
+    if (graph_.getCost(src, dest) == -1)
+        throw UndefinedLinkReference();
+    graph_.removeLink(src, dest);
     return "OK";
 }
 
