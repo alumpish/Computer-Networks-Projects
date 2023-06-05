@@ -41,6 +41,8 @@ std::string Graph::toString() const {
     for (int i = 1; i <= adj_vec_.size(); ++i)
         output_str << std::setw(5) << i;
     output_str << std::endl;
+    output_str << std::string(5 * (adj_vec_.size() + 1) + 1, '-');
+    output_str << std::endl;
     for (int i = 1; i <= adj_vec_.size(); ++i) {
         output_str << std::setw(5) << i;
         output_str << "|";
