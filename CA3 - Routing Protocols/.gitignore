@@ -31,4 +31,9 @@
 *.out
 *.app
 
-.vscode
+# VSCode
+.vscode/
+
+# Bin Folders
+bin/
+debug/
