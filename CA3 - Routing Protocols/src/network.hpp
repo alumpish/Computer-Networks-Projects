@@ -1,3 +1,8 @@
+#ifndef NETWORK_HPP
+#define NETWORK_HPP
+
+#include <vector>
+
 #include "graph.hpp"
 
 class Network {
@@ -13,3 +18,5 @@ public:
 private:
     Graph& graph_;
 };
+
+#endif
