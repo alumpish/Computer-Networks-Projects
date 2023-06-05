@@ -7,31 +7,21 @@
 
 class Graph {
 public:
-    class Node {
-    public:
-        Node(int id);
-        int getId() const;
-        void addNeighbor(Node* neighbor, int link_cost);
-        Node* getNeighbor(int neighbor_id);
-        int getLinkCost(int neighbor_id) const;
-        int getLinkCost(const Node* neighbor) const;
-
-    private:
-        int id_;
-        std::vector<std::pair<int, Node*>> neighbors_;
-
-        std::pair<int, Node*> findLink(int neighbor_id) const;
+    struct Link {
+        int cost_ = -1;
+        bool is_connected_ = false;
     };
 
     // Node ids are 1 based
     Graph(int nodes_count);
     void addLink(int src, int dest, int cost);
+    void changeLinkCost(int src, int dest, int new_cost);
+    int getCost(int src, int dest) const;
+
     std::string toString() const;
 
 private:
-    std::vector<Node*> nodes_;
-
-    Node* findNode(int node_id) const;
+    std::vector<std::vector<Link>> adj_vec_;
 };
 
 #endif
