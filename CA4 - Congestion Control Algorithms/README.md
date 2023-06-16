@@ -34,6 +34,16 @@ In summary, flow control focuses on regulating the data flow between a sender an
 
 ### Q2. "Describe New Reno's algorithm shortly."
 
+New Reno is an enhancement to the Reno congestion control algorithm used in TCP (Transmission Control Protocol), which is widely employed for reliable data transmission over computer networks. New Reno improves upon Reno's congestion control mechanism by introducing a modification to the way TCP handles packet retransmissions after detecting congestion.
+
+In the original Reno algorithm, when congestion is detected, TCP reduces its congestion window (cwnd) and enters a slow-start phase, gradually increasing the cwnd to probe for available network capacity. However, Reno has a limitation known as "TCP global synchronization" that can cause all TCP connections sharing a bottleneck link to enter congestion avoidance simultaneously, leading to suboptimal network performance.
+
+New Reno addresses this limitation by introducing a concept called "fast recovery" during the congestion avoidance phase. When a TCP sender receives duplicate acknowledgments (ACKs) indicating that a packet has been lost, instead of halving the cwnd and entering slow-start, New Reno enters fast recovery. In fast recovery, the sender increases the cwnd by a smaller value, known as the "fast recovery threshold" or ssthresh, and relies on receiving further duplicate ACKs to retransmit the lost packet.
+
+If the sender receives three duplicate ACKs, it assumes that the next transmitted packet has been lost and performs a fast retransmit by retransmitting the missing packet without waiting for a timeout. After fast retransmit, the sender reduces the cwnd to half its value and enters congestion avoidance, increasing the cwnd more cautiously as before.
+
+The introduction of fast recovery in New Reno allows TCP connections to recover from losses more quickly, avoiding unnecessary slow-start episodes. This improvement helps to mitigate the TCP global synchronization issue, as multiple connections sharing the same bottleneck link can recover from losses at different rates, leading to better overall network performance.
+
 ### Q3. "Describe BBR algorithm shortly."
 
 ### Q4. "What's the difference between these three algorithms."
