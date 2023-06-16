@@ -18,7 +18,50 @@
 
 ### NewReno Class
 
+#### Public Methods
+
+##### The Constructor
+
+##### `void sendData()`
+
+##### `void onPacketLoss(int)`
+
+##### `void onRTTUpdate(int)`
+
+##### `void onSelectiveAck(int)`
+
+##### `void log(std::ofstream&) const`
+
+##### `void retransmit()`
+
+##### `void run()`
+
+#### Private Methods:
+
+##### `double lossProbability()`
+
 ### Reno Class
+
+#### Public Methods
+
+##### The Constructor
+
+##### `void sendData()`
+
+##### `void onPacketLoss(int)`
+
+##### `void onRTTUpdate(int)`
+
+##### `void log(std::ofstream&) const`
+
+##### `void retransmit()`
+
+##### `void run()`
+
+
+#### Private Methods
+
+##### `double lossProbability()`
 
 ## Questions
 
