@@ -211,6 +211,20 @@ First phase of these algorithms are almost same. We have possible loss in all of
 Best algorithm for high-speed networks is BBR as we see in images. But for low-speed networks, Reno and NewReno could be as good as BBR.
 
 
+&emsp;
+
+## Reno
+![Alt text](images/reno.jpg)
+
+&emsp;
+
+## NewReno
+![Alt text](images/new_reno.jpg)
+
+&emsp;
+
+## BBR
+![Alt text](images/bbr.jpg)
 
 ### Q6. "Name some of the congestion control algorithms that are not mentioned in this project."
 
