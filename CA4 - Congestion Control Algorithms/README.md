@@ -46,6 +46,18 @@ The introduction of fast recovery in New Reno allows TCP connections to recover 
 
 ### Q3. "Describe BBR algorithm shortly."
 
+BBR (Bottleneck Bandwidth and Round-Trip Time) is a congestion control algorithm developed by Google for TCP (Transmission Control Protocol) to optimize network performance and throughput. It aims to efficiently utilize available network capacity by dynamically adjusting the sending rate based on network conditions.
+
+BBR takes a different approach compared to traditional congestion control algorithms like Reno or Cubic, which primarily rely on packet loss as an indicator of network congestion. Instead, BBR focuses on two key metrics: the bottleneck bandwidth and the round-trip time (RTT) of the network.
+
+The BBR algorithm estimates the available bottleneck bandwidth by measuring the maximum number of bytes that can be transmitted through the network without causing queuing delay. It does this by continuously probing the network with small bursts of packets and observing the resulting RTT variations.
+
+Based on the observed bottleneck bandwidth and RTT, BBR dynamically adjusts the sending rate to maximize network utilization without causing excessive queuing delay. It strives to maintain a low queue occupancy at the bottleneck link to minimize delay and maximize throughput.
+
+BBR utilizes a congestion model called the "BBR gain cycle" to calculate the sending rate. It consists of four phases: Startup, Drain, ProbeBW, and ProbeRTT. During Startup, BBR rapidly increases the sending rate until it detects congestion. In the Drain phase, it reduces the rate to empty the queue. The ProbeBW phase explores the available bandwidth, and the ProbeRTT phase refines the RTT estimation for more accurate control.
+
+By continuously monitoring the bottleneck bandwidth and RTT, BBR adapts its sending rate in real-time to maintain optimal network utilization while minimizing queuing delay. This allows BBR to achieve higher throughput and better performance in diverse network conditions, making it particularly effective for modern high-speed networks and long-distance connections.
+
 ### Q4. "What's the difference between these three algorithms."
 
 ### Q5. "Analyze and describe these three algorithms."
