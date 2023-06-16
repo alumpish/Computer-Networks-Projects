@@ -3,6 +3,7 @@
 ## Contents
 
 - [Code Documentation](#code-documentation)
+
   - [NewReno Class](#newreno-class)
   - [Reno Class](#reno-class)
 
@@ -22,23 +23,57 @@
 
 ##### The Constructor
 
+The NewReno constructor initializes the NewReno congestion control algorithm with the following parameters:
+
+cwnd: Initial congestion window size. It represents the number of packets that can be sent without waiting for an acknowledgment.
+
+ssthresh: Initial slow start threshold. It determines when the algorithm transitions from the slow start phase to the congestion avoidance phase.
+
+fileSize: Size of the file being transmitted.
+
+rtt\*: Round-trip time. It represents the time taken for a packet to travel from the sender to the receiver and back.
+
+losstresh\*: Loss threshold. It is used to detect loss events and trigger congestion control mechanisms.
+
+lossScale\*: Loss scale factor. It adjusts the congestion window reduction during congestion events.
+
+time\*: Time counter. It can be used to track the duration of the transmission or measure timing-related aspects of the algorithm.
+
+retransRemain\_: Remaining retransmission attempts. It keeps track of the number of retransmission attempts during the fast retransmit phase.
+
 ##### `void sendData()`
+
+The sendData() function uses a switch-case statement to determine the current mode of the algorithm and performs the corresponding actions based on the mode. The different modes include:
+
+SLOW*START: In this mode, if the congestion window (cwnd*) is smaller than the slow start threshold (ssthresh*), the congestion window is doubled (cwnd* \*= 2). Once the congestion window exceeds the slow start threshold, the mode is switched to CONGESTION_AVOIDANCE.
+
+CONGESTION_AVOIDANCE: In this mode, the congestion window is increased by the maximum segment size (MSS) for each successful transmission. This helps to gradually increase the sending rate while avoiding congestion.
+
+FAST*RECOVERY: If the algorithm enters fast recovery mode, the congestion window is reduced by half (cwnd* = cwnd* / 2) and the slow start threshold is set to the current congestion window size (ssthresh* = cwnd\_). The algorithm then switches to FAST_TRANSIMIT mode.
+
+FAST*TRANSIMIT: In this mode, the algorithm keeps track of the remaining retransmission attempts (retransRemain*). If the retransmission attempts are exhausted (retransRemain\_ <= 0), the algorithm switches back to CONGESTION_AVOIDANCE mode.
 
 ##### `void onPacketLoss(int)`
 
-##### `void onRTTUpdate(int)`
-
-##### `void onSelectiveAck(int)`
+On packet loss we go to FAST_RECOVERY mode and set the retransmission attempts.
 
 ##### `void log(std::ofstream&) const`
 
+This function logs the current state of the algorithm to the given output stream. It logs the current congestion window size (cwnd*), slow start threshold (ssthresh*), and mode.
+
 ##### `void retransmit()`
 
+This function is called when a packet needs to be retransmitted. It decrements the retransmission attempts (retransRemain\_) and switches to FAST_RECOVERY mode.
+
 ##### `void run()`
+
+This function runs the algorithm. It first initializes the algorithm by setting the initial congestion window size (cwnd*) and slow start threshold (ssthresh*). It then enters a loop that runs until the congestion window size reaches the maximum value (cwnd* >= maxCwnd*). In each iteration, it calls the sendData() function to send packets and handle congestion. Once the maximum congestion window size is reached, the algorithm terminates.
 
 #### Private Methods:
 
 ##### `double lossProbability()`
+
+This function calculates the probability of packet loss based on the current congestion window size (cwnd*) and the maximum congestion window size (maxCwnd*). It uses a linear function to calculate the probability, which increases as the congestion window size approaches the maximum value.
 
 ### Reno Class
 
@@ -46,22 +81,75 @@
 
 ##### The Constructor
 
-##### `void sendData()`
+The Reno constructor initializes the Reno congestion control algorithm with the following parameters:
 
-##### `void onPacketLoss(int)`
+cwnd: Initial congestion window size. It represents the number of packets that can be sent without waiting for an acknowledgment.
 
-##### `void onRTTUpdate(int)`
+ssthresh: Initial slow start threshold. It determines when the algorithm transitions from the slow start phase to the congestion avoidance phase.
 
-##### `void log(std::ofstream&) const`
+fileSize: Size of the file being transmitted.
 
-##### `void retransmit()`
+rtt\_: Round-trip time. It represents the time taken for a packet to travel from the sender to the receiver and back.
 
-##### `void run()`
+losstresh\_: Loss threshold. It is used to detect loss events and trigger congestion control mechanisms.
 
+lossScale\_: Loss scale factor. It adjusts the congestion window reduction during congestion events.
 
-#### Private Methods
+unacknowledged\_: Number of unacknowledged packets. It keeps track of the packets that have been sent but not yet acknowledged.
 
-##### `double lossProbability()`
+time\_: Time counter. It can be used to track the duration of the transmission or measure timing-related aspects of the algorithm.
+
+retransRemain\_: Remaining retransmission attempts. It keeps track of the number of retransmission attempts during congestion events.
+
+##### `void onSelectiveAck(int)`
+
+In this function we increase retransRemain\_ and go to FAST_RECOVERY mode. Difference between this function and onPacketLoss() is that we don't set the retransmission attempts. Because all lost packet will be handled in one Recovery phase.
+
+### BBR Class
+
+#### Public Methods
+
+##### The Constructor
+
+The BBR constructor initializes the BBR congestion control algorithm with the following parameters:
+
+max_bw: Maximum estimated bottleneck bandwidth. It represents the upper limit of the estimated bandwidth of the network path.
+
+min_rtt: Minimum round-trip time. It represents the lower limit of the round-trip time experienced by the network packets.
+
+fileSize: Size of the file being transmitted.
+
+mode\_: Initial mode of the algorithm, set to STARTUP. The algorithm dynamically adjusts the mode based on network conditions.
+
+cwnd\_: Initial congestion window size, set to 1. It represents the number of packets that can be sent without waiting for an acknowledgment.
+
+rtt\_: Round-trip time, initialized with a default value.
+
+target*cwnd*: Target congestion window size, set to 500. It represents the desired number of packets in flight.
+
+pacing*gain*: Pacing gain factor, set to 2.0. It determines the rate at which packets are transmitted.
+
+gain*cycle*: Gain cycle length, set to 8.0. It influences the pacing gain value.
+
+losstresh\_: Loss threshold. It is used to detect loss events and trigger congestion control mechanisms.
+
+lossScale\_: Loss scale factor. It adjusts the congestion window reduction during congestion events.
+
+time\_: Time counter. It can be used to track the duration of the transmission or measure timing-related aspects of the algorithm.
+
+unacknowledged\_: Number of unacknowledged packets. It keeps track of the packets that have been sent but not yet acknowledged.
+
+retransRemain\_: Remaining retransmission attempts. It keeps track of the number of retransmission attempts during congestion events.
+
+##### `double getSendingRate`
+
+It updates sending rate by pacing*gain* max to max*bandwidth*.
+
+##### `void onBottleneck()`
+
+It switches to Drain phase and decrease cwnd\_ by 25%.
+
+#### Private Methods:
 
 ## Questions
 
@@ -105,18 +193,24 @@ By continuously monitoring the bottleneck bandwidth and RTT, BBR adapts its send
 
 Reno, New Reno, and BBR are three different congestion control algorithms used in TCP (Transmission Control Protocol) for managing data transmission over computer networks. Here are the key differences between these algorithms:
 
-  1. Reno:
-  Reno is one of the earliest and most widely deployed congestion control algorithms. It uses a combination of slow-start and congestion avoidance techniques to regulate the sending rate. When congestion is detected based on packet loss, Reno reduces the congestion window (cwnd) and enters a slow-start phase, gradually increasing cwnd to probe for available network capacity. It then enters congestion avoidance, incrementing cwnd more cautiously to maintain network stability. Reno is known for its simplicity but can suffer from global synchronization issues when multiple connections sharing a bottleneck link experience simultaneous congestion events.
+1. Reno:
+   Reno is one of the earliest and most widely deployed congestion control algorithms. It uses a combination of slow-start and congestion avoidance techniques to regulate the sending rate. When congestion is detected based on packet loss, Reno reduces the congestion window (cwnd) and enters a slow-start phase, gradually increasing cwnd to probe for available network capacity. It then enters congestion avoidance, incrementing cwnd more cautiously to maintain network stability. Reno is known for its simplicity but can suffer from global synchronization issues when multiple connections sharing a bottleneck link experience simultaneous congestion events.
 
-  2. New Reno:
-  New Reno is an enhancement to the Reno algorithm designed to address the global synchronization problem. When a packet loss is detected, New Reno enters a fast recovery phase instead of slow-start. In fast recovery, it increases the congestion window by a smaller value and relies on receiving duplicate acknowledgments (ACKs) to retransmit lost packets. This approach allows New Reno to recover from losses more quickly and avoid unnecessary slow-start episodes, improving overall network performance. New Reno is backward compatible with Reno and is widely used in modern TCP implementations.
+2. New Reno:
+   New Reno is an enhancement to the Reno algorithm designed to address the global synchronization problem. When a packet loss is detected, New Reno enters a fast recovery phase instead of slow-start. In fast recovery, it increases the congestion window by a smaller value and relies on receiving duplicate acknowledgments (ACKs) to retransmit lost packets. This approach allows New Reno to recover from losses more quickly and avoid unnecessary slow-start episodes, improving overall network performance. New Reno is backward compatible with Reno and is widely used in modern TCP implementations.
 
-  3. BBR (Bottleneck Bandwidth and Round-Trip Time):
-  BBR is a congestion control algorithm developed by Google. It takes a different approach from Reno and New Reno by focusing on the estimation of bottleneck bandwidth and round-trip time (RTT) to optimize network performance. BBR dynamically adjusts the sending rate based on these metrics rather than relying solely on packet loss as an indicator of congestion. By continuously probing the network and observing RTT variations, BBR estimates the available bottleneck bandwidth and adjusts the sending rate to maximize network utilization without causing excessive queuing delay. BBR aims to achieve high throughput and low delay by maintaining a low queue occupancy at the bottleneck link. It is particularly effective for high-speed networks and long-distance connections.
+3. BBR (Bottleneck Bandwidth and Round-Trip Time):
+   BBR is a congestion control algorithm developed by Google. It takes a different approach from Reno and New Reno by focusing on the estimation of bottleneck bandwidth and round-trip time (RTT) to optimize network performance. BBR dynamically adjusts the sending rate based on these metrics rather than relying solely on packet loss as an indicator of congestion. By continuously probing the network and observing RTT variations, BBR estimates the available bottleneck bandwidth and adjusts the sending rate to maximize network utilization without causing excessive queuing delay. BBR aims to achieve high throughput and low delay by maintaining a low queue occupancy at the bottleneck link. It is particularly effective for high-speed networks and long-distance connections.
 
 In summary, Reno is a classic congestion control algorithm, New Reno is an enhancement to address global synchronization, and BBR is a modern algorithm that optimizes throughput and delay by dynamically adjusting the sending rate based on bottleneck bandwidth and RTT measurements.
 
 ### Q5. "Analyze and describe these three algorithms."
+
+First phase of these algorithms are almost same. We have possible loss in all of them but BBR handle it better than others. Also BBR has the best throughput and lowest RTT. When loss happens, BBR goes to Drain phase and decrease the cwnd slowly. But in Reno and NewReno they go to Fast Recovery phase and cwnd halves. If we have multiple loss in one window, NewReno is better than Reno because it doesn't halve the cwnd again and again. But BBR is better than both of them because it doesn't halve the cwnd at all.
+
+Best algorithm for high-speed networks is BBR as we see in images. But for low-speed networks, Reno and NewReno could be as good as BBR.
+
+
 
 ### Q6. "Name some of the congestion control algorithms that are not mentioned in this project."
 
@@ -128,12 +222,12 @@ Cubic has been widely implemented in various operating systems and networking fr
 
 Cubic has several advantages and characteristics that make it a superior congestion control algorithm in certain scenarios. Here are a few reasons why Cubic may be considered superior to other congestion control algorithms in specific criteria:
 
-  1. Scalability: Cubic is designed to perform well in high-speed networks, making it particularly suitable for modern networks with large bandwidth capacities. It achieves scalability by using a cubic function to control the congestion window size, allowing it to adapt to varying network conditions more efficiently.
+1. Scalability: Cubic is designed to perform well in high-speed networks, making it particularly suitable for modern networks with large bandwidth capacities. It achieves scalability by using a cubic function to control the congestion window size, allowing it to adapt to varying network conditions more efficiently.
 
-  2. Fairness: Cubic aims to provide fairness among competing flows sharing the same network resources. It achieves fairness by adapting the sending rate based on congestion signals and the available bandwidth. This ensures that all flows get a fair share of the network capacity, preventing a single flow from dominating the network.
+2. Fairness: Cubic aims to provide fairness among competing flows sharing the same network resources. It achieves fairness by adapting the sending rate based on congestion signals and the available bandwidth. This ensures that all flows get a fair share of the network capacity, preventing a single flow from dominating the network.
 
-  3. Responsiveness: Cubic is designed to be responsive to changes in network conditions. It uses an algorithm that approximates the congestion window growth in a cubic manner, allowing it to react quickly to network congestion or changes in available bandwidth. This responsiveness helps to mitigate congestion and maintain optimal network performance.
+3. Responsiveness: Cubic is designed to be responsive to changes in network conditions. It uses an algorithm that approximates the congestion window growth in a cubic manner, allowing it to react quickly to network congestion or changes in available bandwidth. This responsiveness helps to mitigate congestion and maintain optimal network performance.
 
-  4. Stability: Cubic is known for its stability and low packet loss rates. It uses a window growth model that results in a smooth increase in sending rates, preventing sudden bursts or rapid drops in congestion window size. This stability leads to improved network performance and reduced packet loss.
+4. Stability: Cubic is known for its stability and low packet loss rates. It uses a window growth model that results in a smooth increase in sending rates, preventing sudden bursts or rapid drops in congestion window size. This stability leads to improved network performance and reduced packet loss.
 
 It's important to note that the effectiveness of congestion control algorithms can vary depending on the network environment and specific use cases. Different algorithms may perform better under different conditions, and the choice of algorithm often depends on factors such as network topology, latency, and available bandwidth. Network administrators and researchers continually evaluate and develop new congestion control algorithms to address the evolving needs of modern networks.
