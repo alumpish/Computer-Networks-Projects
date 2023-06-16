@@ -27,11 +27,6 @@ double BBR::lossProbability() {
     return lossProbability * lossScale_ * 100;
 }
 
-void BBR::updateRTT(double rtt) {
-    if (rtt < min_rtt_)
-        min_rtt_ = rtt;
-}
-
 void BBR::updateBandwidth(double bandwidth) {
     max_bandwidth_ = bandwidth;
 }
@@ -75,7 +70,7 @@ void BBR::sendData() {
     case Mode::PROBE_RTT:
         if (rtt_ > min_rtt_ * 1.25) {
             mode_ = Mode::DRAIN;
-            cwnd_ *= 0.75;
+            // cwnd_ *= 0.75;
             break;
         }
         cwnd_ += 1;
@@ -103,7 +98,7 @@ double BBR::calculateCwndGain() {
 }
 
 void BBR::updateRTT() {
-    rtt_ += lossProbability() * 0.001 * rtt_;
+    rtt_ += lossProbability() * 0.01 * (1.12 * min_rtt_ - rtt_);
 }
 
 void BBR::log(std::ofstream& dataFile) const {

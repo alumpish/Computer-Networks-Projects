@@ -15,7 +15,6 @@ class BBR {
 public:
     BBR(double max_bw, double min_rtt, int fileSize);
     double lossProbability();
-    void updateRTT(double rtt);
     void updateBandwidth(double bandwidth);
     double getSendingRate();
     void updateCongestionWindow(bool is_loss);

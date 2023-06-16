@@ -221,10 +221,20 @@ Best algorithm for high-speed networks is BBR as we see in images. But for low-s
 ## NewReno
 ![Alt text](images/new_reno.jpg)
 
+Diffrence of Reno and NewReno is obvious here. When loss occure Reno need more time to recover from it. But NewReno recover from loss faster in one Recovery phase.
+
+Time needed for Reno to send File is about 20000 and for NewReno is about 11000.
+
 &emsp;
 
 ## BBR
-![Alt text](images/bbr.jpg)
+![Alt text](images/bbr.png)
+Time needed for BBR to send File is about 11000 like NewReno. but its cwnd and throughput is more stable than NewReno.
+
+&emsp;
+
+&emsp;
+
 
 ### Q6. "Name some of the congestion control algorithms that are not mentioned in this project."
 
