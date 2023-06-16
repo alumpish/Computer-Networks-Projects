@@ -11,5 +11,8 @@ int main() {
     NewReno connection2(1, 511, FILE_SIZE);
     connection2.run();
 
+    BBR connection3(10, 10, FILE_SIZE);
+    connection3.run();
+
     return 0;
 }
