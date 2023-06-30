@@ -4,16 +4,11 @@
 
 #include "constants.hpp"
 
-NewReno::NewReno(int cwnd, int ssthresh, int fileSize) {
+NewReno::NewReno(int cwnd, int ssthresh, double lossScale, int fileSize, std::string connectionName)
+    : CongestionController(fileSize, connectionName, lossScale) {
     mode_ = Mode::SLOW_START;
     cwnd_ = cwnd;
     ssthresh_ = ssthresh;
-    fileSize_ = fileSize;
-    rtt_ = RTT;
-    losstresh_ = LOSS_TRESH;
-    lossScale_ = LOSS_SCALE;
-    time_ = 0;
-    retransRemain_ = 0;
 }
 
 double NewReno::lossProbability() {
@@ -58,7 +53,7 @@ void NewReno::onRTTUpdate(int newRTT) {
     rtt_ = newRTT;
 }
 
-void NewReno::onSelectiveAck(int count) {
+void NewReno::onPacketLoss(int count) {
     retransRemain_ += count;
     mode_ = Mode::FAST_RECOVERY;
 }
@@ -68,12 +63,12 @@ void NewReno::log(std::ofstream& dataFile) const {
 }
 
 void NewReno::run() {
-    std::ofstream dataFile("data.txt");
+    std::ofstream dataFile((PLOT_PATH + connectionName_ + ".txt").c_str());
 
     while (fileSize_ > 0) {
         if ((rand() % 100 + 1) < lossProbability()) {
-            std::cout << "Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", sstresh = " << ssthresh_ << std::endl;
-            onSelectiveAck(1);
+            std::cout << connectionName_<< ": Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", sstresh = " << ssthresh_ << std::endl;
+            onPacketLoss(1);
         }
         else {
             sendData();

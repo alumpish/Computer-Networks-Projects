@@ -4,7 +4,9 @@
 #include <fstream>
 #include <string>
 
-class Reno {
+#include "congestion_controller.hpp"
+
+class Reno : public CongestionController {
     enum Mode {
         SLOW_START,
         CONGESTION_AVOIDANCE,
@@ -13,27 +15,18 @@ class Reno {
     };
 
 public:
-    Reno(int cwnd, int ssthresh, int fileSize);
+    Reno(int cwnd, int ssthresh, double lossScale, int fileSize, std::string connectionName);
 
     void sendData();
     void onPacketLoss(int count);
     void onRTTUpdate(int newRTT);
     void log(std::ofstream& dataFile) const;
     void retransmit();
-
     void run();
 
 private:
     Mode mode_;         // Current mode
-    int cwnd_;          // Congestion window
-    int ssthresh_;      // Slow start threshold
-    int rtt_;           // Round trip time
-    int losstresh_;     // Loss threshold
-    double lossScale_;  // Loss scale
-    int fileSize_;      // File size
     int unaknowledged_; // Unaknowledged packets
-    int time_;          // Time
-    int retransRemain_;
 
     double lossProbability();
 };

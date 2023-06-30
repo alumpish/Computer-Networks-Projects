@@ -4,17 +4,13 @@
 
 #include "constants.hpp"
 
-Reno::Reno(int cwnd, int ssthresh, int fileSize) {
+Reno::Reno(int cwnd, int ssthresh, double lossScale, int fileSize, std::string connectionName)
+    : CongestionController(fileSize, connectionName, lossScale) {
     mode_ = Mode::SLOW_START;
     cwnd_ = cwnd;
     ssthresh_ = ssthresh;
-    fileSize_ = fileSize;
-    rtt_ = RTT;
-    losstresh_ = LOSS_TRESH;
-    lossScale_ = LOSS_SCALE;
+
     unaknowledged_ = 0;
-    time_ = 0;
-    retransRemain_ = 0;
 }
 
 double Reno::lossProbability() {
@@ -72,11 +68,11 @@ void Reno::log(std::ofstream& dataFile) const {
 }
 
 void Reno::run() {
-    std::ofstream dataFile("data.txt");
+    std::ofstream dataFile((PLOT_PATH + connectionName_ + ".txt").c_str());
 
     while (fileSize_ > 0) {
         if ((rand() % 100 + 1) < lossProbability()) {
-            std::cout << "Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", sstresh = " << ssthresh_ << std::endl;
+            std::cout << connectionName_<< ": Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", sstresh = " << ssthresh_ << std::endl;
             onPacketLoss(1);
         }
         else {

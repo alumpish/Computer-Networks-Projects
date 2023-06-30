@@ -5,17 +5,18 @@
 
 #include "constants.hpp"
 
-BBR::BBR(double max_bw, double min_rtt, int fileSize)
-    : max_bandwidth_(max_bw), min_rtt_(min_rtt), fileSize_(fileSize) {
+BBR::BBR(double max_bw, double min_rtt, double lossScale, int fileSize, std::string connectionName)
+    : CongestionController(fileSize, connectionName, lossScale) {
     mode_ = Mode::STARTUP;
+
     cwnd_ = 1;
-    rtt_ = RTT;
+
+    max_bandwidth_ = max_bw;
+    min_rtt_ = min_rtt;
+
     target_cwnd_ = 500;
     pacing_gain_ = 2.0;
     gain_cycle_ = 8.0;
-    losstresh_ = LOSS_TRESH;
-    lossScale_ = LOSS_SCALE;
-    time_ = 0;
     unaknowledged_ = 0;
 }
 
@@ -106,11 +107,11 @@ void BBR::log(std::ofstream& dataFile) const {
 }
 
 void BBR::run() {
-    std::ofstream dataFile("data.txt");
+    std::ofstream dataFile((PLOT_PATH + connectionName_ + ".txt").c_str());
 
     while (fileSize_ > 0) {
         if ((rand() % 100 + 1) < lossProbability()) {
-            std::cout << "Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", RTT = " << rtt_ << std::endl;
+            std::cout << connectionName_<< ": Pacekt loss at time " << time_ << ": cwmd = " << cwnd_ << ", RTT = " << rtt_ << std::endl;
             onPacketLoss(1);
         }
         else {

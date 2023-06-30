@@ -1,10 +1,11 @@
 #ifndef NEWRENO_HPP
 #define NEWRENO_HPP
-
 #include <fstream>
 #include <string>
 
-class NewReno {
+#include "congestion_controller.hpp"
+
+class NewReno : public CongestionController {
     enum Mode {
         SLOW_START,
         CONGESTION_AVOIDANCE,
@@ -13,12 +14,11 @@ class NewReno {
     };
 
 public:
-    NewReno(int cwnd, int ssthresh, int fileSize);
+    NewReno(int cwnd, int ssthresh, double lossScale, int fileSize, std::string connectionName);
 
     void sendData();
     void onPacketLoss(int count);
     void onRTTUpdate(int newRTT);
-    void onSelectiveAck(int count);
     void log(std::ofstream& dataFile) const;
     void retransmit();
 
@@ -26,14 +26,7 @@ public:
 
 private:
     Mode mode_;         // Current mode
-    int cwnd_;          // Congestion window
-    int ssthresh_;      // Slow start threshold
-    int rtt_;           // Round trip time
-    int losstresh_;     // Loss threshold
-    double lossScale_;  // Loss scale
-    int fileSize_;      // File size
-    int time_;          // Time
-    int retransRemain_;
+    int unaknowledged_; // Unaknowledged packets
 
     double lossProbability();
 };
