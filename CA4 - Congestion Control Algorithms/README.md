@@ -107,6 +107,18 @@ In this function we increase retransRemain\_ and go to FAST_RECOVERY mode. Diffe
 
 ### BBR Class
 
+Initialization: Before entering the BBR phases, the algorithm initializes its variables and parameters. This may involve setting the initial sending rate, configuring congestion control parameters, and initializing variables to track RTT, packet loss, and other relevant metrics.
+
+Startup Phase: The algorithm enters the startup phase, where it rapidly increases the sending rate to probe for the available bottleneck bandwidth. It starts with a low sending rate and exponentially increases it until the bottleneck bandwidth is reached. During this phase, BBR measures the round-trip time (RTT) and monitors packet loss events to estimate the available bandwidth.
+
+Drain Phase: Once the bottleneck bandwidth is detected, the algorithm enters the drain phase. In this phase, BBR aims to reduce the sending rate gradually, allowing any excess queued packets to be drained and stabilizing the queue occupancy at the bottleneck. The purpose of the drain phase is to avoid creating further congestion and excessive queuing delays.
+
+Probe Bandwidth Phase: After the drain phase, BBR enters the probe bandwidth phase. Here, the algorithm maintains a stable sending rate that corresponds to the estimated available bandwidth. BBR continuously monitors and updates its estimate of the available bandwidth, adapting the sending rate to fully utilize the available capacity without causing excessive queuing delay or congestion.
+
+Probe RTT Phase: BBR periodically enters the probe RTT phase to ensure accurate and up-to-date RTT measurements. During this phase, the algorithm intentionally reduces the sending rate to obtain precise RTT measurements. The measured RTT information is then used to refine the available bandwidth estimation and adjust the congestion control parameters if necessary.
+
+Loop and Adaptation: The control flow of BBR typically involves iterating through the probe bandwidth and probe RTT phases multiple times. The algorithm dynamically adjusts its behavior based on observed network conditions and continually refines its estimates and control parameters to optimize throughput and minimize latency.
+
 #### Public Methods
 
 ##### The Constructor
@@ -167,13 +179,10 @@ In summary, flow control focuses on regulating the data flow between a sender an
 
 New Reno is an enhancement to the Reno congestion control algorithm used in TCP (Transmission Control Protocol), which is widely employed for reliable data transmission over computer networks. New Reno improves upon Reno's congestion control mechanism by introducing a modification to the way TCP handles packet retransmissions after detecting congestion.
 
-In the original Reno algorithm, when congestion is detected, TCP reduces its congestion window (cwnd) and enters a slow-start phase, gradually increasing the cwnd to probe for available network capacity. However, Reno has a limitation known as "TCP global synchronization" that can cause all TCP connections sharing a bottleneck link to enter congestion avoidance simultaneously, leading to suboptimal network performance.
+Reno perform very well over TCP when the packet losses are small. But when we have multiple packet losses in one window then RENO doesn’t perform too well and it’s performance is almost the same as Tahoe under conditions of high packet loss. The reason is that it can only detect a single packet losses. If there is multiple packet drop then the first info about the packet loss comes when we receive the duplicate ACK’s. But the information about the second packet which was lost
+will come only after the ACK for the re-transmitted first segment reaches the sender after one RTT. Also it is possible that the CWD is reduced twice for packet losses which occurred in one window.
 
-New Reno addresses this limitation by introducing a concept called "fast recovery" during the congestion avoidance phase. When a TCP sender receives duplicate acknowledgments (ACKs) indicating that a packet has been lost, instead of halving the cwnd and entering slow-start, New Reno enters fast recovery. In fast recovery, the sender increases the cwnd by a smaller value, known as the "fast recovery threshold" or ssthresh, and relies on receiving further duplicate ACKs to retransmit the lost packet.
-
-If the sender receives three duplicate ACKs, it assumes that the next transmitted packet has been lost and performs a fast retransmit by retransmitting the missing packet without waiting for a timeout. After fast retransmit, the sender reduces the cwnd to half its value and enters congestion avoidance, increasing the cwnd more cautiously as before.
-
-The introduction of fast recovery in New Reno allows TCP connections to recover from losses more quickly, avoiding unnecessary slow-start episodes. This improvement helps to mitigate the TCP global synchronization issue, as multiple connections sharing the same bottleneck link can recover from losses at different rates, leading to better overall network performance.
+It differs from RENO in that it doesn’t exit fast-recovery until all the data which was out standing at the time it entered fast-recovery is acknowledged
 
 ### Q3. "Describe BBR algorithm shortly."
 
@@ -214,12 +223,78 @@ Best algorithm for high-speed networks is BBR as we see in images. But for low-s
 &emsp;
 
 ## Reno
-![Alt text](images/reno.jpg)
+
+```cpp
+// cwnd = 1, ssthresh = 511, loss_scale = 0.015
+Reno reno1(1, 511, 0.015, FILE_SIZE, "Reno_1");
+reno1.run();
+```
+Output:
+```
+Reno_1: Pacekt loss at time 1670: cwmd = 669, sstresh = 511
+Fast recovery end at time 5020
+Reno_1: Pacekt loss at time 8400: cwmd = 671, sstresh = 334
+Fast recovery end at time 11760
+Reno_1: Pacekt loss at time 14350: cwmd = 593, sstresh = 335
+Fast recovery end at time 17320
+```
+![Alt text](images/Reno_1.png)
+
+&emsp;
+
+&emsp;
+
+```cpp
+// cwnd = 1, ssthresh = 1023, loss_scale = 0.015
+Reno reno2(1, 1023, 0.015, FILE_SIZE, "Reno_2");
+reno2.run();
+```
+Output:
+```
+Reno_2: Pacekt loss at time 100: cwmd = 1024, sstresh = 1023
+Reno_2: Pacekt loss at time 110: cwmd = 1024, sstresh = 1023
+Reno_2: Pacekt loss at time 160: cwmd = 1024, sstresh = 1023
+Reno_2: Pacekt loss at time 170: cwmd = 1024, sstresh = 1023
+...
+...
+Reno_2: Pacekt loss at time 300: cwmd = 1024, sstresh = 1023
+Reno_2: Pacekt loss at time 310: cwmd = 1024, sstresh = 1023
+Reno_2: Pacekt loss at time 340: cwmd = 1024, sstresh = 1023
+Fast recovery end at time 5470
+Reno_2: Pacekt loss at time 6200: cwmd = 584, sstresh = 512
+Fast recovery end at time 9130
+Reno_2: Pacekt loss at time 11650: cwmd = 543, sstresh = 292
+Fast recovery end at time 14370
+Reno_2: Pacekt loss at time 19670: cwmd = 800, sstresh = 271
+Reno_2: Pacekt loss at time 19680: cwmd = 800, sstresh = 271
+Reno_2: Pacekt loss at time 19690: cwmd = 800, sstresh = 271
+...
+...
+Reno_2: Pacekt loss at time 22860: cwmd = 800, sstresh = 271
+Reno_2: Pacekt loss at time 22870: cwmd = 800, sstresh = 271
+Fast recovery end at time 26880
+```
+![Alt text](images/Reno_2.png)
+
+As we see in output, by increasing sstresh, more loss will occure, but average cwnd is almost same in both of them because of congestion control set cwnd in according to network condition and loss scale is same in both of them.
 
 &emsp;
 
 ## NewReno
-![Alt text](images/new_reno.jpg)
+
+```cpp
+// cwnd = 1, ssthresh = 511, loss_scale = 0.015
+NewReno newReno1(1, 511, 0.015, FILE_SIZE, "NewReno_1");
+newReno1.run();
+```
+Output:
+```
+NewReno_1: Pacekt loss at time 910: cwmd = 593, sstresh = 511
+NewReno_1: Pacekt loss at time 3910: cwmd = 593, sstresh = 296
+NewReno_1: Pacekt loss at time 7340: cwmd = 636, sstresh = 296
+```
+
+![Alt text](images/NewReno_1.png)
 
 Diffrence of Reno and NewReno is obvious here. When loss occure Reno need more time to recover from it. But NewReno recover from loss faster in one Recovery phase.
 
@@ -227,14 +302,87 @@ Time needed for Reno to send File is about 20000 and for NewReno is about 11000.
 
 &emsp;
 
+&emsp;
+
+```cpp
+// cwnd = 1, ssthresh = 1023, loss_scale = 0.015
+NewReno newReno2(1, 1023, 0.015, FILE_SIZE, "NewReno_2");
+newReno2.run();
+```
+Output:
+```
+NewReno_2: Pacekt loss at time 100: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 110: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 120: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 130: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 140: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 150: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 160: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 170: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 180: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 190: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 200: cwmd = 1024, sstresh = 1023
+NewReno_2: Pacekt loss at time 1670: cwmd = 646, sstresh = 512
+NewReno_2: Pacekt loss at time 4480: cwmd = 601, sstresh = 323
+NewReno_2: Pacekt loss at time 7180: cwmd = 567, sstresh = 300
+NewReno_2: Pacekt loss at time 10170: cwmd = 579, sstresh = 283
+```
+
+![Alt text](images/NewReno_2.png)
+
+By increasing sstresh, more loss will occure, but in cotrast to Reno, loss is much more less in NewReno. And as we see in output, NewReno recover from loss faster than Reno.
+
+&emsp;
+
+&emsp;
+
 ## BBR
-![Alt text](images/bbr.png)
-Time needed for BBR to send File is about 11000 like NewReno. but its cwnd and throughput is more stable than NewReno.
+
+```cpp
+// max_bw = 10, min_rtt = 10, loss_scale = 0.015
+BBR bbr1(10, 10, 0.015, FILE_SIZE, "BBR_1");
+bbr1.run();
+```
+Output:
+```
+
+```
+
+![Alt text](images/BBR_1.png)
+
+Time needed for BBR to send File is about 11000 like NewReno. but its cwnd and throughput is more stable than NewReno. And as we wee in output, no loss occured because of congestion avoidance behavior of BBR.
 
 &emsp;
 
 &emsp;
 
+```cpp
+// max_bw = 10, min_rtt = 10, loss_scale = 0.02
+BBR bbr2(10, 10, 0.02, FILE_SIZE, "BBR_2");
+bbr2.run();
+```
+Output:
+```
+BBR_2: Pacekt loss at time 1340.8: cwmd = 500, RTT = 10.941
+BBR_2: Pacekt loss at time 1692.43: cwmd = 503, RTT = 11.0278
+BBR_2: Pacekt loss at time 3674.09: cwmd = 503, RTT = 11.1826
+BBR_2: Pacekt loss at time 3853.04: cwmd = 506, RTT = 11.1858
+BBR_2: Pacekt loss at time 4322.98: cwmd = 515, RTT = 11.1917
+BBR_2: Pacekt loss at time 4804.31: cwmd = 500, RTT = 11.1952
+BBR_2: Pacekt loss at time 5106.6: cwmd = 524, RTT = 11.1966
+BBR_2: Pacekt loss at time 5722.47: cwmd = 524, RTT = 11.1983
+BBR_2: Pacekt loss at time 5901.64: cwmd = 542, RTT = 11.1986
+BBR_2: Pacekt loss at time 6943.17: cwmd = 509, RTT = 11.1996
+BBR_2: Pacekt loss at time 9664.74: cwmd = 512, RTT = 11.2
+```
+
+![Alt text](images/BBR_2.png)
+
+With 0.015 loss_scale, BBR didn't have any loss. But with 0.02 loss_scale, BBR had some loss. But it recovered from loss very fast and its throughput is more stable than NewReno.
+
+&emsp;
+
+&emsp;
 
 ### Q6. "Name some of the congestion control algorithms that are not mentioned in this project."
 

@@ -37,7 +37,4 @@ settings.json
 # Output files
 /debug
 /obj
-
-*.txt
-*.gp
-*.png
+/plots
