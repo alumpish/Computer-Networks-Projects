@@ -6,6 +6,7 @@
 
   - [NewReno Class](#newreno-class)
   - [Reno Class](#reno-class)
+  - [BBr Class](#bbr-class)
 
 - [Questions](#questions)
   - [Q1](#q1-whats-the-difference-between-congestion-control-and-the-flow-control)
