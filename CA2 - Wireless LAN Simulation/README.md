@@ -469,9 +469,9 @@ To test and find the Throughput and Avg e2e delay, we use the `FlowMonitor`. The
 - Time of the last received packet
 - Duration since the sending of the first packet
 - Throughput Which is equal to:
-$$
+$
 \frac{RxPackets \times 8}{Duration \times 1024 \times 1024}
-$$
+$
 - Sum of e2e delay
 - Average of e2e delay
 
