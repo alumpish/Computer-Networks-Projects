@@ -503,6 +503,6 @@ Mappers have each received 93 (or 92) packets. They will each find the correspon
 
 ### Final Printed Packets
 
-![Final printed msg](report-assets/final-printed-msg.png)
+![Final printed msg](report-assets/final-printed-msg.jpg)
 
 In the end, The received message is being printed.
