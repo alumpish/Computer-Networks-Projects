@@ -3,10 +3,11 @@
 ## Contents
 
 - [Code Documentation](#code-documentation)
-
   - [NewReno Class](#newreno-class)
   - [Reno Class](#reno-class)
   - [BBR Class](#bbr-class)
+
+- [Run](#run)
 
 - [Questions](#questions)
   - [Q1](#q1-whats-the-difference-between-congestion-control-and-the-flow-control)
@@ -163,6 +164,9 @@ It updates sending rate by pacing*gain* max to max*bandwidth*.
 It switches to Drain phase and decrease cwnd\_ by 25%.
 
 #### Private Methods:
+
+## Run
+   You can specify Algorithms and their parameters in `src/main.cpp` file. Then just run makefile with `make` command and run `bin/main`. It makes plot files in `plots` folder and you can plot them with `./plot.sh` command (needs gnuplot). Plot images will also be in `plots` folder.
 
 ## Questions
 

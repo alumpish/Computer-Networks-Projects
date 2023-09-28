@@ -71,7 +71,6 @@ void BBR::sendData() {
     case Mode::PROBE_RTT:
         if (rtt_ > min_rtt_ * 1.25) {
             mode_ = Mode::DRAIN;
-            // cwnd_ *= 0.75;
             break;
         }
         cwnd_ += 1;
