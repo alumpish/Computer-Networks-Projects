@@ -1,11 +1,11 @@
-# Computer Networks Project 3
+# CA3 - Routing Protocols
 
 ## Contents
 
 - [Code Documentation](#code-documentation)
   - [Command Line Interface](#command-line-interface)
   - [Graph](#graph)
-  - [Graph's Command Handlin](#graphs-command-handling)
+  - [Graph's Command Handling](#graphs-command-handling)
   - [Network's Command Handling](#networks-command-handling)
 
 ## Code Documentation

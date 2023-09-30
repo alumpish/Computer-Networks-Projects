@@ -1,13 +1,13 @@
-# Computer Networks Course Project 1
+# CA1 - Socket Programming
 
-## Saman Eslami: 810199375
+## Contents
 
-## Ali Padyav: 810199388
+- [Server Side](#server_side)
+- [Client Side](#client-side)
+- [Both Sides](#both-sides)
+- [How to run](#how-to-run)
 
-<br/>
-<br />
-
-# Server Side
+# **Server Side**
 
 ## `Server`
 
@@ -275,7 +275,7 @@ int main() {
 
 # **Both Sides**
 
-The conncection between the client and the serrver is by Request-Response protocol. The client sends a request to the server and the server responds to the request. The client can send multiple requests to the server and the server can respond to multiple requests. The client and the server can send and receive messages in any order.
+The conncection between the client and the server is by Request-Response protocol. The client sends a request to the server and the server responds to the request. The client can send multiple requests to the server and the server can respond to multiple requests. The client and the server can send and receive messages in any order.
 
 The client sends a request to the server by sending a string that contains the command name and the arguments of the command. The server responds to the request by sending a string that contains the result of the command execution.
 

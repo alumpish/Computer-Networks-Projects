@@ -1,4 +1,4 @@
-# CN_CHomeworks_2
+# CA2 - Wireless LAN Simulation
 
 ## Contents
 
